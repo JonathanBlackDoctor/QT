@@ -1,0 +1,95 @@
+name: Generate daily QT
+
+on:
+  schedule:
+    # GitHub cron is UTC. 15:15 UTC = 00:15 KST on the next calendar day.
+    - cron: '15 15 * * *'
+  workflow_dispatch:
+    inputs:
+      date:
+        description: 'YYYY-MM-DD (KST calendar date). Empty = current KST date'
+        required: false
+        type: string
+      force:
+        description: 'Regenerate an existing date'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: qt-daily
+  cancel-in-progress: false
+
+jobs:
+  generate-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    env:
+      TZ: Asia/Seoul
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
+      GEMINI_FALLBACK_MODEL: ${{ vars.GEMINI_FALLBACK_MODEL }}
+      GOOGLE_CSE_API_KEY: ${{ secrets.GOOGLE_CSE_API_KEY }}
+      GOOGLE_CSE_ID: ${{ secrets.GOOGLE_CSE_ID }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Resolve arguments
+        id: args
+        shell: bash
+        run: |
+          DATE_ARG=""
+          FORCE_ARG=""
+          if [[ -n "${{ inputs.date }}" ]]; then DATE_ARG="--date=${{ inputs.date }}"; fi
+          if [[ "${{ inputs.force }}" == "true" ]]; then FORCE_ARG="--force"; fi
+          echo "date_arg=$DATE_ARG" >> "$GITHUB_OUTPUT"
+          echo "force_arg=$FORCE_ARG" >> "$GITHUB_OUTPUT"
+
+      - name: Generate QT
+        run: node scripts/generate.mjs ${{ steps.args.outputs.date_arg }} ${{ steps.args.outputs.force_arg }}
+
+      - name: Validate content
+        run: node scripts/validate.mjs ${{ steps.args.outputs.date_arg }}
+
+      - name: Commit generated content
+        shell: bash
+        run: |
+          if git diff --quiet -- content; then
+            echo "No content changes to commit."
+          else
+            git config user.name "qt-daily-bot"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            TARGET_DATE="${{ inputs.date }}"
+            if [[ -z "$TARGET_DATE" ]]; then TARGET_DATE="$(TZ=Asia/Seoul date +%F)"; fi
+            git add content
+            git commit -m "content: daily QT $TARGET_DATE"
+            git push
+          fi
+
+      - name: Build site
+        run: node scripts/build-site.mjs
+
+      - uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

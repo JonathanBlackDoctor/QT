@@ -1,3 +1,4 @@
+import { renderProjectPerspectives } from './project-perspectives.js';
 import { christologyQualifier, commentaryRails } from './model.js';
 import { actionButton, appendParagraphs, el, sectionHeading, textEl } from './dom.js';
 import { icon } from './icons.js';
@@ -125,9 +126,7 @@ function renderDeepDive(sections) {
 
   const stack = el('div', 'deep-stack');
   stack.appendChild(detailsItem('context', '문맥과 배경', 'context', proseBody(sections.context)));
-  stack.appendChild(sections.projectPerspective
-    ? detailsItem('project-perspective', '바이블프로젝트 · 리딩지저스 관점', 'film', proseBody(sections.projectPerspective))
-    : unavailableItem('project-perspective', '바이블프로젝트 · 리딩지저스 관점', 'film'));
+  stack.appendChild(renderProjectPerspectives(sections));
   stack.appendChild(detailsItem('commentary', '깊이 있는 주석 및 강해', 'lines', commentaryBody(sections.commentary)));
   stack.appendChild(sections.language
     ? detailsItem('language', '원어·문법 분석', 'language', languageBody(sections.language))

@@ -1,0 +1,11 @@
+/* Independent project evidence: empty/error states remain expandable. */
+.project-source { padding: 14px 0; border-top: 1px solid var(--line-soft); }
+.project-source:first-child { padding-top: 4px; }
+.project-source:last-child { padding-bottom: 0; }
+.project-source-heading { display: flex; align-items: baseline; flex-wrap: wrap; gap: 7px 12px; margin-bottom: 7px; }
+.project-source-heading h3 { margin: 0; font-size: 13px; font-weight: 700; }
+.project-source-status { padding: 3px 7px; border-radius: 5px; color: var(--muted); background: var(--surface-muted); font-size: 10px; }
+.project-source-status.ready { color: var(--accent-strong); background: var(--accent-soft); }
+.project-source > .project-source-scope, .project-source > .project-source-note, .project-source > .project-source-time { font-family: var(--sans); font-size: 11.5px; line-height: 1.7; color: var(--muted); overflow-wrap: anywhere; }
+.project-source > .project-source-time { margin-top: 10px; font-size: 10px; color: var(--subtle); }
+.project-source-link { display: inline-block; margin: 3px 0 7px; line-height: 1.6; }

@@ -1,5 +1,4 @@
 name: Deploy Pages
-
 on:
   push:
     branches: [main]
@@ -10,16 +9,13 @@ on:
       - 'scripts/*.test.mjs'
       - '.github/workflows/pages.yml'
   workflow_dispatch:
-
 permissions:
   contents: read
   pages: write
   id-token: write
-
 concurrency:
-  group: pages
+  group: qt-publish
   cancel-in-progress: false
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -28,11 +24,13 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
       - run: node --test scripts/*.test.mjs
-      - run: node scripts/validate.mjs
+      - run: node scripts/validate.mjs && node scripts/validate-projects.mjs
       - run: node scripts/build-site.mjs
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
@@ -41,5 +39,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
-# Triggered once after the first QT content commit so Pages picks up the new archive.

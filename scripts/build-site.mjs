@@ -6,14 +6,8 @@ import { pageHtml } from '../site/page.mjs';
 const dist = path.join(ROOT, 'dist');
 const site = path.join(ROOT, 'site');
 const assets = [
-  'app.js',
-  'archive.js',
-  'dom.js',
-  'icons.js',
-  'model.js',
-  'reader-chrome.js',
-  'reader-content.js',
-  'styles.css',
+  'app.js', 'archive.js', 'dom.js', 'icons.js', 'model.js',
+  'reader-chrome.js', 'reader-content.js', 'project-perspectives.js', 'styles.css',
 ];
 
 await fs.rm(dist, { recursive: true, force: true });
@@ -28,5 +22,4 @@ await Promise.all([
   fs.writeFile(path.join(dist, '404.html'), pageHtml('QT', 'home'), 'utf8'),
   fs.writeFile(path.join(dist, '.nojekyll'), '', 'utf8'),
 ]);
-
 console.log('Site built to dist/');

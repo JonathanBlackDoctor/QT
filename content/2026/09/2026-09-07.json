@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "status": "failed",
+  "date": "2026-09-07",
+  "displayDate": "2026년 9월 7일 (월)",
+  "passage": null,
+  "title": null,
+  "verification": {
+    "overall": "확인 실패",
+    "date": "확인 실패",
+    "passage": "확인 실패",
+    "title": "확인 실패",
+    "suCommentary": "확인 실패"
+  },
+  "failureMessage": "⚠️ 오늘(2026-09-07)의 매일성경 본문을 성서유니온 공식 페이지 또는 검색을 통해 확인하지 못했습니다.\n본문 구절(예: 큐티 시편 79:1-13)을 직접 입력해 주시면 해설을 진행하겠습니다.",
+  "sections": null,
+  "sources": [],
+  "evidenceMeta": {
+    "retrievedAt": "2026-09-06T16:03:05.024Z",
+    "suDirectAttempted": true,
+    "suDirectSucceeded": false,
+    "suDirectUrl": null,
+    "suDirectDateMatch": false,
+    "suDirectError": "All direct SU entry points failed: https://sum.su.or.kr:8888/bible/today => fetch failed | https://sum.su.or.kr/bible/today => fetch failed",
+    "suDateNavigationTried": false,
+    "searchFallbackUsed": false,
+    "researchDirectCount": 0,
+    "researchMetadataCount": 0
+  },
+  "generatedAt": "2026-09-06T16:04:17.067Z"
+}

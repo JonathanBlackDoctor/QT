@@ -1,5 +1,14 @@
 [
   {
+    "date": "2026-09-07",
+    "displayDate": "2026년 9월 7일 (월)",
+    "passage": null,
+    "title": null,
+    "status": "failed",
+    "verification": "확인 실패",
+    "path": "2026/09/2026-09-07.json"
+  },
+  {
     "date": "2026-09-06",
     "displayDate": "2026년 9월 6일 (일)",
     "passage": "사사기 3:1-11",

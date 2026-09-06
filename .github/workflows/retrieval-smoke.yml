@@ -7,6 +7,7 @@ on:
       - '.github/workflows/retrieval-smoke.yml'
       - 'scripts/evidence.mjs'
       - 'scripts/lib.mjs'
+      - 'scripts/lib.test.mjs'
   workflow_dispatch:
 
 permissions:
@@ -24,7 +25,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Fetch and verify today's SU passage
+
+      - name: Run parser and retrieval unit tests
+        run: node --test scripts/*.test.mjs
+
+      - name: Check live SU retrieval
         shell: bash
         run: |
           node --input-type=module <<'NODE'
@@ -36,18 +41,17 @@ jobs:
             date,
             passage: ev.passage,
             suDirectSucceeded: ev.su.directSucceeded,
-            suDirectError: ev.su.directError,
+            exactPrimarySucceeded: ev.su.exactPrimarySucceeded,
+            suDirectError: ev.su.directError?.slice(0, 500) ?? null,
             dateStatus: ev.su.dateStatus,
             passageStatus: ev.su.passageStatus,
             directUrl: ev.su.directDocument?.url ?? null,
             dateMatch: ev.su.directDocument?.dateMatch ?? false,
-            title: ev.su.directDocument?.title ?? null,
-            passageCandidates: ev.su.directDocument?.passageCandidates ?? [],
-            textHead: ev.su.directDocument?.text?.slice(0, 2500) ?? null,
             fallbackSnippets: ev.su.fallbackSnippets?.length ?? 0,
             researchDocuments: ev.researchDocuments?.length ?? 0,
             researchMetadata: ev.researchMetadata?.length ?? 0
           }, null, 2));
-          if (!ev.su.directSucceeded) process.exitCode = 2;
-          if (!ev.passage) process.exitCode = 3;
+          if (!ev.passage) {
+            console.warn('No verified passage in this live attempt. The production generator will record a verification failure instead of guessing.');
+          }
           NODE

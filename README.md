@@ -30,11 +30,11 @@ Pro를 기본으로 쓰고, 호출 실패 시 Flash로 자동 fallback합니다.
 
 Google 검색 키가 없더라도 성서유니온 직접 접근으로 본문을 확인할 수 있으면 생성할 수 있습니다. 다만 직접 접근 실패 시 검색 fallback을 수행할 수 없고, 추가 화이트리스트 연구 자료도 제한됩니다.
 
-## GitHub Pages
+## GitHub Pages — 최초 1회 설정
 
-워크플로가 `actions/configure-pages`의 `enablement: true`로 Pages 활성화를 시도합니다. 저장소 정책상 자동 활성화가 허용되지 않는 경우에만 Repository → **Settings → Pages → Build and deployment → Source: GitHub Actions**를 한 번 선택하면 됩니다.
+새 저장소에서는 Repository → **Settings → Pages → Build and deployment → Source: GitHub Actions**를 한 번 선택해야 합니다. 현재 연결된 자동화 토큰은 새 Pages 사이트 자체를 생성할 권한이 없으므로 이 최초 활성화만 GitHub UI에서 수행합니다.
 
-그 뒤 `Deploy Pages` 또는 `Generate daily QT` workflow가 사이트를 배포합니다.
+활성화 뒤 `Deploy Pages` 또는 `Generate daily QT` workflow가 사이트를 배포합니다.
 
 예상 주소:
 

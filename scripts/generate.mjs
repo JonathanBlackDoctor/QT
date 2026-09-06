@@ -6,6 +6,7 @@ import {
   contentPaths,
   currentKstDate,
   exists,
+  extractPassages,
   isWhitelistedUrl,
   koreanDate,
   parseArgs,
@@ -39,9 +40,21 @@ if (!evidence.passage) {
 }
 
 const systemPrompt = await fs.readFile(path.join(ROOT, 'prompts', 'qt-system.md'), 'utf8');
-const result = await generateCommentary({ targetDate, evidence, systemPrompt });
-const normalized = normalizeResult(result, evidence, targetDate);
-validateGenerated(normalized, evidence);
+let result = await generateCommentary({ targetDate, evidence, systemPrompt });
+let normalized = normalizeResult(result, evidence, targetDate);
+try {
+  validateGenerated(normalized, evidence);
+} catch (error) {
+  console.warn(`Generated output failed evidence compliance: ${error.message}`);
+  result = await generateCommentary({
+    targetDate,
+    evidence,
+    systemPrompt,
+    correction: { issue: error.message, previous: normalized },
+  });
+  normalized = normalizeResult(result, evidence, targetDate);
+  validateGenerated(normalized, evidence);
+}
 await persist(targetDate, normalized);
 console.log(`Generated QT ${targetDate}: ${normalized.passage}`);
 
@@ -69,7 +82,7 @@ function buildFailure(date, evidence) {
   };
 }
 
-async function generateCommentary({ targetDate, evidence, systemPrompt }) {
+async function generateCommentary({ targetDate, evidence, systemPrompt, correction = null }) {
   const apiKey = process.env.GEMINI_API_KEY?.trim();
   if (!apiKey) throw new Error('GEMINI_API_KEY is required to generate commentary.');
 
@@ -114,6 +127,15 @@ async function generateCommentary({ targetDate, evidence, systemPrompt }) {
     '',
     'EVIDENCE_BUNDLE:',
     JSON.stringify(evidence),
+    ...(correction ? [
+      '',
+      'COMPLIANCE_CORRECTION_REQUIRED:',
+      correction.issue,
+      'The prior draft below violated the evidence rules. Rewrite the full JSON from scratch.',
+      'Do not preserve any unsupported Bible reference, Hebrew/Greek token, Strong number, quotation, or typology assertion.',
+      'PRIOR_DRAFT:',
+      JSON.stringify(correction.previous),
+    ] : []),
   ].join('\n');
 
   const text = await callGemini({ apiKey, systemPrompt, userPrompt });
@@ -259,6 +281,36 @@ function validateGenerated(doc, evidence) {
   if (doc.sections.lifeApplication.some(x => !x.text)) throw new Error('All four life-application areas are required.');
   for (const source of doc.sources) {
     if (!isWhitelistedUrl(source.url)) throw new Error(`Non-whitelisted source: ${source.url}`);
+  }
+
+  const evidenceText = JSON.stringify(evidence);
+  const generatedText = JSON.stringify(doc.sections);
+
+  // A generated explicit Bible reference must already occur verbatim in the evidence bundle,
+  // except for the verified target passage itself. This blocks remembered cross-references.
+  const generatedRefs = extractPassages(generatedText);
+  for (const ref of generatedRefs) {
+    if (ref === evidence.passage) continue;
+    if (!evidenceText.includes(ref)) {
+      throw new Error(`Unsupported Bible reference outside Evidence Bundle: ${ref}`);
+    }
+  }
+
+  // Original-language spellings must be copied from retrieved evidence, never recalled from memory.
+  const originalTokens = generatedText.match(/[\u0590-\u05FF]{2,}|[\u0370-\u03FF]{2,}/g) ?? [];
+  for (const token of new Set(originalTokens)) {
+    if (!evidenceText.includes(token)) {
+      throw new Error(`Unsupported original-language token outside Evidence Bundle: ${token}`);
+    }
+  }
+
+  // Typological language is allowed only when its uncertainty level is explicit.
+  const christological = doc.sections.christological ?? '';
+  if (/(예표|미리\s*(?:바라|보여))/.test(christological) && !/(가능|가능성|유사성|공명)/.test(christological)) {
+    throw new Error('Typological claim lacks an explicit uncertainty qualifier.');
+  }
+  if (/미리\s*(?:바라보게|보여)/.test(christological)) {
+    throw new Error('Christological section uses an overly assertive forward-looking typology phrase.');
   }
 }
 

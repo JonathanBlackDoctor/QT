@@ -41,8 +41,21 @@ jobs:
         run: |
           node --input-type=module <<'NODE'
           import { fetchText, SU_TODAY_URL } from './scripts/lib.mjs';
-          const doc = await fetchText(SU_TODAY_URL, { maxChars: 22000 });
-          console.log(`landing title=${JSON.stringify(doc.title)} url=${doc.url}`);
+          const urls = [SU_TODAY_URL, 'https://sum.su.or.kr/bible/today'];
+          let doc = null;
+          for (const url of urls) {
+            try {
+              doc = await fetchText(url, { timeoutMs: 15000, maxChars: 22000 });
+              console.log(`landing title=${JSON.stringify(doc.title)} url=${doc.url}`);
+              break;
+            } catch (error) {
+              console.log(`landing failed url=${url} error=${error?.message ?? error}`);
+            }
+          }
+          if (!doc) {
+            console.log('No SU landing page available for diagnostics; continuing with normal generator retries.');
+            process.exit(0);
+          }
           const seen = new Set();
           let shown = 0;
           for (const link of doc.links ?? []) {

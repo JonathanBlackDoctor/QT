@@ -81,9 +81,9 @@ export function currentKstDate() {
 
 export function koreanDate(date) {
   const d = new Date(`${date}T12:00:00+09:00`);
-  return new Intl.DateTimeFormat('ko-KR', {
-    timeZone: KST, year: 'numeric', month: 'long', day: 'numeric', weekday: 'short'
-  }).format(d).replace(/\. /g, '년 ').replace(/\.$/, '');
+  const weekday = new Intl.DateTimeFormat('ko-KR', { timeZone: KST, weekday: 'short' }).format(d);
+  const [year, month, day] = date.split('-').map(Number);
+  return `${year}년 ${month}월 ${day}일 (${weekday})`;
 }
 
 export function datePieces(date) {

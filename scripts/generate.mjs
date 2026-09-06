@@ -21,8 +21,12 @@ const targetDate = assertDate(args.date || currentKstDate());
 const paths = contentPaths(targetDate);
 
 if (await exists(paths.json) && !args.force) {
-  console.log(`QT ${targetDate} already exists; skipping. Use --force to regenerate.`);
-  process.exit(0);
+  const existing = await readJson(paths.json).catch(() => null);
+  if (existing?.status === 'ok') {
+    console.log(`QT ${targetDate} already exists and is valid; skipping. Use --force to regenerate.`);
+    process.exit(0);
+  }
+  console.log(`QT ${targetDate} has a failed/incomplete record; retrying generation.`);
 }
 
 const evidence = await collectEvidence(targetDate);

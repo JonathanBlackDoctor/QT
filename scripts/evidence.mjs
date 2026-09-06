@@ -66,14 +66,29 @@ function documentMatchesDate(doc, targetDate) {
   return pageMentionsDate(primaryRegion, targetDate);
 }
 
+async function fetchTextWithRetry(url, options, attempts = 3) {
+  let lastError;
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    try {
+      return await fetchText(url, options);
+    } catch (error) {
+      lastError = error;
+      if (attempt < attempts) {
+        await new Promise(resolve => setTimeout(resolve, 1500 * attempt));
+      }
+    }
+  }
+  throw lastError;
+}
+
 async function fetchOfficialLanding() {
   try {
-    const doc = await fetchText(SU_TODAY_URL, { maxChars: 22000 });
+    const doc = await fetchTextWithRetry(SU_TODAY_URL, { maxChars: 22000 });
     return { doc, exactPrimarySucceeded: true, attempts: [{ url: SU_TODAY_URL, ok: true }] };
   } catch (primaryError) {
     const attempts = [{ url: SU_TODAY_URL, ok: false, error: String(primaryError?.message ?? primaryError) }];
     try {
-      const doc = await fetchText(SU_ALT_TODAY_URL, { maxChars: 22000 });
+      const doc = await fetchTextWithRetry(SU_ALT_TODAY_URL, { maxChars: 22000 });
       attempts.push({ url: SU_ALT_TODAY_URL, ok: true, finalUrl: doc.url });
       return { doc, exactPrimarySucceeded: false, attempts };
     } catch (secondaryError) {
@@ -234,7 +249,7 @@ function passageLocator(passage) {
   return { book, slug, chapter: Number(m[2]), verse: Number(m[3]) };
 }
 
-async function deterministicResearch(passage) {
+export async function deterministicResearch(passage) {
   const ref = passageLocator(passage);
   if (!ref) return [];
 

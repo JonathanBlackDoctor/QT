@@ -46,7 +46,10 @@ const BOOKS = [
 ];
 
 const BOOK_ALT = BOOKS.sort((a,b)=>b.length-a.length).map(escapeRegex).join('|');
-const PASSAGE_RE = new RegExp(`(?:${BOOK_ALT})\\s*\\d{1,3}\\s*[:：]\\s*\\d{1,3}(?:\\s*[-~–—]\\s*\\d{1,3})?`, 'g');
+const PASSAGE_RE = new RegExp(
+  `(${BOOK_ALT})\\s*(?:\\([^)]{1,80}\\))?\\s*(\\d{1,3})\\s*[:：]\\s*(\\d{1,3})(?:\\s*[-~–—]\\s*(?:(\\d{1,3})\\s*[:：]\\s*)?(\\d{1,3}))?`,
+  'g',
+);
 
 function escapeRegex(s) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -102,9 +105,21 @@ export function pageMentionsDate(text, date) {
 }
 
 export function extractPassages(text) {
-  const matches = text.match(PASSAGE_RE) ?? [];
-  const normalized = matches.map(s => s.replace(/\s+/g, ' ').replace('：', ':').replace(/[~–—]/g, '-').trim());
-  return [...new Set(normalized)];
+  const out = [];
+  PASSAGE_RE.lastIndex = 0;
+  let m;
+  while ((m = PASSAGE_RE.exec(text)) !== null) {
+    const [, book, startChapter, startVerse, endChapter, endVerse] = m;
+    let ref = `${book} ${startChapter}:${startVerse}`;
+    if (endVerse) {
+      ref += endChapter && endChapter !== startChapter
+        ? `-${endChapter}:${endVerse}`
+        : `-${endVerse}`;
+    }
+    if (!out.includes(ref)) out.push(ref);
+  }
+  PASSAGE_RE.lastIndex = 0;
+  return out;
 }
 
 export function decodeHtmlEntities(input) {

@@ -131,8 +131,8 @@ async function generateCommentary({ targetDate, evidence, systemPrompt }) {
 }
 
 async function callGemini({ apiKey, systemPrompt, userPrompt, temperature = 0.2 }) {
-  const primary = process.env.GEMINI_MODEL?.trim() || 'gemini-2.5-pro';
-  const fallback = process.env.GEMINI_FALLBACK_MODEL?.trim() || 'gemini-2.5-flash';
+  const primary = process.env.GEMINI_MODEL?.trim() || 'gemini-3.8-flash';
+  const fallback = process.env.GEMINI_FALLBACK_MODEL?.trim() || 'gemini-2.5-pro';
   const models = [...new Set([primary, fallback].filter(Boolean))];
   const body = {
     systemInstruction: { parts: [{ text: systemPrompt }] },

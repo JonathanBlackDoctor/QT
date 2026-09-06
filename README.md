@@ -23,10 +23,10 @@ Repository → **Settings → Secrets and variables → Actions → New reposito
 
 선택적으로 Repository → **Settings → Secrets and variables → Actions → Variables**에서 모델을 바꿀 수 있습니다.
 
-- `GEMINI_MODEL` — 기본값 `gemini-2.5-pro`
-- `GEMINI_FALLBACK_MODEL` — 기본값 `gemini-2.5-flash`
+- `GEMINI_MODEL` — 기본값 `gemini-3.8-flash`
+- `GEMINI_FALLBACK_MODEL` — 기본값 `gemini-2.5-pro`
 
-Pro를 기본으로 쓰고, 호출 실패 시 Flash로 자동 fallback합니다. 매일 한 번의 긴 Evidence Bundle을 엄격하게 처리하는 작업이라 속도보다 지시 준수와 추론 안정성을 우선한 설정입니다.
+최신 안정판인 Gemini 3.8 Flash를 기본으로 쓰고, 호출 실패 시 안정적인 Gemini 2.5 Pro로 자동 fallback합니다. 매일 한 번의 Evidence Bundle 기반 생성에서는 최신 지시 준수 성능과 비용 효율을 우선하고, 장애·호환성 문제 때는 Pro 계열로 안전하게 내려갑니다.
 
 Google 검색 키가 없더라도 성서유니온 직접 접근으로 본문을 확인할 수 있으면 생성할 수 있습니다. 다만 직접 접근 실패 시 검색 fallback을 수행할 수 없고, 추가 화이트리스트 연구 자료도 제한됩니다.
 

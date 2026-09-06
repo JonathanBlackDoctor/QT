@@ -34,7 +34,9 @@ concurrency:
   cancel-in-progress: false
 jobs:
   generate-and-deploy:
-    runs-on: ubuntu-latest
+    # 2026-09-07 controlled comparison: SU timed out on Ubuntu; macOS returned 200.
+    # This is a generation transport fix, not a guarantee about schedule delivery.
+    runs-on: macos-latest
     timeout-minutes: 15
     environment:
       name: github-pages

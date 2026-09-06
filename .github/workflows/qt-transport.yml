@@ -1,0 +1,53 @@
+name: QT transport diagnostics
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: qt-transport-diagnostics
+  cancel-in-progress: true
+jobs:
+  inspect:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 3
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Diagnose the two configured SU entry points (no content or secrets logged)
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import { lookup } from 'node:dns/promises';
+          import https from 'node:https';
+          const codes = (error, depth = 0) => !error || depth > 3 ? [] : [
+            error.name, error.code,
+            ...codes(error.cause, depth + 1),
+            ...(Array.isArray(error.errors) ? error.errors.slice(0, 4).flatMap(e => codes(e, depth + 1)) : [])
+          ].filter(v => typeof v === 'string' && /^[A-Za-z0-9_]+$/.test(v));
+          try {
+            const addresses = await lookup('sum.su.or.kr', { all: true });
+            console.log(JSON.stringify({ stage: 'dns', families: addresses.map(a => a.family), count: addresses.length }));
+          } catch (error) { console.log(JSON.stringify({ stage: 'dns', codes: codes(error) })); }
+          const urls = ['https://sum.su.or.kr:8888/bible/today', 'https://sum.su.or.kr/bible/today'];
+          for (const url of urls) {
+            const start = Date.now();
+            try {
+              const response = await fetch(url, { redirect: 'manual', signal: AbortSignal.timeout(12000) });
+              console.log(JSON.stringify({ transport: 'fetch', url, status: response.status, ms: Date.now() - start }));
+              await response.body?.cancel();
+            } catch (error) { console.log(JSON.stringify({ transport: 'fetch', url, codes: codes(error), ms: Date.now() - start })); }
+            await new Promise(resolve => {
+              const started = Date.now();
+              const req = https.get(url, { family: 4, signal: AbortSignal.timeout(12000) }, response => {
+                console.log(JSON.stringify({ transport: 'https_ipv4', url, status: response.statusCode, ms: Date.now() - started }));
+                response.destroy(); resolve();
+              });
+              req.on('error', error => { console.log(JSON.stringify({ transport: 'https_ipv4', url, codes: codes(error), ms: Date.now() - started })); resolve(); });
+            });
+          }
+          NODE

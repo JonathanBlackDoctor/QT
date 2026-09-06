@@ -46,7 +46,88 @@
     "prayerPoints": [
       "삶의 시험과 연단 속에서 타협하지 않고 오직 주님의 말씀에 순종하며 하나님만을 구원자로 바라보게 하소서.",
       "연약함으로 무너졌을 때라도 즉시 회개하며 부르짖게 하시고, 주의 영으로 새 힘을 얻어 영적 승리를 누리게 하소서."
-    ]
+    ],
+    "projectPerspectives": {
+      "bibleproject": {
+        "provider": "bibleproject",
+        "label": "바이블프로젝트",
+        "version": 1,
+        "book": "사사기",
+        "scope": "book",
+        "status": "ready",
+        "reason": "공식 책 해설 본문을 직접 확보했습니다.",
+        "checkedAt": "2026-09-06T10:45:47.957Z",
+        "searchConfigured": false,
+        "attempts": [
+          {
+            "url": "https://bibleproject.com/guides/book-of-judges/",
+            "outcome": "ok"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://bibleproject.com/guides/book-of-judges/",
+            "title": "Judges",
+            "evidenceLevel": "direct",
+            "contentKind": "article"
+          }
+        ],
+        "passage": "사사기 3:1-11",
+        "evidenceHash": "e7a330ce07c87b46a7c3496b59f9ae17593133fffc50b586fbebf9a06d7243e6",
+        "summary": "사사기는 여호수아 사후 이스라엘이 가나안 족속을 쫓아내지 못하고 그들의 우상 숭배와 타락을 답습하면서 겪는 전면적인 실패를 다룹니다. 이스라엘은 죄를 짓고 이방 민족에게 압제를 당하다가 고통 속에 부르짖고, 하나님이 사사를 세워 구원하시면 평화가 찾아오지만 사사가 죽으면 다시 범죄하는 하향 곡선의 순환을 반복합니다. 세워진 지도자들과 백성 전체는 점차 부패하여 각자 자기 소견에 옳은 대로 행하며 파멸에 이르게 되지만, 하나님은 결함 많은 지도자들을 통해서도 백성을 끝까지 구원하시는 긍휼을 보이십니다. 해석적 적용으로 볼 때, 오늘의 본문은 이스라엘이 가나안 풍습에 물들어 범죄하자 이방의 압제를 겪고 부르짖을 때 하나님이 사사 옷니엘을 세워 건져내시는 사사기 특유의 구원 순환이 시작되는 모습을 반영합니다.",
+        "evidenceQuotes": [
+          "The book of Judges begins with the death of Joshua and, unfortunately, tells the story of Israel’s total failure.",
+          "This part of Israel’s history was a series of cycles moving in a downward spiral. Israel would become like the Canaanites and would sin against God."
+        ],
+        "summaryStatus": "ready",
+        "model": "gemini-3.8-flash",
+        "summaryAttempts": [
+          {
+            "model": "gemini-3.8-flash",
+            "outcome": "ok"
+          }
+        ]
+      },
+      "readingjesus": {
+        "provider": "readingjesus",
+        "label": "리딩지저스",
+        "version": 1,
+        "book": "사사기",
+        "scope": "book",
+        "status": "not_found",
+        "reason": "해당 책과 관련되고 공식 채널 ID가 일치하는 영상을 확보하지 못했습니다. 검색 보완 설정은 연결되지 않았습니다.",
+        "checkedAt": "2026-09-06T10:45:53.154Z",
+        "searchConfigured": false,
+        "attempts": [
+          {
+            "url": "https://www.youtube.com/@readingjesus",
+            "outcome": "ok"
+          },
+          {
+            "url": "https://www.youtube.com/@readingjesus/search",
+            "outcome": "ok"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "ok"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "ok"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "ok"
+          }
+        ],
+        "sources": [],
+        "channelId": "UCDKV9zBBIEA1If3sBz_rMZQ",
+        "passage": "사사기 3:1-11",
+        "evidenceHash": null,
+        "summary": null,
+        "summaryStatus": "not_applicable"
+      }
+    }
   },
   "sources": [
     {
@@ -66,6 +147,12 @@
       "url": "https://biblehub.com/text/judges/3-1.htm",
       "usedFor": "원어 '시험하려'(לְנַסּוֹת, Strong's 5254) 어휘 분석",
       "evidenceLevel": "direct"
+    },
+    {
+      "label": "바이블프로젝트 · Judges",
+      "url": "https://bibleproject.com/guides/book-of-judges/",
+      "usedFor": "책 전체의 흐름과 본문 연결 (공식 해설 본문)",
+      "evidenceLevel": "direct"
     }
   ],
   "evidenceMeta": {
@@ -78,9 +165,22 @@
     "suDateNavigationTried": false,
     "searchFallbackUsed": false,
     "researchDirectCount": 2,
-    "researchMetadataCount": 0
+    "researchMetadataCount": 0,
+    "projectSources": {
+      "bibleproject": {
+        "status": "ready",
+        "summaryStatus": "ready",
+        "checkedAt": "2026-09-06T10:45:47.957Z"
+      },
+      "readingjesus": {
+        "status": "not_found",
+        "summaryStatus": "not_applicable",
+        "checkedAt": "2026-09-06T10:45:53.154Z"
+      }
+    }
   },
   "generatedAt": "2026-09-06T03:51:55.217Z",
   "reviewedAt": "2026-09-06T03:56:47.583865Z",
-  "reviewNote": "Evidence-compliance review: unsupported cross-reference and unverified original-language expansion removed."
+  "reviewNote": "Evidence-compliance review: unsupported cross-reference and unverified original-language expansion removed.",
+  "projectEnrichedAt": "2026-09-06T10:46:04.236Z"
 }

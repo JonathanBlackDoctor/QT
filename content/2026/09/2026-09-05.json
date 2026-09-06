@@ -46,7 +46,88 @@
     "prayerPoints": [
       "하나님과 다른 우상을 함께 섬기려는 분열된 마음을 드러내 주시고, 오직 주님께 충성하게 하소서.",
       "어려움이 사라지는 것만 바라지 않고, 어떤 상황에서도 말씀을 지키며 구원의 은혜에 합당하게 살아가게 하소서."
-    ]
+    ],
+    "projectPerspectives": {
+      "bibleproject": {
+        "provider": "bibleproject",
+        "label": "바이블프로젝트",
+        "version": 1,
+        "book": "사사기",
+        "scope": "book",
+        "status": "ready",
+        "reason": "공식 책 해설 본문을 직접 확보했습니다.",
+        "checkedAt": "2026-09-06T10:45:47.957Z",
+        "searchConfigured": false,
+        "attempts": [
+          {
+            "url": "https://bibleproject.com/guides/book-of-judges/",
+            "outcome": "ok"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://bibleproject.com/guides/book-of-judges/",
+            "title": "Judges",
+            "evidenceLevel": "direct",
+            "contentKind": "article"
+          }
+        ],
+        "passage": "사사기 2:11-23",
+        "evidenceHash": "e7a330ce07c87b46a7c3496b59f9ae17593133fffc50b586fbebf9a06d7243e6",
+        "summary": null,
+        "summaryStatus": "failed",
+        "summaryError": "요약 생성 또는 근거 검증에 실패했습니다. 확보한 자료와 기존 본문은 보존했습니다.",
+        "summaryAttempts": [
+          {
+            "model": "gemini-3.8-flash",
+            "outcome": "evidence_validation_failed"
+          },
+          {
+            "model": "gemini-2.5-pro",
+            "outcome": "http_404"
+          }
+        ]
+      },
+      "readingjesus": {
+        "provider": "readingjesus",
+        "label": "리딩지저스",
+        "version": 1,
+        "book": "사사기",
+        "scope": "book",
+        "status": "not_found",
+        "reason": "해당 책과 관련되고 공식 채널 ID가 일치하는 영상을 확보하지 못했습니다. 검색 보완 설정은 연결되지 않았습니다.",
+        "checkedAt": "2026-09-06T10:45:53.154Z",
+        "searchConfigured": false,
+        "attempts": [
+          {
+            "url": "https://www.youtube.com/@readingjesus",
+            "outcome": "ok"
+          },
+          {
+            "url": "https://www.youtube.com/@readingjesus/search",
+            "outcome": "ok"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "ok"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "ok"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "ok"
+          }
+        ],
+        "sources": [],
+        "channelId": "UCDKV9zBBIEA1If3sBz_rMZQ",
+        "passage": "사사기 2:11-23",
+        "evidenceHash": null,
+        "summary": null,
+        "summaryStatus": "not_applicable"
+      }
+    }
   },
   "sources": [],
   "evidenceMeta": {
@@ -64,9 +145,22 @@
     "suDateNavigationTried": false,
     "searchFallbackUsed": false,
     "researchDirectCount": 0,
-    "researchMetadataCount": 0
+    "researchMetadataCount": 0,
+    "projectSources": {
+      "bibleproject": {
+        "status": "ready",
+        "summaryStatus": "failed",
+        "checkedAt": "2026-09-06T10:45:47.957Z"
+      },
+      "readingjesus": {
+        "status": "not_found",
+        "summaryStatus": "not_applicable",
+        "checkedAt": "2026-09-06T10:45:53.154Z"
+      }
+    }
   },
   "generatedAt": "2026-09-06T09:38:17.413Z",
   "reviewedAt": "2026-09-06T09:38:17.413Z",
-  "reviewNote": "Manual one-day backfill for date-navigation testing. Passage/title cross-checked against two independent public archives; unsupported original-language claims and extra cross-references omitted."
+  "reviewNote": "Manual one-day backfill for date-navigation testing. Passage/title cross-checked against two independent public archives; unsupported original-language claims and extra cross-references omitted.",
+  "projectEnrichedAt": "2026-09-06T10:45:56.160Z"
 }

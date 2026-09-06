@@ -1,0 +1,76 @@
+name: Tighten output evidence validation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/tighten-output-validation.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Patch prompt and generator validation
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          p = Path('prompts/qt-system.md')
+          s = p.read_text(encoding='utf-8')
+          marker = '- Strong\'s 번호는 해당 번호가 Evidence Bundle에 실제로 존재할 때만 쓴다.\n'
+          extra = '''- 생성문에 다른 성경 구절 주소(예: 누가복음 4:18)를 새로 적으려면 그 **정확한 구절 주소가 Evidence Bundle 텍스트 안에 실제로 존재**해야 한다. 없으면 구절 번호를 기억으로 추가하지 않는다.\n- 히브리어·헬라어 철자 자체도 Evidence Bundle 안에 정확히 존재하는 형태만 쓸 수 있다. 다른 절의 원어를 기억으로 보충하거나 추론하지 않는다.\n'''
+          if extra not in s and marker in s:
+              s = s.replace(marker, marker + extra)
+          marker2 = '명시적 근거가 없는데 “그리스도를 예표한다”, “예언의 성취다”, “직접 가리킨다”라고 단정하지 않는다. Evidence Bundle에 신약/정경 연결을 검증할 자료가 충분하지 않으면, 그 한계를 밝히고 절제된 정경적 연결만 제시한다.\n'
+          extra2 = '''예표/예표적 공명을 언급해야 한다면 같은 문단 안에서 반드시 “가능한”, “가능성”, “유사성을 통해 묵상할 수 있다”처럼 불확실성 수준을 명시한다. “미리 바라보게 한다/미리 보여준다” 같은 표현으로 예표를 사실상 단정하지 않는다.\n'''
+          if extra2 not in s and marker2 in s:
+              s = s.replace(marker2, marker2 + extra2)
+          p.write_text(s, encoding='utf-8')
+
+          p = Path('scripts/generate.mjs')
+          s = p.read_text(encoding='utf-8')
+          s = s.replace('  exists,\n  isWhitelistedUrl,', '  exists,\n  extractPassages,\n  isWhitelistedUrl,')
+
+          old = '''const result = await generateCommentary({ targetDate, evidence, systemPrompt });\nconst normalized = normalizeResult(result, evidence, targetDate);\nvalidateGenerated(normalized, evidence);\nawait persist(targetDate, normalized);\nconsole.log(`Generated QT ${targetDate}: ${normalized.passage}`);\n'''
+          new = '''let result = await generateCommentary({ targetDate, evidence, systemPrompt });\nlet normalized = normalizeResult(result, evidence, targetDate);\ntry {\n  validateGenerated(normalized, evidence);\n} catch (error) {\n  console.warn(`Generated output failed evidence compliance: ${error.message}`);\n  result = await generateCommentary({\n    targetDate,\n    evidence,\n    systemPrompt,\n    correction: { issue: error.message, previous: normalized },\n  });\n  normalized = normalizeResult(result, evidence, targetDate);\n  validateGenerated(normalized, evidence);\n}\nawait persist(targetDate, normalized);\nconsole.log(`Generated QT ${targetDate}: ${normalized.passage}`);\n'''
+          if old in s:
+              s = s.replace(old, new)
+
+          s = s.replace('async function generateCommentary({ targetDate, evidence, systemPrompt }) {', 'async function generateCommentary({ targetDate, evidence, systemPrompt, correction = null }) {')
+          old2 = '''    'EVIDENCE_BUNDLE:',\n    JSON.stringify(evidence),\n  ].join('\\n');\n'''
+          new2 = '''    'EVIDENCE_BUNDLE:',\n    JSON.stringify(evidence),\n    ...(correction ? [\n      '',\n      'COMPLIANCE_CORRECTION_REQUIRED:',\n      correction.issue,\n      'The prior draft below violated the evidence rules. Rewrite the full JSON from scratch.',\n      'Do not preserve any unsupported Bible reference, Hebrew/Greek token, Strong number, quotation, or typology assertion.',\n      'PRIOR_DRAFT:',\n      JSON.stringify(correction.previous),\n    ] : []),\n  ].join('\\n');\n'''
+          if old2 in s:
+              s = s.replace(old2, new2)
+
+          anchor = '''  for (const source of doc.sources) {\n    if (!isWhitelistedUrl(source.url)) throw new Error(`Non-whitelisted source: ${source.url}`);\n  }\n'''
+          hard = '''  for (const source of doc.sources) {\n    if (!isWhitelistedUrl(source.url)) throw new Error(`Non-whitelisted source: ${source.url}`);\n  }\n\n  const evidenceText = JSON.stringify(evidence);\n  const generatedText = JSON.stringify(doc.sections);\n\n  // A generated explicit Bible reference must already occur verbatim in the evidence bundle,\n  // except for the verified target passage itself. This blocks remembered cross-references.\n  const generatedRefs = extractPassages(generatedText);\n  for (const ref of generatedRefs) {\n    if (ref === evidence.passage) continue;\n    if (!evidenceText.includes(ref)) {\n      throw new Error(`Unsupported Bible reference outside Evidence Bundle: ${ref}`);\n    }\n  }\n\n  // Original-language spellings must be copied from retrieved evidence, never recalled from memory.\n  const originalTokens = generatedText.match(/[\\u0590-\\u05FF]{2,}|[\\u0370-\\u03FF]{2,}/g) ?? [];\n  for (const token of new Set(originalTokens)) {\n    if (!evidenceText.includes(token)) {\n      throw new Error(`Unsupported original-language token outside Evidence Bundle: ${token}`);\n    }\n  }\n\n  // Typological language is allowed only when its uncertainty level is explicit.\n  const christological = doc.sections.christological ?? '';\n  if (/(예표|미리\\s*(?:바라|보여))/.test(christological) && !/(가능|가능성|유사성|공명)/.test(christological)) {\n    throw new Error('Typological claim lacks an explicit uncertainty qualifier.');\n  }\n  if (/미리\\s*(?:바라보게|보여)/.test(christological)) {\n    throw new Error('Christological section uses an overly assertive forward-looking typology phrase.');\n  }\n'''
+          if anchor in s and 'Unsupported Bible reference outside Evidence Bundle' not in s:
+              s = s.replace(anchor, hard)
+          p.write_text(s, encoding='utf-8')
+          PY
+
+          node --test scripts/*.test.mjs
+          node scripts/validate.mjs
+          git diff --check
+      - name: Commit validation hardening
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "No changes needed."
+            exit 0
+          fi
+          git config user.name "qt-maintenance-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add scripts/generate.mjs prompts/qt-system.md
+          git commit -m "feat: enforce evidence-only references and original language"
+          git push

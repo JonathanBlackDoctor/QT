@@ -1,16 +1,36 @@
 const KST = 'Asia/Seoul';
+const DAY_MS = 24 * 60 * 60 * 1000;
+// KST is UTC+09:00. The reader's day starts at 04:00, not midnight.
+const READING_DAY_OFFSET_MS = 5 * 60 * 60 * 1000;
 
-export function selectEntry(index, requestedDate) {
+export function readingDate(now = new Date()) {
+  return new Date(new Date(now).getTime() + READING_DAY_OFFSET_MS).toISOString().slice(0, 10);
+}
+
+export function millisecondsUntilReadingDay(now = new Date()) {
+  const shifted = new Date(now).getTime() + READING_DAY_OFFSET_MS;
+  if (!Number.isFinite(shifted)) throw new RangeError('Invalid reading-day timestamp');
+  return DAY_MS - ((shifted % DAY_MS + DAY_MS) % DAY_MS);
+}
+
+export function selectEntry(index, requestedDate, now = new Date()) {
   const entries = Array.isArray(index) ? index : [];
-  if (!entries.length) return { entry: null, entryIndex: -1, selectedDate: null, requestedMissing: false };
-
   const requestedIndex = requestedDate
     ? entries.findIndex((entry) => entry?.date === requestedDate)
     : -1;
-  const entryIndex = requestedIndex >= 0 ? requestedIndex : 0;
-
+  const target = readingDate(now);
+  // Select the nearest date at or before the reading day, never a future day.
+  // Do not assume the index is sorted; retain its original indices for navigation.
+  let entryIndex = requestedIndex;
+  if (entryIndex < 0) {
+    for (let i = 0; i < entries.length; i++) {
+      const date = entries[i]?.date;
+      if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date) && date <= target
+          && (entryIndex < 0 || date > entries[entryIndex].date)) entryIndex = i;
+    }
+  }
   return {
-    entry: entries[entryIndex],
+    entry: entries[entryIndex] ?? null,
     entryIndex,
     selectedDate: entries[entryIndex]?.date ?? null,
     requestedMissing: Boolean(requestedDate && requestedIndex < 0),

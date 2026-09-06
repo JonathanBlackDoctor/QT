@@ -2,9 +2,9 @@ name: Generate daily QT
 
 on:
   schedule:
-    # UTC cron: 00:15 KST and recovery at 00:45 KST.
-    - cron: '15 15 * * *'
-    - cron: '45 15 * * *'
+    # UTC cron: 00:05 KST and recovery at 00:20 KST.
+    - cron: '5 15 * * *'
+    - cron: '20 15 * * *'
   workflow_dispatch:
     inputs:
       date:

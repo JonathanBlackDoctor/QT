@@ -2,7 +2,7 @@ import { el, textEl, appendParagraphs } from './dom.js';
 import { icon } from './icons.js';
 
 export const PROJECT_STATUS_LABELS = {
-  ready: '해설 자료 확보', metadata_only: '제목·설명만 확보', not_found: '관련 자료 없음',
+  ready: '해설 자료 확보', metadata_only: '영상 정보만 확보', not_found: '관련 자료 없음',
   fetch_failed: '접속 실패', identity_unverified: '공식 채널 확인 실패',
   unsupported_book: '책 이름 확인 필요', not_configured: '설정 필요',
 };
@@ -49,7 +49,7 @@ export function renderProjectPerspectives(sections = {}) {
         const link = textEl('a', 'source-link project-source-link', source.title || '확인한 원문 열기');
         link.href = source.url; link.target = '_blank'; link.rel = 'noopener noreferrer';
         article.appendChild(link);
-        article.appendChild(textEl('p', 'project-source-note', source.contentKind === 'video_metadata' ? '확인 범위: 제목·설명만. 영상 해설을 확인했다는 뜻이 아닙니다.'
+        article.appendChild(textEl('p', 'project-source-note', source.contentKind === 'video_metadata' ? `확인 범위: ${source.metadataFields?.includes('description') ? '제목·채널·설명' : '제목·채널'}만. 영상 해설을 확인했다는 뜻이 아닙니다.`
           : source.contentKind === 'transcript' ? `확인 범위: 실제 확보한 ${source.automaticCaptions ? '자동 ' : ''}자막${source.language ? ` (${source.language})` : ''}` : '확인 범위: 공식 해설 페이지 본문'));
       }
       if (state?.checkedAt && Number.isFinite(Date.parse(state.checkedAt))) article.appendChild(textEl('p', 'project-source-time', `자료 확인 ${new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', dateStyle: 'medium', timeStyle: 'short' }).format(new Date(state.checkedAt))}`));

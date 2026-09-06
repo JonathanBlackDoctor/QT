@@ -4,6 +4,8 @@ on:
   schedule:
     # GitHub cron is UTC. 15:15 UTC = 00:15 KST on the next calendar day.
     - cron: '15 15 * * *'
+    # Recovery run. Successful dates are idempotently skipped before any model call.
+    - cron: '45 15 * * *'
   workflow_dispatch:
     inputs:
       date:

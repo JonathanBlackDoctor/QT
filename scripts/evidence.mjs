@@ -7,6 +7,8 @@ import {
   pageMentionsDate,
 } from './lib.mjs';
 
+const SU_ALT_TODAY_URL = 'https://sum.su.or.kr/bible/today';
+
 const SOURCE_LABELS = {
   'sum.su.or.kr': '성서유니온 매일성경',
   'su.or.kr': '성서유니온',
@@ -46,6 +48,25 @@ function isOfficialSuUrl(url) {
 function documentMatchesDate(doc, targetDate) {
   const primaryRegion = `${doc.title ?? ''}\n${doc.url ?? ''}\n${(doc.text ?? '').slice(0, 4500)}`;
   return pageMentionsDate(primaryRegion, targetDate);
+}
+
+async function fetchOfficialLanding() {
+  try {
+    const doc = await fetchText(SU_TODAY_URL, { maxChars: 22000 });
+    return { doc, exactPrimarySucceeded: true, attempts: [{ url: SU_TODAY_URL, ok: true }] };
+  } catch (primaryError) {
+    const attempts = [{ url: SU_TODAY_URL, ok: false, error: String(primaryError?.message ?? primaryError) }];
+    try {
+      const doc = await fetchText(SU_ALT_TODAY_URL, { maxChars: 22000 });
+      attempts.push({ url: SU_ALT_TODAY_URL, ok: true, finalUrl: doc.url });
+      return { doc, exactPrimarySucceeded: false, attempts };
+    } catch (secondaryError) {
+      attempts.push({ url: SU_ALT_TODAY_URL, ok: false, error: String(secondaryError?.message ?? secondaryError) });
+      const error = new Error(`All direct SU entry points failed: ${attempts.map(a => `${a.url} => ${a.ok ? 'ok' : a.error}`).join(' | ')}`);
+      error.attempts = attempts;
+      throw error;
+    }
+  }
 }
 
 async function tryOfficialDateNavigation(initialDoc, targetDate) {
@@ -231,8 +252,11 @@ export async function collectEvidence(targetDate) {
     retrievedAt,
     su: {
       primaryUrl: SU_TODAY_URL,
+      alternateDirectUrl: SU_ALT_TODAY_URL,
       directAttempted: true,
       directSucceeded: false,
+      exactPrimarySucceeded: false,
+      directAttempts: [],
       directError: null,
       dateNavigationTried: false,
       dateStatus: '확인 실패',
@@ -249,7 +273,10 @@ export async function collectEvidence(targetDate) {
   };
 
   try {
-    const initial = await fetchText(SU_TODAY_URL, { maxChars: 22000 });
+    const landing = await fetchOfficialLanding();
+    const initial = landing.doc;
+    evidence.su.directAttempts = landing.attempts;
+    evidence.su.exactPrimarySucceeded = landing.exactPrimarySucceeded;
     if (!isOfficialSuUrl(initial.url)) {
       throw new Error(`Official page redirected outside allowed SU domains: ${initial.url}`);
     }
@@ -288,6 +315,7 @@ export async function collectEvidence(targetDate) {
       if (hasCommentarySignals(direct.text)) evidence.su.commentaryStatus = '직접 확인';
     }
   } catch (error) {
+    evidence.su.directAttempts = error?.attempts ?? evidence.su.directAttempts;
     evidence.su.directError = String(error?.message ?? error);
   }
 

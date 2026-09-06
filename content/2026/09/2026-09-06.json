@@ -91,12 +91,12 @@
       "readingjesus": {
         "provider": "readingjesus",
         "label": "리딩지저스",
-        "version": 1,
+        "version": 2,
         "book": "사사기",
         "scope": "book",
-        "status": "not_found",
-        "reason": "해당 책과 관련되고 공식 채널 ID가 일치하는 영상을 확보하지 못했습니다. 검색 보완 설정은 연결되지 않았습니다.",
-        "checkedAt": "2026-09-06T10:45:53.154Z",
+        "status": "metadata_only",
+        "reason": "공식 영상의 제목·채널 정보만 확인했습니다. 자막을 확보하지 못해 해설을 추측하지 않습니다.",
+        "checkedAt": "2026-09-06T10:52:54.043Z",
         "searchConfigured": false,
         "attempts": [
           {
@@ -113,15 +113,64 @@
           },
           {
             "url": "https://www.youtube.com/watch",
+            "outcome": "playback_login_required"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "player_metadata_unavailable"
+          },
+          {
+            "url": "https://www.youtube.com/oembed",
             "outcome": "ok"
           },
           {
             "url": "https://www.youtube.com/watch",
             "outcome": "ok"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "playback_login_required"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "player_metadata_unavailable"
+          },
+          {
+            "url": "https://www.youtube.com/oembed",
+            "outcome": "ok"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "ok"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "playback_login_required"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "player_metadata_unavailable"
+          },
+          {
+            "url": "https://www.youtube.com/oembed",
+            "outcome": "ok"
           }
         ],
-        "sources": [],
+        "sources": [
+          {
+            "url": "https://www.youtube.com/watch?v=LKAWSlJj5u0",
+            "title": "사사기 16장 | 45주 성경통독",
+            "evidenceLevel": "direct",
+            "contentKind": "video_metadata",
+            "channelId": "UCDKV9zBBIEA1If3sBz_rMZQ",
+            "metadataFields": [
+              "title",
+              "channel"
+            ]
+          }
+        ],
         "channelId": "UCDKV9zBBIEA1If3sBz_rMZQ",
+        "description": "",
         "passage": "사사기 3:1-11",
         "evidenceHash": null,
         "summary": null,
@@ -173,14 +222,14 @@
         "checkedAt": "2026-09-06T10:45:47.957Z"
       },
       "readingjesus": {
-        "status": "not_found",
+        "status": "metadata_only",
         "summaryStatus": "not_applicable",
-        "checkedAt": "2026-09-06T10:45:53.154Z"
+        "checkedAt": "2026-09-06T10:52:54.043Z"
       }
     }
   },
   "generatedAt": "2026-09-06T03:51:55.217Z",
   "reviewedAt": "2026-09-06T03:56:47.583865Z",
   "reviewNote": "Evidence-compliance review: unsupported cross-reference and unverified original-language expansion removed.",
-  "projectEnrichedAt": "2026-09-06T10:46:04.236Z"
+  "projectEnrichedAt": "2026-09-06T10:52:57.308Z"
 }

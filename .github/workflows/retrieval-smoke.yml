@@ -41,6 +41,9 @@ jobs:
             passageStatus: ev.su.passageStatus,
             directUrl: ev.su.directDocument?.url ?? null,
             dateMatch: ev.su.directDocument?.dateMatch ?? false,
+            title: ev.su.directDocument?.title ?? null,
+            passageCandidates: ev.su.directDocument?.passageCandidates ?? [],
+            textHead: ev.su.directDocument?.text?.slice(0, 2500) ?? null,
             fallbackSnippets: ev.su.fallbackSnippets?.length ?? 0,
             researchDocuments: ev.researchDocuments?.length ?? 0,
             researchMetadata: ev.researchMetadata?.length ?? 0

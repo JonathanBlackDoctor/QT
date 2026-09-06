@@ -25,7 +25,6 @@ jobs:
           python - <<'PY'
           from pathlib import Path
 
-          # 1) Retry transient SU fetch failures and export deterministic BibleHub research for integration tests.
           p = Path('scripts/evidence.mjs')
           s = p.read_text(encoding='utf-8')
           anchor = 'async function fetchOfficialLanding() {'
@@ -37,7 +36,6 @@ jobs:
           s = s.replace('async function deterministicResearch(passage) {', 'export async function deterministicResearch(passage) {')
           p.write_text(s, encoding='utf-8')
 
-          # 2) Retry an existing failed/incomplete day instead of treating it as a successful idempotent record.
           p = Path('scripts/generate.mjs')
           s = p.read_text(encoding='utf-8')
           old = '''if (await exists(paths.json) && !args.force) {\n  console.log(`QT ${targetDate} already exists; skipping. Use --force to regenerate.`);\n  process.exit(0);\n}\n'''
@@ -46,7 +44,6 @@ jobs:
               s = s.replace(old, new)
           p.write_text(s, encoding='utf-8')
 
-          # 3) Make the Christological confidence ladder explicit enough for unattended generation.
           p = Path('prompts/qt-system.md')
           s = p.read_text(encoding='utf-8')
           old = '''## 그리스도 중심 연결\n\n근거 수준을 구분한다.\n1. 명시적 신약 인용/성취\n2. 강한 정경적·신학적 연결\n3. 가능한 예표적 공명\n\n3번은 본문의 직접 의미처럼 단정하지 않는다.\n'''
@@ -55,30 +52,12 @@ jobs:
               s = s.replace(old, new)
           p.write_text(s, encoding='utf-8')
 
-          # 4) Stable human-readable Korean date formatting.
           p = Path('scripts/lib.mjs')
           s = p.read_text(encoding='utf-8')
           old = '''export function koreanDate(date) {\n  const d = new Date(`${date}T12:00:00+09:00`);\n  return new Intl.DateTimeFormat('ko-KR', {\n    timeZone: KST, year: 'numeric', month: 'long', day: 'numeric', weekday: 'short'\n  }).format(d).replace(/\\. /g, '년 ').replace(/\\.$/, '');\n}\n'''
           new = '''export function koreanDate(date) {\n  const d = new Date(`${date}T12:00:00+09:00`);\n  const weekday = new Intl.DateTimeFormat('ko-KR', { timeZone: KST, weekday: 'short' }).format(d);\n  const [year, month, day] = date.split('-').map(Number);\n  return `${year}년 ${month}월 ${day}일 (${weekday})`;\n}\n'''
           if old in s:
               s = s.replace(old, new)
-          p.write_text(s, encoding='utf-8')
-
-          # 5) Add a second recovery schedule at 00:45 KST. Successful days skip without another model call.
-          p = Path('.github/workflows/daily-qt.yml')
-          s = p.read_text(encoding='utf-8')
-          old = "    - cron: '15 15 * * *'\n"
-          new = "    - cron: '15 15 * * *'\n    # Recovery run: 15:45 UTC = 00:45 KST. Successful dates are idempotently skipped.\n    - cron: '45 15 * * *'\n"
-          if "cron: '45 15 * * *'" not in s:
-              s = s.replace(old, new)
-          p.write_text(s, encoding='utf-8')
-
-          # 6) Smoke test deterministic BibleHub access independently of transient SU availability.
-          p = Path('.github/workflows/retrieval-smoke.yml')
-          s = p.read_text(encoding='utf-8')
-          s = s.replace("import { collectEvidence } from './scripts/evidence.mjs';", "import { collectEvidence, deterministicResearch } from './scripts/evidence.mjs';")
-          s = s.replace("const ev = await collectEvidence(date);", "const ev = await collectEvidence(date);\n          const deterministic = await deterministicResearch(ev.passage ?? '사사기 3:1-11');")
-          s = s.replace("researchMetadata: ev.researchMetadata?.length ?? 0", "researchMetadata: ev.researchMetadata?.length ?? 0,\n            deterministicResearchDocuments: deterministic.length,\n            deterministicUrls: deterministic.map(d => d.url)")
           p.write_text(s, encoding='utf-8')
           PY
 
@@ -94,6 +73,6 @@ jobs:
           fi
           git config user.name "qt-maintenance-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add scripts/evidence.mjs scripts/generate.mjs scripts/lib.mjs prompts/qt-system.md .github/workflows/daily-qt.yml .github/workflows/retrieval-smoke.yml
+          git add scripts/evidence.mjs scripts/generate.mjs scripts/lib.mjs prompts/qt-system.md
           git commit -m "feat: harden daily QT retries and evidence rules"
           git push

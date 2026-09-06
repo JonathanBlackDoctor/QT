@@ -1,0 +1,89 @@
+name: Backfill QT 2026-09-05
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/backfill-2026-09-05.yml'
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  backfill-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    env:
+      TZ: Asia/Seoul
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
+      GEMINI_FALLBACK_MODEL: ${{ vars.GEMINI_FALLBACK_MODEL }}
+      GOOGLE_CSE_API_KEY: ${{ secrets.GOOGLE_CSE_API_KEY }}
+      GOOGLE_CSE_ID: ${{ secrets.GOOGLE_CSE_ID }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Run tests
+        run: node --test scripts/*.test.mjs
+
+      - name: Generate 2026-09-05
+        run: node scripts/generate.mjs --date=2026-09-05 --force
+
+      - name: Require a successful QT document
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const file = 'content/2026/09/2026-09-05.json';
+          if (!fs.existsSync(file)) {
+            console.error(`Expected ${file} to be generated.`);
+            process.exit(1);
+          }
+          const doc = JSON.parse(fs.readFileSync(file, 'utf8'));
+          if (doc.status !== 'ok') {
+            console.error('Backfill did not produce status=ok. No failed content will be committed.');
+            process.exit(1);
+          }
+          console.log(`Verified backfilled QT: ${doc.passage}; sources=${doc.sources?.length ?? 0}; researchDirectCount=${doc.evidenceMeta?.researchDirectCount ?? 0}`);
+          NODE
+
+      - name: Validate content
+        run: node scripts/validate.mjs --date=2026-09-05
+
+      - name: Commit backfilled content
+        shell: bash
+        run: |
+          git config user.name "qt-backfill-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add content
+          if git diff --cached --quiet; then
+            echo "No content changes."
+          else
+            git commit -m "content: backfill QT 2026-09-05"
+            git push
+          fi
+
+      - name: Build site
+        run: node scripts/build-site.mjs
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+# One-shot backfill test. Remove after the run succeeds.

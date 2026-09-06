@@ -36,12 +36,14 @@ jobs:
             date,
             passage: ev.passage,
             suDirectSucceeded: ev.su.directSucceeded,
+            suDirectError: ev.su.directError,
             dateStatus: ev.su.dateStatus,
             passageStatus: ev.su.passageStatus,
             directUrl: ev.su.directDocument?.url ?? null,
             dateMatch: ev.su.directDocument?.dateMatch ?? false,
             fallbackSnippets: ev.su.fallbackSnippets?.length ?? 0,
-            researchDocuments: ev.researchDocuments?.length ?? 0
+            researchDocuments: ev.researchDocuments?.length ?? 0,
+            researchMetadata: ev.researchMetadata?.length ?? 0
           }, null, 2));
           if (!ev.su.directSucceeded) process.exitCode = 2;
           if (!ev.passage) process.exitCode = 3;

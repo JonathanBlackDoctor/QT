@@ -1,19 +1,17 @@
-name: Generate daily QT
-
+name: Supplement project perspectives
 on:
-  schedule:
-    # UTC cron: 00:15 KST and recovery at 00:45 KST.
-    - cron: '15 15 * * *'
-    - cron: '45 15 * * *'
+  push:
+    branches: [main]
+    paths: ['.github/workflows/project-perspectives.yml']
   workflow_dispatch:
     inputs:
-      date:
-        description: 'YYYY-MM-DD (KST calendar date). Empty = current KST date'
-        required: false
+      dates:
+        description: 'Comma-separated existing dates; only project sections will be supplemented'
+        required: true
+        default: '2026-09-05,2026-09-06'
         type: string
       force:
-        description: 'Regenerate an existing date'
-        required: false
+        description: 'Refresh already successful project sections (never remove them on failure)'
         default: false
         type: boolean
 permissions:
@@ -24,14 +22,12 @@ concurrency:
   group: qt-publish
   cancel-in-progress: false
 jobs:
-  generate-and-deploy:
+  supplement:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    env:
-      TZ: Asia/Seoul
     steps:
       - uses: actions/checkout@v4
         with:
@@ -45,22 +41,12 @@ jobs:
           path: .cache/project-sources
           key: project-sources-v1-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: project-sources-v1-
-      - name: Run unit tests
+      - name: Run tests
         run: node --test scripts/*.test.mjs
-      - name: Resolve date safely
-        id: args
+      - name: Supplement requested dates without regenerating QT
         env:
-          REQUESTED_DATE: ${{ inputs.date }}
-        shell: bash
-        run: |
-          DATE="${REQUESTED_DATE:-$(TZ=Asia/Seoul date +%F)}"
-          export DATE
-          node --input-type=module -e 'const d=process.env.DATE;if(!/^\d{4}-\d{2}-\d{2}$/.test(d)||Number.isNaN(Date.parse(d+"T00:00:00Z"))||new Date(d+"T00:00:00Z").toISOString().slice(0,10)!==d)process.exit(1)'
-          echo "date=$DATE" >> "$GITHUB_OUTPUT"
-      - name: Generate QT and supplement project perspectives
-        env:
-          TARGET_DATE: ${{ steps.args.outputs.date }}
-          FORCE_GENERATION: ${{ inputs.force }}
+          TARGET_DATES: ${{ inputs.dates || '2026-09-05,2026-09-06' }}
+          FORCE_REFRESH: ${{ inputs.force }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
           GEMINI_FALLBACK_MODEL: ${{ vars.GEMINI_FALLBACK_MODEL }}
@@ -69,25 +55,21 @@ jobs:
           READING_JESUS_CHANNEL_ID: ${{ vars.READING_JESUS_CHANNEL_ID }}
         shell: bash
         run: |
-          args=("--date=$TARGET_DATE")
-          if [[ "$FORCE_GENERATION" == "true" ]]; then args+=(--force); fi
-          node scripts/generate.mjs "${args[@]}"
-          # Runs even when an existing status=ok QT was skipped by the main generator.
-          node scripts/enrich-projects.mjs "--date=$TARGET_DATE"
-      - name: Validate content
+          args=("--dates=$TARGET_DATES")
+          if [[ "$FORCE_REFRESH" == "true" ]]; then args+=(--force); fi
+          node scripts/enrich-projects.mjs "${args[@]}"
+      - name: Validate both content and project provenance
         run: |
           node scripts/validate.mjs
           node scripts/validate-projects.mjs
-      - name: Commit generated content
-        env:
-          TARGET_DATE: ${{ steps.args.outputs.date }}
+      - name: Commit supplemented content
         shell: bash
         run: |
           git add content
           if ! git diff --cached --quiet; then
-            git config user.name "qt-daily-bot"
+            git config user.name "qt-project-bot"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git commit -m "content: daily QT $TARGET_DATE"
+            git commit -m "content: supplement verified project perspectives"
             git pull --rebase origin main
             git push origin HEAD:main
           fi

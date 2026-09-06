@@ -1,0 +1,25 @@
+name: Check project perspectives
+on:
+  pull_request:
+  push:
+    branches: ['fix/project-perspectives-20260906']
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Syntax and unit tests (no external requests)
+        run: |
+          for file in scripts/*.mjs site/*.js; do node --check "$file"; done
+          node --test scripts/*.test.mjs
+      - name: Validate and build
+        run: |
+          node scripts/validate.mjs
+          node scripts/validate-projects.mjs
+          node scripts/build-site.mjs
+          test -f dist/project-perspectives.js

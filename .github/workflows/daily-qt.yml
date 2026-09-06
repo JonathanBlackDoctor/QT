@@ -45,7 +45,10 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
+
+      - name: Run unit tests
+        run: node --test scripts/*.test.mjs
 
       - name: Resolve arguments
         id: args

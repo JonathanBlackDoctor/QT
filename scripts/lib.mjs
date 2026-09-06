@@ -14,6 +14,8 @@ export const WHITELIST_HOSTS = new Set([
   'www.duranno.com',
   'bibleproject.com',
   'www.bibleproject.com',
+  'youtube.com',
+  'www.youtube.com',
   'bskorea.or.kr',
   'www.bskorea.or.kr',
   'biblehub.com',

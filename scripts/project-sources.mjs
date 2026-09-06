@@ -3,7 +3,7 @@ import { createHttpClient, plainText, decodeEntities, safeDiagnosticUrl, allowed
 
 const BP_HOSTS = ['bibleproject.com', 'www.bibleproject.com'];
 const YT_HOSTS = ['youtube.com', 'www.youtube.com'];
-export const SOURCE_VERSION = 1;
+export const SOURCE_VERSION = 2;
 export const PROVIDERS = ['bibleproject', 'readingjesus'];
 export const PROVIDER_NAMES = { bibleproject: '바이블프로젝트', readingjesus: '리딩지저스' };
 
@@ -79,6 +79,17 @@ export function videoCandidates(html, book) {
   });
   const score = v => /개관|개요|강의|해설|overview|lecture/i.test(v.title) ? 10 : /낭독|장별 성경읽기|오디오/i.test(v.title) ? -10 : 0;
   return out.sort((a,b) => score(b) - score(a)).slice(0, 8);
+}
+
+export function verifiedVideoMetadata(raw, identity, book) {
+  try {
+    const metadata = JSON.parse(raw);
+    const author = new URL(metadata.author_url);
+    const ownerPath = author.pathname.replace(/\/$/, '');
+    const ownerMatches = ownerPath.toLowerCase() === '/@readingjesus' || ownerPath === `/channel/${identity.id}`;
+    if (!allowedSourceUrl(author.href, YT_HOSTS) || !ownerMatches || !mentionsBook(metadata.title, book)) return null;
+    return { title: String(metadata.title), channelId: identity.id };
+  } catch { return null; }
 }
 
 export function parseCaptions(raw) {
@@ -177,14 +188,30 @@ export function createProjectCollector({ request = createHttpClient(), env = pro
       const watchUrl = `https://www.youtube.com/watch?v=${candidate.id}`;
       const watch = await open(watchUrl, YT_HOSTS, result);
       const player = watch && assignedJson(watch.text, 'ytInitialPlayerResponse');
-      const detail = player?.videoDetails;
-      if (!detail || detail.channelId !== identity.id || detail.videoId !== candidate.id || !mentionsBook(detail.title, book)) continue;
-      const source = { url: watchUrl, title: detail.title, evidenceLevel: 'direct', contentKind: 'video_metadata', channelId: identity.id };
+      const playback = player?.playabilityStatus?.status;
+      if (playback && playback !== 'OK') result.attempts.push({ url: safeDiagnosticUrl(watchUrl), outcome: `playback_${String(playback).toLowerCase().replace(/[^a-z_]/g, '')}` });
+      let detail = player?.videoDetails;
+      const hasPlayerMetadata = Boolean(detail);
+      if (!detail) {
+        result.attempts.push({ url: safeDiagnosticUrl(watchUrl), outcome: 'player_metadata_unavailable' });
+        // Public title/author metadata is not a substitute for gated playback or captions.
+        const oembed = await open(`https://www.youtube.com/oembed?url=${encodeURIComponent(watchUrl)}&format=json`, YT_HOSTS, result);
+        const metadata = oembed && verifiedVideoMetadata(oembed.text, identity, book);
+        if (!metadata) continue;
+        detail = { ...metadata, videoId: candidate.id, shortDescription: '' };
+      }
+      if (detail.channelId !== identity.id || detail.videoId !== candidate.id || !mentionsBook(detail.title, book)) {
+        result.attempts.push({ url: safeDiagnosticUrl(watchUrl), outcome: 'video_identity_mismatch' });
+        continue;
+      }
+      const metadataFields = detail.shortDescription ? ['title','channel','description'] : ['title','channel'];
+      const source = { url: watchUrl, title: detail.title, evidenceLevel: 'direct', contentKind: 'video_metadata', channelId: identity.id, metadataFields };
       if (!result.sources.length) {
         result.sources = [source]; result.status = 'metadata_only';
         result.description = String(detail.shortDescription || '').slice(0, 700);
-        result.reason = '공식 영상의 제목·설명만 확보했습니다. 영상 내용을 추측해 관점을 작성하지 않습니다.';
+        result.reason = detail.shortDescription ? '공식 영상의 제목·채널·설명만 확보했습니다. 영상 내용을 추측해 관점을 작성하지 않습니다.' : '공식 영상의 제목·채널 정보만 확인했습니다. 자막을 확보하지 못해 해설을 추측하지 않습니다.';
       }
+      if (!hasPlayerMetadata || (playback && playback !== 'OK')) continue;
       if (/낭독|장별 성경읽기|오디오/i.test(detail.title) && !/개관|개요|강의|해설/i.test(detail.title)) continue;
       const tracks = player?.captions?.playerCaptionsTracklistRenderer?.captionTracks || [];
       const sorted = tracks.filter(t => ['ko','en'].includes(t.languageCode))

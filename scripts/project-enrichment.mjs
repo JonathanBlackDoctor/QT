@@ -7,7 +7,7 @@ import { locateBook } from './project-books.mjs';
 
 const hash = text => createHash('sha256').update(String(text)).digest('hex');
 const compact = text => String(text ?? '').normalize('NFC').replace(/\s+/g, ' ').trim();
-export const STATUS_LABELS = { ready: '해설 자료 확보', metadata_only: '제목·설명만 확보', not_found: '관련 자료 없음', fetch_failed: '접속 실패', identity_unverified: '공식 채널 확인 실패', unsupported_book: '책 이름 확인 필요', not_configured: '설정 필요' };
+export const STATUS_LABELS = { ready: '해설 자료 확보', metadata_only: '영상 정보만 확보', not_found: '관련 자료 없음', fetch_failed: '접속 실패', identity_unverified: '공식 채널 확인 실패', unsupported_book: '책 이름 확인 필요', not_configured: '설정 필요' };
 
 export function createCachedCollector({ directory, collect = createProjectCollector(), env = process.env, now = () => Date.now() } = {}) {
   const memory = new Map();
@@ -98,7 +98,7 @@ export async function enrichDocument(doc, { collect = createProjectCollector(), 
   const old = doc.sections.projectPerspectives || {};
   const perspectives = { ...old };
   for (const provider of PROVIDERS) {
-    if (!force && old[provider]?.summaryStatus === 'ready' && old[provider]?.passage === doc.passage && old[provider]?.version === SOURCE_VERSION) continue;
+    if (!force && old[provider]?.summaryStatus === 'ready' && old[provider]?.passage === doc.passage) continue;
     let source;
     try { source = await collect(doc.passage, provider, { force }); }
     catch { source = { provider, version: SOURCE_VERSION, book: locateBook(doc.passage)?.ko || null, scope: 'book', status: 'fetch_failed', reason: '자료 수집에 실패했습니다.', checkedAt: now(), sources: [], attempts: [], text: null }; }
@@ -136,7 +136,7 @@ export function supplementMarkdown(markdown, perspectives) {
     parts.push(`### ${p.label || provider}`, '', `자료 상태: ${STATUS_LABELS[p.status] || p.status}`, p.reason || '', '');
     if (p.summaryStatus === 'ready' && p.summary) parts.push(p.summary, '');
     else if (p.summaryError) parts.push(p.summaryError, '');
-    for (const s of p.sources || []) parts.push(`- [${s.title.replace(/[\[\]\r\n]/g, '')}](${s.url}) — ${s.contentKind === 'video_metadata' ? '제목·설명만 확인' : s.contentKind === 'transcript' ? '확보한 자막' : '공식 해설 본문'}`);
+    for (const s of p.sources || []) parts.push(`- [${s.title.replace(/[\[\]\r\n]/g, '')}](${s.url}) — ${s.contentKind === 'video_metadata' ? '영상 메타데이터만 확인' : s.contentKind === 'transcript' ? '확보한 자막' : '공식 해설 본문'}`);
     parts.push('');
   }
   parts.push(end);

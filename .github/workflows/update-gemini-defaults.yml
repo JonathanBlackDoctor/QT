@@ -1,0 +1,67 @@
+name: Update Gemini defaults
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/update-gemini-defaults.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Update model defaults and docs
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          replacements = {
+              Path('scripts/generate.mjs'): [
+                  ("process.env.GEMINI_MODEL?.trim() || 'gemini-2.5-pro'", "process.env.GEMINI_MODEL?.trim() || 'gemini-3.8-flash'"),
+                  ("process.env.GEMINI_FALLBACK_MODEL?.trim() || 'gemini-2.5-flash'", "process.env.GEMINI_FALLBACK_MODEL?.trim() || 'gemini-2.5-pro'"),
+              ],
+              Path('.env.example'): [
+                  ('GEMINI_MODEL=gemini-2.5-pro', 'GEMINI_MODEL=gemini-3.8-flash'),
+                  ('GEMINI_FALLBACK_MODEL=gemini-2.5-flash', 'GEMINI_FALLBACK_MODEL=gemini-2.5-pro'),
+              ],
+              Path('README.md'): [
+                  ('`GEMINI_MODEL` — 기본값 `gemini-2.5-pro`', '`GEMINI_MODEL` — 기본값 `gemini-3.8-flash`'),
+                  ('`GEMINI_FALLBACK_MODEL` — 기본값 `gemini-2.5-flash`', '`GEMINI_FALLBACK_MODEL` — 기본값 `gemini-2.5-pro`'),
+                  ('Pro를 기본으로 쓰고, 호출 실패 시 Flash로 자동 fallback합니다. 매일 한 번의 긴 Evidence Bundle을 엄격하게 처리하는 작업이라 속도보다 지시 준수와 추론 안정성을 우선한 설정입니다.', '최신 안정판인 Gemini 3.8 Flash를 기본으로 쓰고, 호출 실패 시 안정적인 Gemini 2.5 Pro로 자동 fallback합니다. 매일 한 번의 Evidence Bundle 기반 생성에서는 최신 지시 준수 성능과 비용 효율을 우선하고, 장애·호환성 문제 때는 Pro 계열로 안전하게 내려갑니다.'),
+              ],
+          }
+
+          changed = []
+          for path, pairs in replacements.items():
+              if not path.exists():
+                  continue
+              text = path.read_text(encoding='utf-8')
+              original = text
+              for old, new in pairs:
+                  text = text.replace(old, new)
+              if text != original:
+                  path.write_text(text, encoding='utf-8')
+                  changed.append(str(path))
+          print('Updated:', ', '.join(changed) if changed else 'none')
+          PY
+          git diff --check
+          grep -n "GEMINI_MODEL\|GEMINI_FALLBACK_MODEL" scripts/generate.mjs .env.example README.md || true
+      - name: Commit changes
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "No changes needed."
+            exit 0
+          fi
+          git config user.name "qt-maintenance-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add scripts/generate.mjs .env.example README.md
+          git commit -m "config: use Gemini 3.8 Flash with 2.5 Pro fallback"
+          git push

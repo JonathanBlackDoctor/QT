@@ -39,18 +39,27 @@ function isOfficialSuUrl(url) {
   return host === 'sum.su.or.kr' || host === 'su.or.kr';
 }
 
+/**
+ * 날짜 네비게이션 링크가 페이지 어딘가에 있다는 이유만으로 그 날짜의 본문이라고
+ * 오판하지 않도록, 문서 제목·최종 URL·본문 앞부분에 실제 날짜가 나타나는지 본다.
+ */
+function documentMatchesDate(doc, targetDate) {
+  const primaryRegion = `${doc.title ?? ''}\n${doc.url ?? ''}\n${(doc.text ?? '').slice(0, 4500)}`;
+  return pageMentionsDate(primaryRegion, targetDate);
+}
+
 async function tryOfficialDateNavigation(initialDoc, targetDate) {
   const links = Array.isArray(initialDoc.links) ? initialDoc.links : [];
   const candidates = links
     .filter(l => isOfficialSuUrl(l.href))
     .filter(l => pageMentionsDate(`${l.text ?? ''} ${l.href}`, targetDate))
-    .slice(0, 4);
+    .slice(0, 6);
 
   for (const link of candidates) {
     try {
       const doc = await fetchText(link.href, { maxChars: 22000 });
       if (!isOfficialSuUrl(doc.url)) continue;
-      if (!pageMentionsDate(doc.text, targetDate)) continue;
+      if (!documentMatchesDate(doc, targetDate)) continue;
       return { doc, via: link.href };
     } catch {}
   }
@@ -139,7 +148,7 @@ async function fallbackForPassage(targetDate) {
       const direct = await safeOpen(item.url, 18000);
       if (direct && !direct.error) {
         direct.query = query;
-        direct.dateMatch = pageMentionsDate(direct.text, targetDate);
+        direct.dateMatch = documentMatchesDate(direct, targetDate);
         direct.passageCandidates = extractPassages(direct.text).slice(0, 12);
         opened.push(direct);
         if (!passage && direct.dateMatch && direct.passageCandidates.length) passage = direct.passageCandidates[0];
@@ -149,11 +158,40 @@ async function fallbackForPassage(targetDate) {
     if (passage) break;
   }
 
-  return { passage, snippets, opened, searchAvailable: Boolean(process.env.GOOGLE_CSE_API_KEY && process.env.GOOGLE_CSE_ID) };
+  return {
+    passage,
+    snippets,
+    opened,
+    searchAvailable: Boolean(process.env.GOOGLE_CSE_API_KEY && process.env.GOOGLE_CSE_ID),
+  };
+}
+
+async function readingJesusMetadata(passage) {
+  if (!passage || !process.env.GOOGLE_CSE_API_KEY || !process.env.GOOGLE_CSE_ID) return [];
+  const query = `site:youtube.com/@readingjesus "${passage}"`;
+  try {
+    const result = await googleSearch(query, { num: 4 });
+    return result.items
+      .filter(item => canonicalHost(item.url) === 'youtube.com' && isWhitelistedUrl(item.url))
+      .slice(0, 2)
+      .map(item => ({
+        source: '리딩지저스 (YouTube 검색 메타데이터)',
+        url: item.url,
+        title: item.title,
+        snippet: item.snippet.slice(0, 1200),
+        evidenceLevel: 'search_snippet',
+        query,
+        usageRestriction: '영상 내용 추정 금지. 제목·채널·검색에 노출된 설명 메타데이터만 사용.',
+      }));
+  } catch {
+    return [];
+  }
 }
 
 async function researchPassage(passage) {
-  if (!passage || !process.env.GOOGLE_CSE_API_KEY || !process.env.GOOGLE_CSE_ID) return [];
+  if (!passage || !process.env.GOOGLE_CSE_API_KEY || !process.env.GOOGLE_CSE_ID) {
+    return { documents: [], metadata: [] };
+  }
   const queries = [
     `"${passage}" site:bskorea.or.kr`,
     `"${passage}" site:bibleproject.com`,
@@ -172,7 +210,7 @@ async function researchPassage(passage) {
     for (const item of result.items) {
       if (!isWhitelistedUrl(item.url)) continue;
       const host = canonicalHost(item.url);
-      if (host === 'sum.su.or.kr' || host === 'su.or.kr' || seenHosts.has(host)) continue;
+      if (host === 'sum.su.or.kr' || host === 'su.or.kr' || host === 'youtube.com' || seenHosts.has(host)) continue;
       const direct = await safeOpen(item.url, 12000);
       if (direct && !direct.error && direct.text.length >= 200) {
         docs.push({ ...direct, query, discoveredBy: 'google_cse' });
@@ -181,7 +219,9 @@ async function researchPassage(passage) {
       }
     }
   }
-  return docs;
+
+  const metadata = await readingJesusMetadata(passage);
+  return { documents: docs, metadata };
 }
 
 export async function collectEvidence(targetDate) {
@@ -205,6 +245,7 @@ export async function collectEvidence(targetDate) {
     },
     passage: null,
     researchDocuments: [],
+    researchMetadata: [],
   };
 
   try {
@@ -216,7 +257,7 @@ export async function collectEvidence(targetDate) {
     let direct = initial;
     let navigationVia = null;
 
-    if (!pageMentionsDate(initial.text, targetDate)) {
+    if (!documentMatchesDate(initial, targetDate)) {
       evidence.su.dateNavigationTried = true;
       const navigated = await tryOfficialDateNavigation(initial, targetDate);
       if (navigated) {
@@ -225,7 +266,7 @@ export async function collectEvidence(targetDate) {
       }
     }
 
-    const dateMatch = pageMentionsDate(direct.text, targetDate);
+    const dateMatch = documentMatchesDate(direct, targetDate);
     const passageCandidates = extractPassages(direct.text).slice(0, 12);
     evidence.su.directDocument = {
       source: labelFor(direct.url),
@@ -266,6 +307,10 @@ export async function collectEvidence(targetDate) {
     }
   }
 
-  if (evidence.passage) evidence.researchDocuments = await researchPassage(evidence.passage);
+  if (evidence.passage) {
+    const research = await researchPassage(evidence.passage);
+    evidence.researchDocuments = research.documents;
+    evidence.researchMetadata = research.metadata;
+  }
   return evidence;
 }

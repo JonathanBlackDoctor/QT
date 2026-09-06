@@ -1,0 +1,29 @@
+name: QT schedule diagnostics
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/daily-qt.yml'
+      - '.github/workflows/qt-health.yml'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/daily-qt.yml'
+      - '.github/workflows/qt-health.yml'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Inspect repository and scheduler registration (read only)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY" --jq '{default_branch, fork, archived, created_at, pushed_at}'
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows" --jq '.workflows[] | {id, name, path, state, created_at, updated_at}'
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs?event=schedule&per_page=10" --jq '{total_count, runs: [.workflow_runs[] | {id, path, status, conclusion, created_at, run_started_at, updated_at, html_url}]}'

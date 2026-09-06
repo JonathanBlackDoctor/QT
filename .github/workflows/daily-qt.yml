@@ -55,6 +55,7 @@ jobs:
         env:
           REQUESTED_DATE: ${{ inputs.date }}
           FORCE_GENERATION: ${{ inputs.force }}
+          RETRY_PERSPECTIVES: ${{ github.event_name == 'schedule' && github.event.schedule == '20 15 * * *' }}
         run: node scripts/qt-readiness.mjs
       - name: Already generated and published
         if: steps.ready.outputs.needs_deployment != 'true'
@@ -63,7 +64,7 @@ jobs:
         if: steps.ready.outputs.needs_deployment == 'true'
         run: node --test scripts/*.test.mjs
       - uses: actions/cache@v4
-        if: steps.ready.outputs.needs_generation == 'true'
+        if: steps.ready.outputs.needs_enrichment == 'true'
         with:
           path: .cache/project-sources
           key: project-sources-v1-${{ github.run_id }}-${{ github.run_attempt }}
@@ -85,7 +86,7 @@ jobs:
           if [[ "$FORCE_GENERATION" == "true" ]]; then args+=(--force); fi
           node scripts/generate.mjs "${args[@]}"
       - name: Supplement project perspectives (non-blocking)
-        if: steps.ready.outputs.needs_generation == 'true'
+        if: steps.ready.outputs.needs_enrichment == 'true'
         continue-on-error: true
         timeout-minutes: 3
         env:
@@ -94,7 +95,7 @@ jobs:
           GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
           GEMINI_FALLBACK_MODEL: ${{ vars.GEMINI_FALLBACK_MODEL }}
           GOOGLE_CSE_API_KEY: ${{ secrets.GOOGLE_CSE_API_KEY }}
-          GOOGLE_CSE_ID: ${{ secrets.GOOGLE_CSE_ID }}
+          GOOGLE_CSE_ID: ${{ secrets.GOOGLE_CSE_ID || vars.GOOGLE_CSE_ID }}
           READING_JESUS_CHANNEL_ID: ${{ vars.READING_JESUS_CHANNEL_ID }}
         run: node scripts/enrich-projects.mjs "--date=$TARGET_DATE"
       - name: Validate content

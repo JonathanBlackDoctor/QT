@@ -77,6 +77,7 @@ async function main() {
   const date = checkedDate(process.env.REQUESTED_DATE?.trim() || generationDate());
   const state = await inspectReadiness(date);
   const forced = process.env.FORCE_GENERATION === 'true';
+  const needsEnrichment = forced || !state.ready || process.env.RETRY_PERSPECTIVES === 'true';
   const requireReady = process.argv.includes('--require-ready');
   const baseUrl = process.env.PAGES_BASE_URL;
   let published = !baseUrl;
@@ -90,7 +91,7 @@ async function main() {
   console.log(JSON.stringify({ ...state, published, checkedAt: new Date().toISOString(), event: process.env.GITHUB_EVENT_NAME || 'local' }));
   if (!requireReady && process.env.GITHUB_OUTPUT) {
     await fs.appendFile(process.env.GITHUB_OUTPUT,
-      `date=${date}\nneeds_generation=${forced || !state.ready}\nforce_generation=${forced || state.repair}\nneeds_deployment=${forced || !state.ready || !published}\n`);
+      `date=${date}\nneeds_generation=${forced || !state.ready}\nforce_generation=${forced || state.repair}\nneeds_enrichment=${needsEnrichment}\nneeds_deployment=${needsEnrichment || !published}\n`);
   }
   if (process.env.GITHUB_STEP_SUMMARY) {
     await fs.appendFile(process.env.GITHUB_STEP_SUMMARY,

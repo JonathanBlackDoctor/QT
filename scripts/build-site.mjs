@@ -5,15 +5,22 @@ import { pageHtml } from '../site/page.mjs';
 
 const dist = path.join(ROOT, 'dist');
 const site = path.join(ROOT, 'site');
-const assets = ['app.js', 'model.js', 'styles.css'];
+const assets = [
+  'app.js',
+  'archive.js',
+  'dom.js',
+  'icons.js',
+  'model.js',
+  'reader-chrome.js',
+  'reader-content.js',
+  'styles.css',
+];
 
 await fs.rm(dist, { recursive: true, force: true });
 await fs.mkdir(dist, { recursive: true });
 await fs.cp(path.join(ROOT, 'content'), path.join(dist, 'content'), { recursive: true });
-
-await Promise.all(
-  assets.map((asset) => fs.copyFile(path.join(site, asset), path.join(dist, asset))),
-);
+await fs.cp(path.join(site, 'styles'), path.join(dist, 'styles'), { recursive: true });
+await Promise.all(assets.map((asset) => fs.copyFile(path.join(site, asset), path.join(dist, asset))));
 
 await Promise.all([
   fs.writeFile(path.join(dist, 'index.html'), pageHtml('오늘의 QT', 'home'), 'utf8'),

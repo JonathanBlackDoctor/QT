@@ -1,0 +1,48 @@
+name: Retrieval smoke test
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/retrieval-smoke.yml'
+      - 'scripts/evidence.mjs'
+      - 'scripts/lib.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Seoul
+      GOOGLE_CSE_API_KEY: ${{ secrets.GOOGLE_CSE_API_KEY }}
+      GOOGLE_CSE_ID: ${{ secrets.GOOGLE_CSE_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Fetch and verify today's SU passage
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import { currentKstDate } from './scripts/lib.mjs';
+          import { collectEvidence } from './scripts/evidence.mjs';
+          const date = currentKstDate();
+          const ev = await collectEvidence(date);
+          console.log(JSON.stringify({
+            date,
+            passage: ev.passage,
+            suDirectSucceeded: ev.su.directSucceeded,
+            dateStatus: ev.su.dateStatus,
+            passageStatus: ev.su.passageStatus,
+            directUrl: ev.su.directDocument?.url ?? null,
+            dateMatch: ev.su.directDocument?.dateMatch ?? false,
+            fallbackSnippets: ev.su.fallbackSnippets?.length ?? 0,
+            researchDocuments: ev.researchDocuments?.length ?? 0
+          }, null, 2));
+          if (!ev.su.directSucceeded) process.exitCode = 2;
+          if (!ev.passage) process.exitCode = 3;
+          NODE

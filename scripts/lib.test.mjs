@@ -7,6 +7,11 @@ test('extracts Korean passage references', () => {
   assert.deepEqual(extractPassages('본문 렘 7:1~15'), ['렘 7:1-15']);
 });
 
+test('extracts SU bilingual and repeated-chapter range format', () => {
+  assert.deepEqual(extractPassages('본문 : 사사기(Judges) 3:1 - 3:11 찬송가 390장'), ['사사기 3:1-11']);
+  assert.deepEqual(extractPassages('창세기(Genesis) 1:31 - 2:3'), ['창세기 1:31-2:3']);
+});
+
 test('date detection understands Korean and ISO dates', () => {
   assert.equal(pageMentionsDate('2026년 9월 7일 월요일', '2026-09-07'), true);
   assert.equal(pageMentionsDate('2026-09-07', '2026-09-07'), true);

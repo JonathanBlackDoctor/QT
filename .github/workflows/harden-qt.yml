@@ -1,0 +1,99 @@
+name: Harden QT pipeline
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/harden-qt.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Apply reliability and evidence hardening
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          # 1) Retry transient SU fetch failures and export deterministic BibleHub research for integration tests.
+          p = Path('scripts/evidence.mjs')
+          s = p.read_text(encoding='utf-8')
+          anchor = 'async function fetchOfficialLanding() {'
+          helper = '''async function fetchTextWithRetry(url, options, attempts = 3) {\n  let lastError;\n  for (let attempt = 1; attempt <= attempts; attempt++) {\n    try {\n      return await fetchText(url, options);\n    } catch (error) {\n      lastError = error;\n      if (attempt < attempts) {\n        await new Promise(resolve => setTimeout(resolve, 1500 * attempt));\n      }\n    }\n  }\n  throw lastError;\n}\n\n'''
+          if 'async function fetchTextWithRetry(' not in s:
+              s = s.replace(anchor, helper + anchor)
+          s = s.replace("fetchText(SU_TODAY_URL, { maxChars: 22000 })", "fetchTextWithRetry(SU_TODAY_URL, { maxChars: 22000 })")
+          s = s.replace("fetchText(SU_ALT_TODAY_URL, { maxChars: 22000 })", "fetchTextWithRetry(SU_ALT_TODAY_URL, { maxChars: 22000 })")
+          s = s.replace('async function deterministicResearch(passage) {', 'export async function deterministicResearch(passage) {')
+          p.write_text(s, encoding='utf-8')
+
+          # 2) Retry an existing failed/incomplete day instead of treating it as a successful idempotent record.
+          p = Path('scripts/generate.mjs')
+          s = p.read_text(encoding='utf-8')
+          old = '''if (await exists(paths.json) && !args.force) {\n  console.log(`QT ${targetDate} already exists; skipping. Use --force to regenerate.`);\n  process.exit(0);\n}\n'''
+          new = '''if (await exists(paths.json) && !args.force) {\n  const existing = await readJson(paths.json).catch(() => null);\n  if (existing?.status === 'ok') {\n    console.log(`QT ${targetDate} already exists and is valid; skipping. Use --force to regenerate.`);\n    process.exit(0);\n  }\n  console.log(`QT ${targetDate} has a failed/incomplete record; retrying generation.`);\n}\n'''
+          if old in s:
+              s = s.replace(old, new)
+          p.write_text(s, encoding='utf-8')
+
+          # 3) Make the Christological confidence ladder explicit enough for unattended generation.
+          p = Path('prompts/qt-system.md')
+          s = p.read_text(encoding='utf-8')
+          old = '''## 그리스도 중심 연결\n\n근거 수준을 구분한다.\n1. 명시적 신약 인용/성취\n2. 강한 정경적·신학적 연결\n3. 가능한 예표적 공명\n\n3번은 본문의 직접 의미처럼 단정하지 않는다.\n'''
+          new = '''## 그리스도 중심 연결\n\n근거 수준을 반드시 구분한다.\n1. 명시적 신약 인용/성취 — Evidence Bundle 안에 실제로 확인된 신약 자료가 해당 본문을 인용·암시·성취한다고 뒷받침할 때만 사용한다.\n2. 강한 정경적·신학적 연결 — 직접적인 예언/예표라고 단정하지 말고, 성경 전체의 구원·왕권·언약·죄와 은혜 같은 주제와 연결해 묵상할 수 있음을 명시한다.\n3. 가능한 예표적 공명 — 반드시 “가능한 공명”, “유사성을 통해 묵상할 수 있음”처럼 가능성으로만 표현한다.\n\n명시적 근거가 없는데 “그리스도를 예표한다”, “예언의 성취다”, “직접 가리킨다”라고 단정하지 않는다. Evidence Bundle에 신약/정경 연결을 검증할 자료가 충분하지 않으면, 그 한계를 밝히고 절제된 정경적 연결만 제시한다.\n'''
+          if old in s:
+              s = s.replace(old, new)
+          p.write_text(s, encoding='utf-8')
+
+          # 4) Stable human-readable Korean date formatting.
+          p = Path('scripts/lib.mjs')
+          s = p.read_text(encoding='utf-8')
+          old = '''export function koreanDate(date) {\n  const d = new Date(`${date}T12:00:00+09:00`);\n  return new Intl.DateTimeFormat('ko-KR', {\n    timeZone: KST, year: 'numeric', month: 'long', day: 'numeric', weekday: 'short'\n  }).format(d).replace(/\\. /g, '년 ').replace(/\\.$/, '');\n}\n'''
+          new = '''export function koreanDate(date) {\n  const d = new Date(`${date}T12:00:00+09:00`);\n  const weekday = new Intl.DateTimeFormat('ko-KR', { timeZone: KST, weekday: 'short' }).format(d);\n  const [year, month, day] = date.split('-').map(Number);\n  return `${year}년 ${month}월 ${day}일 (${weekday})`;\n}\n'''
+          if old in s:
+              s = s.replace(old, new)
+          p.write_text(s, encoding='utf-8')
+
+          # 5) Add a second recovery schedule at 00:45 KST. Successful days skip without another model call.
+          p = Path('.github/workflows/daily-qt.yml')
+          s = p.read_text(encoding='utf-8')
+          old = "    - cron: '15 15 * * *'\n"
+          new = "    - cron: '15 15 * * *'\n    # Recovery run: 15:45 UTC = 00:45 KST. Successful dates are idempotently skipped.\n    - cron: '45 15 * * *'\n"
+          if "cron: '45 15 * * *'" not in s:
+              s = s.replace(old, new)
+          p.write_text(s, encoding='utf-8')
+
+          # 6) Smoke test deterministic BibleHub access independently of transient SU availability.
+          p = Path('.github/workflows/retrieval-smoke.yml')
+          s = p.read_text(encoding='utf-8')
+          s = s.replace("import { collectEvidence } from './scripts/evidence.mjs';", "import { collectEvidence, deterministicResearch } from './scripts/evidence.mjs';")
+          s = s.replace("const ev = await collectEvidence(date);", "const ev = await collectEvidence(date);\n          const deterministic = await deterministicResearch(ev.passage ?? '사사기 3:1-11');")
+          s = s.replace("researchMetadata: ev.researchMetadata?.length ?? 0", "researchMetadata: ev.researchMetadata?.length ?? 0,\n            deterministicResearchDocuments: deterministic.length,\n            deterministicUrls: deterministic.map(d => d.url)")
+          p.write_text(s, encoding='utf-8')
+          PY
+
+          node --test scripts/*.test.mjs
+          node scripts/validate.mjs
+          git diff --check
+      - name: Commit hardening
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "No hardening changes needed."
+            exit 0
+          fi
+          git config user.name "qt-maintenance-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add scripts/evidence.mjs scripts/generate.mjs scripts/lib.mjs prompts/qt-system.md .github/workflows/daily-qt.yml .github/workflows/retrieval-smoke.yml
+          git commit -m "feat: harden daily QT retries and evidence rules"
+          git push

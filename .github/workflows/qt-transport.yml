@@ -1,10 +1,11 @@
 name: QT transport diagnostics
 on:
   workflow_dispatch:
-  pull_request:
-    paths: ['.github/workflows/qt-transport.yml']
 permissions:
   contents: read
+concurrency:
+  group: qt-transport-diagnostics
+  cancel-in-progress: true
 jobs:
   inspect:
     strategy:

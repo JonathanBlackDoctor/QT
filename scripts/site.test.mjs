@@ -52,7 +52,9 @@ test('home template narrows live announcements to a dedicated status region', ()
 });
 
 test('reader UI excludes note fields and completion streak features', async () => {
-  const appSource = await fs.readFile(path.join(ROOT, 'site', 'app.js'), 'utf8');
-  assert.doesNotMatch(appSource, /오늘 묵상 완료|연속\s*\d*일|질문에 대한 메모/);
-  assert.doesNotMatch(appSource, /type\s*=\s*['"]text['"]/);
+  const siteDir = path.join(ROOT, 'site');
+  const files = (await fs.readdir(siteDir)).filter((name) => name.endsWith('.js'));
+  const source = (await Promise.all(files.map((name) => fs.readFile(path.join(siteDir, name), 'utf8')))).join('\n');
+  assert.doesNotMatch(source, /오늘 묵상 완료|연속\s*\d*일|질문에 대한 메모/);
+  assert.doesNotMatch(source, /type\s*=\s*['"]text['"]/);
 });

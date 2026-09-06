@@ -29,14 +29,15 @@ jobs:
       - name: Run parser and retrieval unit tests
         run: node --test scripts/*.test.mjs
 
-      - name: Check live SU retrieval
+      - name: Check live SU and deterministic research retrieval
         shell: bash
         run: |
           node --input-type=module <<'NODE'
           import { currentKstDate } from './scripts/lib.mjs';
-          import { collectEvidence } from './scripts/evidence.mjs';
+          import { collectEvidence, deterministicResearch } from './scripts/evidence.mjs';
           const date = currentKstDate();
           const ev = await collectEvidence(date);
+          const deterministic = await deterministicResearch(ev.passage ?? '사사기 3:1-11');
           console.log(JSON.stringify({
             date,
             passage: ev.passage,
@@ -49,9 +50,14 @@ jobs:
             dateMatch: ev.su.directDocument?.dateMatch ?? false,
             fallbackSnippets: ev.su.fallbackSnippets?.length ?? 0,
             researchDocuments: ev.researchDocuments?.length ?? 0,
-            researchMetadata: ev.researchMetadata?.length ?? 0
+            researchMetadata: ev.researchMetadata?.length ?? 0,
+            deterministicResearchDocuments: deterministic.length,
+            deterministicUrls: deterministic.map(d => d.url)
           }, null, 2));
           if (!ev.passage) {
-            console.warn('No verified passage in this live attempt. The production generator will record a verification failure instead of guessing.');
+            console.warn('No verified SU passage in this live attempt. Production will retry and never guess.');
+          }
+          if (!deterministic.length) {
+            console.warn('Deterministic BibleHub sources were unavailable in this live attempt; they remain optional evidence.');
           }
           NODE

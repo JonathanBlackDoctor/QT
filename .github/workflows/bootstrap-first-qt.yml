@@ -1,0 +1,46 @@
+name: Bootstrap first QT
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/bootstrap-first-qt.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Seoul
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
+      GEMINI_FALLBACK_MODEL: ${{ vars.GEMINI_FALLBACK_MODEL }}
+      GOOGLE_CSE_API_KEY: ${{ secrets.GOOGLE_CSE_API_KEY }}
+      GOOGLE_CSE_ID: ${{ secrets.GOOGLE_CSE_ID }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Test retrieval parser
+        run: node --test scripts/*.test.mjs
+      - name: Generate today's QT
+        run: node scripts/generate.mjs --date=2026-09-06
+      - name: Validate generated content
+        run: node scripts/validate.mjs --date=2026-09-06
+      - name: Commit generated content
+        shell: bash
+        run: |
+          if git diff --quiet -- content; then
+            echo "No content changes to commit."
+            exit 0
+          fi
+          git config user.name "qt-bootstrap-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add content
+          git commit -m "content: first QT 2026-09-06"
+          git push

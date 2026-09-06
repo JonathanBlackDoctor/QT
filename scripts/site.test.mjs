@@ -15,14 +15,15 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 test('selectEntry honors a valid date and safely falls back for a missing date', () => {
   const index = [{ date: '2026-09-07' }, { date: '2026-09-06' }];
-  assert.deepEqual(selectEntry(index, '2026-09-06'), {
+  const now = new Date('2026-09-07T04:00:00+09:00');
+  assert.deepEqual(selectEntry(index, '2026-09-06', now), {
     entry: index[1],
     entryIndex: 1,
     selectedDate: '2026-09-06',
     requestedMissing: false,
   });
-  assert.equal(selectEntry(index, '2026-09-01').entry, index[0]);
-  assert.equal(selectEntry(index, '2026-09-01').requestedMissing, true);
+  assert.equal(selectEntry(index, '2026-09-01', now).entry, index[0]);
+  assert.equal(selectEntry(index, '2026-09-01', now).requestedMissing, true);
 });
 
 test('entryNavigation follows the newest-first content index', () => {

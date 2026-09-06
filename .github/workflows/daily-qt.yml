@@ -2,9 +2,18 @@ name: Generate daily QT
 
 on:
   schedule:
-    # UTC cron: 00:05 KST and recovery at 00:20 KST.
-    - cron: '5 15 * * *'
-    - cron: '20 15 * * *'
+    # Primary and first recovery, expressed in UTC.
+    - cron: '5 15 * * *' # 00:05 KST
+    - cron: '20 15 * * *' # 00:20 KST
+    # Bounded catch-up window, including after the 04:00 reader rollover.
+    - cron: '35,50 15 * * *' # 00:35, 00:50 KST
+    - cron: '5,20,35,50 16-19 * * *' # 01:05 through 04:50 KST
+  # A pipeline repair should recover missing content immediately, not wait a day.
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/daily-qt.yml'
+      - 'scripts/qt-readiness.mjs'
   workflow_dispatch:
     inputs:
       date:
@@ -32,6 +41,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     env:
       TZ: Asia/Seoul
+      PAGES_BASE_URL: https://JonathanBlackDoctor.github.io/QT/
     steps:
       - uses: actions/checkout@v4
         with:
@@ -40,27 +50,29 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
+      - name: Resolve calendar date and check content/publication
+        id: ready
+        env:
+          REQUESTED_DATE: ${{ inputs.date }}
+          FORCE_GENERATION: ${{ inputs.force }}
+        run: node scripts/qt-readiness.mjs
+      - name: Already generated and published
+        if: steps.ready.outputs.needs_deployment != 'true'
+        run: echo 'Verified dated content and its published copy match. No model call or deployment needed.'
+      - name: Run unit tests
+        if: steps.ready.outputs.needs_deployment == 'true'
+        run: node --test scripts/*.test.mjs
       - uses: actions/cache@v4
+        if: steps.ready.outputs.needs_generation == 'true'
         with:
           path: .cache/project-sources
           key: project-sources-v1-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: project-sources-v1-
-      - name: Run unit tests
-        run: node --test scripts/*.test.mjs
-      - name: Resolve date safely
-        id: args
+      - name: Generate missing or incomplete QT
+        if: steps.ready.outputs.needs_generation == 'true'
         env:
-          REQUESTED_DATE: ${{ inputs.date }}
-        shell: bash
-        run: |
-          DATE="${REQUESTED_DATE:-$(TZ=Asia/Seoul date +%F)}"
-          export DATE
-          node --input-type=module -e 'const d=process.env.DATE;if(!/^\d{4}-\d{2}-\d{2}$/.test(d)||Number.isNaN(Date.parse(d+"T00:00:00Z"))||new Date(d+"T00:00:00Z").toISOString().slice(0,10)!==d)process.exit(1)'
-          echo "date=$DATE" >> "$GITHUB_OUTPUT"
-      - name: Generate QT and supplement project perspectives
-        env:
-          TARGET_DATE: ${{ steps.args.outputs.date }}
-          FORCE_GENERATION: ${{ inputs.force }}
+          TARGET_DATE: ${{ steps.ready.outputs.date }}
+          FORCE_GENERATION: ${{ steps.ready.outputs.force_generation }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
           GEMINI_FALLBACK_MODEL: ${{ vars.GEMINI_FALLBACK_MODEL }}
@@ -72,15 +84,28 @@ jobs:
           args=("--date=$TARGET_DATE")
           if [[ "$FORCE_GENERATION" == "true" ]]; then args+=(--force); fi
           node scripts/generate.mjs "${args[@]}"
-          # Runs even when an existing status=ok QT was skipped by the main generator.
-          node scripts/enrich-projects.mjs "--date=$TARGET_DATE"
+      - name: Supplement project perspectives (non-blocking)
+        if: steps.ready.outputs.needs_generation == 'true'
+        continue-on-error: true
+        timeout-minutes: 3
+        env:
+          TARGET_DATE: ${{ steps.ready.outputs.date }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
+          GEMINI_FALLBACK_MODEL: ${{ vars.GEMINI_FALLBACK_MODEL }}
+          GOOGLE_CSE_API_KEY: ${{ secrets.GOOGLE_CSE_API_KEY }}
+          GOOGLE_CSE_ID: ${{ secrets.GOOGLE_CSE_ID }}
+          READING_JESUS_CHANNEL_ID: ${{ vars.READING_JESUS_CHANNEL_ID }}
+        run: node scripts/enrich-projects.mjs "--date=$TARGET_DATE"
       - name: Validate content
+        if: steps.ready.outputs.needs_deployment == 'true'
         run: |
           node scripts/validate.mjs
           node scripts/validate-projects.mjs
       - name: Commit generated content
+        if: steps.ready.outputs.needs_deployment == 'true'
         env:
-          TARGET_DATE: ${{ steps.args.outputs.date }}
+          TARGET_DATE: ${{ steps.ready.outputs.date }}
         shell: bash
         run: |
           git add content
@@ -92,11 +117,20 @@ jobs:
             git push origin HEAD:main
           fi
       - name: Build site
+        if: steps.ready.outputs.needs_deployment == 'true'
         run: node scripts/build-site.mjs
       - uses: actions/configure-pages@v5
+        if: steps.ready.outputs.needs_deployment == 'true'
       - uses: actions/upload-pages-artifact@v3
+        if: steps.ready.outputs.needs_deployment == 'true'
         with:
           path: ./dist
       - name: Deploy to GitHub Pages
+        if: steps.ready.outputs.needs_deployment == 'true'
         id: deployment
         uses: actions/deploy-pages@v4
+      - name: Require successful dated content and verify its published copy
+        if: always() && steps.ready.outputs.needs_deployment == 'true'
+        env:
+          REQUESTED_DATE: ${{ steps.ready.outputs.date }}
+        run: node scripts/qt-readiness.mjs --require-ready

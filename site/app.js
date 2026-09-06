@@ -1,6 +1,6 @@
 import { renderArchive } from './archive.js';
 import { textEl } from './dom.js';
-import { selectEntry } from './model.js';
+import { millisecondsUntilReadingDay, readingDate, selectEntry } from './model.js';
 import {
   createDateAnchor,
   renderEvidenceActions,
@@ -30,17 +30,28 @@ async function main() {
 
 async function renderHome(index) {
   removeHomeChrome();
-  if (!Array.isArray(index) || !index.length) {
-    app.replaceChildren(textEl('div', 'empty', '아직 생성된 QT가 없습니다.\n첫 자동 생성 후 이곳에 기록이 나타납니다.'));
+  const now = new Date();
+  const defaultDate = readingDate(now);
+  const requestedDate = new URLSearchParams(location.search).get('date');
+  const selection = selectEntry(index, requestedDate, now);
+  if (!requestedDate) watchReadingDay(defaultDate, now);
+
+  if (!selection.entry) {
+    setReaderHeader({ date: defaultDate, title: '해설 준비 중' });
+    app.replaceChildren(textEl('div', 'empty', `${defaultDate}까지의 QT가 아직 준비되지 않았습니다.\n첫 화면의 날짜는 한국시간 04:00에 전환됩니다.`));
+    const archive = textEl('a', 'record-note', '생성된 날짜를 아카이브에서 선택하기 →');
+    archive.href = './archive.html';
+    app.append(archive);
     return;
   }
 
-  const requestedDate = new URLSearchParams(location.search).get('date');
-  const selection = selectEntry(index, requestedDate);
   const doc = await fetchJson(`./content/${selection.entry.path}`);
   document.title = `${doc.title || '오늘의 QT'} · QT`;
   setReaderHeader(doc);
   app.replaceChildren(renderHero(doc), createDateAnchor());
+  if ((!requestedDate || selection.requestedMissing) && selection.selectedDate !== defaultDate) {
+    app.append(textEl('p', 'record-note', `${defaultDate} 해설이 아직 준비되지 않아 ${selection.selectedDate} 기록을 표시합니다.`));
+  }
 
   if (doc.status === 'failed') {
     app.append(
@@ -51,12 +62,24 @@ async function renderHome(index) {
     app.append(
       ...renderReaderSections(doc.sections),
       renderEvidenceActions(doc),
-      textEl('p', 'record-note', '검증 상태와 실제 사용 출처를 각 날짜 기록에 함께 보관합니다.'),
+      textEl('p', 'record-note', '첫 화면은 한국시간 매일 04:00에 전환됩니다. 검증 상태와 실제 사용 출처를 각 날짜 기록에 함께 보관합니다.'),
     );
   }
 
   installHomeChrome(doc, index, selection);
   if (selection.requestedMissing) announceMissingDate(requestedDate, selection.selectedDate);
+}
+
+function watchReadingDay(renderedDate, now) {
+  // Also cover sleeping/background tabs and the browser's back/forward cache.
+  // Explicit ?date= links never install this handler and remain pinned.
+  const check = () => {
+    if (document.visibilityState !== 'hidden' && readingDate() !== renderedDate) location.reload();
+  };
+  window.setTimeout(check, millisecondsUntilReadingDay(now) + 50);
+  window.addEventListener('pageshow', check);
+  window.addEventListener('focus', check);
+  document.addEventListener('visibilitychange', check);
 }
 
 async function fetchJson(url) {

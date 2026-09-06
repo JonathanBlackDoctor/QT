@@ -33,7 +33,7 @@ jobs:
           node-version: '24'
       - name: Run tests
         run: node --test scripts/*.test.mjs
-      - name: Regenerate 2026-09-06
+      - name: Regenerate 2026-09-06 under strict evidence validator
         run: node scripts/generate.mjs --date=2026-09-06 --force
       - name: Refuse to replace good content with a failed retrieval
         shell: bash
@@ -58,7 +58,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No content changes."
           else
-            git commit -m "content: refresh QT 2026-09-06 with hardened evidence"
+            git commit -m "content: refresh QT 2026-09-06 under strict evidence validation"
             git push
           fi
       - name: Build site
@@ -70,3 +70,5 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+# One-shot final validation run. Remove after success.

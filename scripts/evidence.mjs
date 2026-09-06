@@ -24,6 +24,22 @@ const SOURCE_LABELS = {
   'enduringword.com': 'Enduring Word',
 };
 
+const BIBLEHUB_BOOK_SLUGS = {
+  '창세기':'genesis','출애굽기':'exodus','레위기':'leviticus','민수기':'numbers','신명기':'deuteronomy',
+  '여호수아':'joshua','사사기':'judges','룻기':'ruth','사무엘상':'1_samuel','사무엘하':'2_samuel',
+  '열왕기상':'1_kings','열왕기하':'2_kings','역대상':'1_chronicles','역대하':'2_chronicles','에스라':'ezra',
+  '느헤미야':'nehemiah','에스더':'esther','욥기':'job','시편':'psalms','잠언':'proverbs','전도서':'ecclesiastes',
+  '아가':'songs','이사야':'isaiah','예레미야':'jeremiah','예레미야애가':'lamentations','애가':'lamentations',
+  '에스겔':'ezekiel','다니엘':'daniel','호세아':'hosea','요엘':'joel','아모스':'amos','오바댜':'obadiah',
+  '요나':'jonah','미가':'micah','나훔':'nahum','하박국':'habakkuk','스바냐':'zephaniah','학개':'haggai',
+  '스가랴':'zechariah','말라기':'malachi','마태복음':'matthew','마가복음':'mark','누가복음':'luke',
+  '요한복음':'john','사도행전':'acts','로마서':'romans','고린도전서':'1_corinthians','고린도후서':'2_corinthians',
+  '갈라디아서':'galatians','에베소서':'ephesians','빌립보서':'philippians','골로새서':'colossians',
+  '데살로니가전서':'1_thessalonians','데살로니가후서':'2_thessalonians','디모데전서':'1_timothy','디모데후서':'2_timothy',
+  '디도서':'titus','빌레몬서':'philemon','히브리서':'hebrews','야고보서':'james','베드로전서':'1_peter',
+  '베드로후서':'2_peter','요한일서':'1_john','요한이서':'2_john','요한삼서':'3_john','유다서':'jude','요한계시록':'revelation',
+};
+
 function labelFor(url) {
   return SOURCE_LABELS[canonicalHost(url)] ?? canonicalHost(url);
 }
@@ -209,10 +225,56 @@ async function readingJesusMetadata(passage) {
   }
 }
 
-async function researchPassage(passage) {
-  if (!passage || !process.env.GOOGLE_CSE_API_KEY || !process.env.GOOGLE_CSE_ID) {
-    return { documents: [], metadata: [] };
+function passageLocator(passage) {
+  const m = String(passage ?? '').match(/^(.+?)\s+(\d{1,3}):(\d{1,3})/);
+  if (!m) return null;
+  const book = m[1].trim();
+  const slug = BIBLEHUB_BOOK_SLUGS[book];
+  if (!slug) return null;
+  return { book, slug, chapter: Number(m[2]), verse: Number(m[3]) };
+}
+
+async function deterministicResearch(passage) {
+  const ref = passageLocator(passage);
+  if (!ref) return [];
+
+  const candidates = [
+    {
+      url: `https://biblehub.com/${ref.slug}/${ref.chapter}.htm`,
+      role: 'chapter_commentary',
+      maxChars: 14000,
+    },
+    {
+      url: `https://biblehub.com/text/${ref.slug}/${ref.chapter}-${ref.verse}.htm`,
+      role: 'interlinear_first_verse',
+      maxChars: 10000,
+    },
+  ];
+
+  const docs = [];
+  for (const candidate of candidates) {
+    const direct = await safeOpen(candidate.url, candidate.maxChars);
+    if (!direct || direct.error || direct.text.length < 200) continue;
+    docs.push({
+      ...direct,
+      discoveredBy: 'deterministic_url',
+      role: candidate.role,
+      passage,
+    });
   }
+  return docs;
+}
+
+async function researchPassage(passage) {
+  if (!passage) return { documents: [], metadata: [] };
+
+  const docs = await deterministicResearch(passage);
+  const metadata = await readingJesusMetadata(passage);
+
+  if (!process.env.GOOGLE_CSE_API_KEY || !process.env.GOOGLE_CSE_ID) {
+    return { documents: docs.slice(0, 4), metadata };
+  }
+
   const queries = [
     `"${passage}" site:bskorea.or.kr`,
     `"${passage}" site:bibleproject.com`,
@@ -222,8 +284,7 @@ async function researchPassage(passage) {
     `"${passage}" site:thegospelcoalition.org OR site:enduringword.com OR site:desiringgod.org`,
   ];
 
-  const docs = [];
-  const seenHosts = new Set();
+  const seenHosts = new Set(docs.map(d => canonicalHost(d.url)));
   for (const query of queries) {
     if (docs.length >= 4) break;
     let result;
@@ -241,8 +302,7 @@ async function researchPassage(passage) {
     }
   }
 
-  const metadata = await readingJesusMetadata(passage);
-  return { documents: docs, metadata };
+  return { documents: docs.slice(0, 4), metadata };
 }
 
 export async function collectEvidence(targetDate) {

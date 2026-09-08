@@ -74,17 +74,16 @@
         ],
         "passage": "사사기 4:11-24",
         "evidenceHash": "e7a330ce07c87b46a7c3496b59f9ae17593133fffc50b586fbebf9a06d7243e6",
-        "summary": null,
-        "summaryStatus": "failed",
-        "summaryError": "요약 생성 또는 근거 검증에 실패했습니다. 확보한 자료와 기존 본문은 보존했습니다.",
+        "summary": "사사기는 여호수아 사후 이스라엘이 가나안 족속을 온전히 몰아내지 못하고 그들의 우상숭배와 관습에 물들며 겪게 되는 영적 실패와 도덕적 타락의 과정을 보여줍니다. 이스라엘이 하나님께 범죄하여 대적에게 압제당하고, 고통 속에서 부르짖으면 하나님께서 사사를 세워 구원하시지만 사사가 죽은 뒤 다시 타락하는 하향식 악순환이 거듭됩니다. 세워진 지도자들 역시 점차 결함과 부패를 드러내며, 책의 후반부는 각자가 자기 소견에 옳은 대로 행하는 전면적인 혼란과 내란의 참상을 드러냅니다. 해석적 적용으로 볼 때, 본문의 승리 기록 또한 반복되는 타락 속에서도 자기 백성의 부르짖음에 응답하시며 구원을 베푸시는 하나님의 자비로운 역사라는 거대한 흐름 안에서 바라볼 수 있습니다.",
+        "evidenceQuotes": [
+          "This part of Israel’s history was a series of cycles moving in a downward spiral. Israel would become like the Canaanites and would sin against God."
+        ],
+        "summaryStatus": "ready",
+        "model": "gemini-3.8-flash",
         "summaryAttempts": [
           {
             "model": "gemini-3.8-flash",
-            "outcome": "evidence_validation_failed"
-          },
-          {
-            "model": "gemini-2.5-pro",
-            "outcome": "http_404"
+            "outcome": "ok"
           }
         ]
       },
@@ -196,6 +195,12 @@
       "url": "https://biblehub.com/text/judges/4-11.htm",
       "usedFor": "히브리어 원어 및 Strong's 번호 분석",
       "evidenceLevel": "direct"
+    },
+    {
+      "label": "바이블프로젝트 · Judges",
+      "url": "https://bibleproject.com/guides/book-of-judges/",
+      "usedFor": "책 전체의 흐름과 본문 연결 (공식 해설 본문)",
+      "evidenceLevel": "direct"
     }
   ],
   "evidenceMeta": {
@@ -212,7 +217,7 @@
     "projectSources": {
       "bibleproject": {
         "status": "ready",
-        "summaryStatus": "failed",
+        "summaryStatus": "ready",
         "checkedAt": "2026-09-06T10:52:46.848Z"
       },
       "readingjesus": {
@@ -223,5 +228,5 @@
     }
   },
   "generatedAt": "2026-09-08T18:23:49.889Z",
-  "projectEnrichedAt": "2026-09-08T18:24:00.294Z"
+  "projectEnrichedAt": "2026-09-08T18:43:01.302Z"
 }

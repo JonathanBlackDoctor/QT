@@ -1,3 +1,59 @@
+/* Meditation-first reading flow */
+.reading-guide {
+  margin: 0 28px 4px;
+  padding: 13px 15px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: color-mix(in srgb, var(--accent-soft) 48%, var(--surface));
+}
+.reading-guide strong {
+  display: block;
+  color: var(--accent-strong);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.55;
+  word-break: keep-all;
+}
+.reading-guide p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 11.5px;
+  line-height: 1.7;
+  word-break: keep-all;
+}
+.context-section { padding-top: 22px; }
+.context-preview {
+  margin: 0;
+  color: var(--body-text);
+  font-family: var(--serif);
+  font-size: 16px;
+  line-height: 1.9;
+  text-wrap: pretty;
+  word-break: keep-all;
+}
+.context-details { margin-top: 11px; }
+.context-details summary {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  gap: 7px;
+  padding: 0 2px;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+  list-style: none;
+  cursor: pointer;
+}
+.context-details summary::-webkit-details-marker { display: none; }
+.context-details .details-toggle { width: 13px; height: 13px; }
+.context-details .details-toggle::before,
+.context-details .details-toggle::after { top: 6px; width: 11px; }
+.context-details[open] .details-toggle::after { transform: rotate(0); }
+.context-details-body { padding: 9px 0 0; }
+.context-details-body > p:first-child { padding-top: 11px; border-top: 1px solid var(--line-soft); }
+.summary-section > p { color: var(--text); font-size: 17px; line-height: 1.96; }
+.deep-qualifier { margin: 3px 0 12px; }
+
 /* Deep reading */
 .deep-section { padding: 28px 28px 14px; border-top: 1px solid var(--line); }
 .deep-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 13px; }
@@ -67,3 +123,7 @@
 .action-value { color: var(--muted); font-size: 12px; white-space: nowrap; }
 .action-value.verified { color: var(--accent); font-weight: 700; }
 .record-note { margin: 16px 28px 0; color: var(--subtle); font-size: 10.5px; line-height: 1.65; text-align: center; }
+
+@media (max-width: 520px) {
+  .reading-guide { margin-right: 20px; margin-left: 20px; }
+}

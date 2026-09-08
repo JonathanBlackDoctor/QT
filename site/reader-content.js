@@ -31,16 +31,11 @@ export function createDateAnchor() {
 
 export function renderReaderSections(sections = {}) {
   return [
+    renderReadingGuide(),
+    renderContextSection(sections.context),
     renderLeadSection(sections.summary),
-    renderProseSection({
-      id: 'christological', label: '그리스도 중심적 연결', iconName: 'cross',
-      qualifier: christologyQualifier(sections.christological), text: sections.christological,
-    }),
-    renderProseSection({
-      id: 'su-application', label: '성서유니온 해설과 적용', iconName: 'note', text: sections.suApplication,
-    }),
-    renderLifeApplication(sections.lifeApplication),
     renderQuestions(sections.questions),
+    renderLifeApplication(sections.lifeApplication),
     renderPrayer(sections.prayerPoints),
     renderDeepDive(sections),
   ];
@@ -65,10 +60,44 @@ export function renderEvidenceActions(doc) {
   return section;
 }
 
+function renderReadingGuide() {
+  const section = el('aside', 'reading-guide');
+  section.setAttribute('aria-label', 'QT 사용 안내');
+  section.append(
+    textEl('strong', '', '먼저 말씀을 천천히 읽고 묵상해 보세요.'),
+    textEl('p', '', '이 해설은 묵상을 대신하기보다, 이해가 더 필요할 때 참고하기 위해 만들었습니다.'),
+  );
+  return section;
+}
+
+function renderContextSection(text) {
+  const section = el('section', 'reader-section context-section');
+  section.id = 'context';
+  section.appendChild(sectionHeading('문맥과 배경', 'context'));
+
+  const { preview, remainder } = splitContext(text);
+  section.appendChild(textEl('p', 'context-preview', preview || '표시할 문맥과 배경이 없습니다.'));
+
+  if (remainder) {
+    const details = el('details', 'context-details');
+    const summary = document.createElement('summary');
+    summary.append(
+      textEl('span', 'context-more-label', '자세히 보기'),
+      el('span', 'details-toggle'),
+    );
+    const body = el('div', 'context-details-body prose compact-prose');
+    appendParagraphs(body, remainder);
+    details.append(summary, body);
+    section.appendChild(details);
+  }
+
+  return section;
+}
+
 function renderLeadSection(text) {
-  const section = el('section', 'reader-section lead-section prose');
+  const section = el('section', 'reader-section summary-section prose');
   section.id = 'summary';
-  section.appendChild(textEl('h2', 'sr-only', '본문 요약'));
+  section.appendChild(sectionHeading('본문의 흐름', 'book'));
   appendParagraphs(section, text);
   return section;
 }
@@ -121,11 +150,17 @@ function renderDeepDive(sections) {
   const section = el('section', 'deep-section');
   section.id = 'deep-dive';
   const heading = el('div', 'deep-heading');
-  heading.append(textEl('h2', '', '더 깊이 읽기'), textEl('span', '', '4개 · 선택'));
+  heading.append(textEl('h2', '', '더 깊이 읽기'), textEl('span', '', '5개 · 선택'));
   section.appendChild(heading);
 
   const stack = el('div', 'deep-stack');
-  stack.appendChild(detailsItem('context', '문맥과 배경', 'context', proseBody(sections.context)));
+  stack.appendChild(detailsItem(
+    'christological',
+    '그리스도 중심적 연결',
+    'cross',
+    proseBody(sections.christological, christologyQualifier(sections.christological)),
+  ));
+  stack.appendChild(detailsItem('su-application', '성서유니온 해설과 적용', 'note', proseBody(sections.suApplication)));
   stack.appendChild(renderProjectPerspectives(sections));
   stack.appendChild(detailsItem('commentary', '깊이 있는 주석 및 강해', 'lines', commentaryBody(sections.commentary)));
   stack.appendChild(sections.language
@@ -152,8 +187,9 @@ function unavailableItem(id, title, iconName) {
   return row;
 }
 
-function proseBody(text) {
+function proseBody(text, qualifier = null) {
   const body = el('div', 'details-body prose compact-prose');
+  if (qualifier) body.appendChild(textEl('span', 'qualifier deep-qualifier', qualifier));
   appendParagraphs(body, text);
   return body;
 }
@@ -185,6 +221,41 @@ function languageBody(text) {
   }
   appendParagraphs(body, text);
   return body;
+}
+
+function splitContext(value) {
+  const raw = String(value ?? '').trim();
+  if (!raw) return { preview: '', remainder: '' };
+
+  const paragraphs = raw.split(/\n\s*\n/).map((part) => part.trim()).filter(Boolean);
+  const first = paragraphs[0] || raw;
+  const trailing = paragraphs.slice(1).join('\n\n');
+
+  if (first.length <= 220) {
+    return { preview: first, remainder: trailing };
+  }
+
+  const sentences = first.match(/[^.!?。！？]+[.!?。！？]?/g) || [first];
+  let preview = '';
+  for (const sentence of sentences) {
+    const next = `${preview} ${sentence.trim()}`.trim();
+    if (preview && next.length > 200) break;
+    preview = next;
+    if (preview.length >= 100) break;
+  }
+
+  if (!preview || preview.length > 220) {
+    const cut = first.slice(0, 180);
+    const lastSpace = cut.lastIndexOf(' ');
+    preview = first.slice(0, lastSpace > 120 ? lastSpace : 180).trim();
+  }
+
+  const firstRemainder = first.slice(preview.length).trim();
+  const remainder = [firstRemainder, trailing].filter(Boolean).join('\n\n');
+  return {
+    preview: remainder && !/[.!?。！？]$/.test(preview) ? `${preview}…` : preview,
+    remainder,
+  };
 }
 
 function normalizeArea(value) {

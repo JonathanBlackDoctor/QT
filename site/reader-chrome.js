@@ -129,10 +129,9 @@ function renderTocDialog() {
   const body = el('nav', 'toc-list');
   body.setAttribute('aria-label', '문서 목차');
   const entries = [
-    ['01', '본문 요약', 'summary'], ['02', '그리스도 중심적 연결', 'christological'],
-    ['03', '성서유니온 해설과 적용', 'su-application'], ['04', '삶으로', 'life-application'],
-    ['05', '묵상을 위한 질문', 'questions'], ['06', '기도 제목', 'prayer'],
-    ['07', '더 깊이 읽기', 'deep-dive'],
+    ['01', '문맥과 배경', 'context'], ['02', '본문의 흐름', 'summary'],
+    ['03', '묵상을 위한 질문', 'questions'], ['04', '삶으로', 'life-application'],
+    ['05', '기도 제목', 'prayer'], ['06', '더 깊이 읽기', 'deep-dive'],
   ];
   for (const [number, label, id] of entries) {
     const button = el('button', 'toc-item');
@@ -146,13 +145,13 @@ function renderTocDialog() {
   }
   body.appendChild(el('div', 'toc-divider'));
   const source = actionButton('toc-item', 'sources-dialog');
-  source.append(textEl('span', 'toc-number', '08'), textEl('span', '', '실제 사용 출처'));
+  source.append(textEl('span', 'toc-number', '07'), textEl('span', '', '실제 사용 출처'));
   const verify = actionButton('toc-item', 'verification-dialog');
-  verify.append(textEl('span', 'toc-number', '09'), textEl('span', '', '자체 검증 상태'));
+  verify.append(textEl('span', 'toc-number', '08'), textEl('span', '', '자체 검증 상태'));
   const archive = textEl('a', 'toc-item', '아카이브 보기');
   archive.href = './archive.html'; archive.prepend(textEl('span', 'toc-number', '→'));
   body.append(source, verify, archive);
-  return bottomSheet('toc-dialog', '목차', '핵심 흐름 6개 · 심화 4개 · 근거 2개', body);
+  return bottomSheet('toc-dialog', '목차', '핵심 흐름 5개 · 심화 5개 · 근거 2개', body);
 }
 
 function bottomSheet(id, title, subtitle, body) {

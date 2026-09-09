@@ -96,7 +96,7 @@
         "scope": "book",
         "status": "metadata_only",
         "reason": "공식 영상의 제목·채널 정보만 확인했습니다. 자막을 확보하지 못해 해설을 추측하지 않습니다.",
-        "checkedAt": "2026-09-08T18:23:56.890Z",
+        "checkedAt": "2026-09-09T18:39:19.832Z",
         "searchConfigured": false,
         "attempts": [
           {
@@ -158,8 +158,8 @@
         ],
         "sources": [
           {
-            "url": "https://www.youtube.com/watch?v=513GYg1bTJs",
-            "title": "사사기 4장 | 45주 성경통독",
+            "url": "https://www.youtube.com/watch?v=7aOFexgyiH8",
+            "title": "사사기 15장 | 45주 성경통독",
             "evidenceLevel": "direct",
             "contentKind": "video_metadata",
             "channelId": "UCDKV9zBBIEA1If3sBz_rMZQ",
@@ -224,10 +224,10 @@
       "readingjesus": {
         "status": "metadata_only",
         "summaryStatus": "not_applicable",
-        "checkedAt": "2026-09-08T18:23:56.890Z"
+        "checkedAt": "2026-09-09T18:39:19.832Z"
       }
     }
   },
   "generatedAt": "2026-09-09T18:22:53.918Z",
-  "projectEnrichedAt": "2026-09-09T18:22:59.651Z"
+  "projectEnrichedAt": "2026-09-09T18:39:23.227Z"
 }

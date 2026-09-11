@@ -2,10 +2,10 @@
   {
     "date": "2026-09-12",
     "displayDate": "2026년 9월 12일 (토)",
-    "passage": null,
+    "passage": "사사기 6:1-10",
     "title": null,
-    "status": "failed",
-    "verification": "확인 실패",
+    "status": "ok",
+    "verification": "직접 확인",
     "path": "2026/09/2026-09-12.json"
   },
   {

@@ -39,51 +39,23 @@ jobs:
       - name: Run unit tests
         run: node --test scripts/*.test.mjs
 
-      - name: Repair SU DNS resolution (best effort)
-        shell: bash
-        run: |
-          set -u
-          for host in sum.su.or.kr su.or.kr; do
-            if python3 - "$host" <<'PY'
-          import socket
-          import sys
-          try:
-              socket.getaddrinfo(sys.argv[1], 443)
-          except OSError:
-              raise SystemExit(1)
-          PY
-            then
-              continue
-            fi
-            ip="$(curl -fsS --max-time 8 "https://dns.google/resolve?name=${host}&type=A" \
-              | python3 -c 'import ipaddress,json,sys; d=json.load(sys.stdin); print(next((a["data"] for a in d.get("Answer",[]) if a.get("type")==1 and ipaddress.ip_address(a.get("data","")).version==4),""))' 2>/dev/null || true)"
-            if [[ -n "$ip" ]]; then
-              echo "$ip $host" | sudo tee -a /etc/hosts >/dev/null
-            else
-              echo "::warning::Could not establish a DNS fallback for $host."
-            fi
-          done
-
-      - name: Regenerate QT 2026-09-13
+      - name: Recover QT 2026-09-13 from verified adjacent ranges
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
           GEMINI_FALLBACK_MODEL: ${{ vars.GEMINI_FALLBACK_MODEL }}
-          GOOGLE_CSE_API_KEY: ${{ secrets.GOOGLE_CSE_API_KEY }}
-          GOOGLE_CSE_ID: ${{ secrets.GOOGLE_CSE_ID || vars.GOOGLE_CSE_ID }}
-          READING_JESUS_CHANNEL_ID: ${{ vars.READING_JESUS_CHANNEL_ID }}
         shell: bash
         run: |
           for attempt in 1 2 3; do
-            echo "Backfill generation attempt $attempt/3"
-            if node scripts/generate.mjs --date="$TARGET_DATE" --force; then
+            echo "Historical recovery attempt $attempt/3"
+            if node scripts/recover-historical.mjs --date="$TARGET_DATE"; then
               if REQUESTED_DATE="$TARGET_DATE" PAGES_BASE_URL="" node scripts/qt-readiness.mjs --require-ready; then
                 exit 0
               fi
             fi
             if (( attempt < 3 )); then sleep $((attempt * 5)); fi
           done
-          echo "::error::Backfill did not produce a locally ready QT record."
+          echo "::error::Historical recovery did not produce a locally ready QT record."
           exit 1
 
       - name: Supplement project perspectives (non-blocking)

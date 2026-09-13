@@ -13,6 +13,11 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/daily-qt.yml'
+      - 'prompts/qt-system.md'
+      - 'scripts/generate.mjs'
+      - 'scripts/evidence.mjs'
+      - 'scripts/lib.mjs'
+      - 'scripts/transport.mjs'
       - 'scripts/qt-readiness.mjs'
   workflow_dispatch:
     inputs:
@@ -71,7 +76,36 @@ jobs:
           path: .cache/project-sources
           key: project-sources-v1-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: project-sources-v1-
+      - name: Repair SU DNS resolution (best effort)
+        if: steps.ready.outputs.needs_generation == 'true'
+        shell: bash
+        run: |
+          set -u
+          for host in sum.su.or.kr su.or.kr; do
+            if python3 - "$host" <<'PY'
+          import socket
+          import sys
+          try:
+              socket.getaddrinfo(sys.argv[1], 443)
+          except OSError:
+              raise SystemExit(1)
+          PY
+            then
+              continue
+            fi
+
+            echo "System DNS could not resolve $host; trying DNS-over-HTTPS."
+            ip="$(curl -fsS --max-time 8 "https://dns.google/resolve?name=${host}&type=A" \
+              | python3 -c 'import ipaddress,json,sys; d=json.load(sys.stdin); print(next((a["data"] for a in d.get("Answer",[]) if a.get("type")==1 and ipaddress.ip_address(a.get("data","")).version==4),""))' 2>/dev/null || true)"
+            if [[ -n "$ip" ]]; then
+              echo "$ip $host" | sudo tee -a /etc/hosts >/dev/null
+              echo "Added a temporary DNS fallback for $host."
+            else
+              echo "::warning::Could not establish a DNS fallback for $host; generator retries remain enabled."
+            fi
+          done
       - name: Generate missing or incomplete QT
+        id: generate
         if: steps.ready.outputs.needs_generation == 'true'
         env:
           TARGET_DATE: ${{ steps.ready.outputs.date }}
@@ -86,7 +120,20 @@ jobs:
         run: |
           args=("--date=$TARGET_DATE")
           if [[ "$FORCE_GENERATION" == "true" ]]; then args+=(--force); fi
-          node scripts/generate.mjs "${args[@]}"
+
+          for attempt in 1 2 3; do
+            echo "QT generation attempt $attempt/3"
+            if node scripts/generate.mjs "${args[@]}"; then
+              if REQUESTED_DATE="$TARGET_DATE" PAGES_BASE_URL="" node scripts/qt-readiness.mjs --require-ready; then
+                exit 0
+              fi
+            fi
+            if (( attempt < 3 )); then
+              sleep $((attempt * 5))
+            fi
+          done
+          echo "::error::QT generation did not produce a locally ready record after 3 attempts."
+          exit 1
       - name: Supplement project perspectives (non-blocking)
         if: steps.ready.outputs.needs_enrichment == 'true'
         continue-on-error: true
@@ -133,7 +180,19 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
       - name: Require successful dated content and verify its published copy
-        if: always() && steps.ready.outputs.needs_deployment == 'true'
+        if: always() && steps.ready.outputs.needs_deployment == 'true' && (steps.generate.outcome == 'success' || steps.generate.outcome == 'skipped')
         env:
           REQUESTED_DATE: ${{ steps.ready.outputs.date }}
-        run: node scripts/qt-readiness.mjs --require-ready
+        shell: bash
+        run: |
+          for attempt in 1 2 3 4; do
+            echo "Published-copy verification attempt $attempt/4"
+            if node scripts/qt-readiness.mjs --require-ready; then
+              exit 0
+            fi
+            if (( attempt < 4 )); then
+              sleep $((attempt * 4))
+            fi
+          done
+          echo "::error::Published QT did not converge to the generated copy after repeated checks."
+          exit 1

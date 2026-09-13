@@ -1,0 +1,131 @@
+name: Recover QT 2026-09-13
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/recover-2026-09-13.yml'
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: qt-publish
+  cancel-in-progress: false
+
+jobs:
+  recover-and-deploy:
+    runs-on: macos-latest
+    timeout-minutes: 15
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    env:
+      TZ: Asia/Seoul
+      TARGET_DATE: '2026-09-13'
+      PAGES_BASE_URL: https://JonathanBlackDoctor.github.io/QT/
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Run unit tests
+        run: node --test scripts/*.test.mjs
+      - name: Repair SU DNS resolution (best effort)
+        shell: bash
+        run: |
+          set -u
+          for host in sum.su.or.kr su.or.kr; do
+            if python3 - "$host" <<'PY'
+          import socket
+          import sys
+          try:
+              socket.getaddrinfo(sys.argv[1], 443)
+          except OSError:
+              raise SystemExit(1)
+          PY
+            then
+              continue
+            fi
+            echo "System DNS could not resolve $host; trying DNS-over-HTTPS."
+            ip="$(curl -fsS --max-time 8 "https://dns.google/resolve?name=${host}&type=A" \
+              | python3 -c 'import ipaddress,json,sys; d=json.load(sys.stdin); print(next((a["data"] for a in d.get("Answer",[]) if a.get("type")==1 and ipaddress.ip_address(a.get("data","")).version==4),""))' 2>/dev/null || true)"
+            if [[ -n "$ip" ]]; then
+              echo "$ip $host" | sudo tee -a /etc/hosts >/dev/null
+              echo "Added a temporary DNS fallback for $host."
+            else
+              echo "::warning::Could not establish a DNS fallback for $host."
+            fi
+          done
+      - name: Regenerate QT 2026-09-13
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
+          GEMINI_FALLBACK_MODEL: ${{ vars.GEMINI_FALLBACK_MODEL }}
+          GOOGLE_CSE_API_KEY: ${{ secrets.GOOGLE_CSE_API_KEY }}
+          GOOGLE_CSE_ID: ${{ secrets.GOOGLE_CSE_ID || vars.GOOGLE_CSE_ID }}
+          READING_JESUS_CHANNEL_ID: ${{ vars.READING_JESUS_CHANNEL_ID }}
+        shell: bash
+        run: |
+          for attempt in 1 2 3; do
+            echo "Recovery generation attempt $attempt/3"
+            if node scripts/generate.mjs "--date=$TARGET_DATE" --force; then
+              if REQUESTED_DATE="$TARGET_DATE" PAGES_BASE_URL="" node scripts/qt-readiness.mjs --require-ready; then
+                exit 0
+              fi
+            fi
+            if (( attempt < 3 )); then sleep $((attempt * 5)); fi
+          done
+          echo "::error::Recovery generation failed to produce a ready 2026-09-13 record."
+          exit 1
+      - name: Supplement project perspectives (non-blocking)
+        continue-on-error: true
+        timeout-minutes: 3
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
+          GEMINI_FALLBACK_MODEL: ${{ vars.GEMINI_FALLBACK_MODEL }}
+          GOOGLE_CSE_API_KEY: ${{ secrets.GOOGLE_CSE_API_KEY }}
+          GOOGLE_CSE_ID: ${{ secrets.GOOGLE_CSE_ID || vars.GOOGLE_CSE_ID }}
+          READING_JESUS_CHANNEL_ID: ${{ vars.READING_JESUS_CHANNEL_ID }}
+        run: node scripts/enrich-projects.mjs "--date=$TARGET_DATE"
+      - name: Validate content
+        run: |
+          node scripts/validate.mjs
+          node scripts/validate-projects.mjs
+      - name: Commit recovered content
+        shell: bash
+        run: |
+          git add content
+          if ! git diff --cached --quiet; then
+            git config user.name "qt-daily-bot"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "content: recover QT $TARGET_DATE"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+      - name: Build site
+        run: node scripts/build-site.mjs
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+      - name: Verify published recovered copy
+        shell: bash
+        env:
+          REQUESTED_DATE: '2026-09-13'
+        run: |
+          for attempt in 1 2 3 4; do
+            echo "Published-copy verification attempt $attempt/4"
+            if node scripts/qt-readiness.mjs --require-ready; then exit 0; fi
+            if (( attempt < 4 )); then sleep $((attempt * 4)); fi
+          done
+          exit 1

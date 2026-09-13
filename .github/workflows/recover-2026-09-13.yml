@@ -62,6 +62,18 @@ jobs:
               echo "::warning::Could not establish a DNS fallback for $host."
             fi
           done
+      - name: Inspect official SU navigation links
+        continue-on-error: true
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import { fetchText, SU_TODAY_URL, canonicalHost } from './scripts/lib.mjs';
+          const doc = await fetchText(SU_TODAY_URL, { maxChars: 22000 });
+          console.log(`SU page: ${doc.url}`);
+          for (const link of (doc.links ?? []).filter((l) => ['sum.su.or.kr','su.or.kr'].includes(canonicalHost(l.href)))) {
+            console.log(`${JSON.stringify(link.text)}\t${link.href}`);
+          }
+          NODE
       - name: Regenerate QT 2026-09-13
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}

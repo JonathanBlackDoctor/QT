@@ -11,10 +11,10 @@
   {
     "date": "2026-09-13",
     "displayDate": "2026년 9월 13일 (일)",
-    "passage": null,
-    "title": null,
-    "status": "failed",
-    "verification": "확인 실패",
+    "passage": "사사기 6:11-24",
+    "title": "내가 반드시 너와 함께 하리니",
+    "status": "ok",
+    "verification": "보조 자료 교차확인",
     "path": "2026/09/2026-09-13.json"
   },
   {

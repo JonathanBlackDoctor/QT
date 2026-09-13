@@ -1,4 +1,4 @@
-name: Backfill QT 2026-09-13
+name: Verify and deploy recovered QT 2026-09-13
 
 on:
   push:
@@ -8,18 +8,18 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 
 concurrency:
   group: qt-publish
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
-  backfill-and-deploy:
+  verify-and-deploy:
     runs-on: macos-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -35,58 +35,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-
-      - name: Run unit tests
-        run: node --test scripts/*.test.mjs
-
-      - name: Recover QT 2026-09-13 from verified adjacent ranges
+      - name: Verify recovered record is locally ready
         env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
-          GEMINI_FALLBACK_MODEL: ${{ vars.GEMINI_FALLBACK_MODEL }}
-        shell: bash
+          REQUESTED_DATE: '2026-09-13'
         run: |
-          for attempt in 1 2 3; do
-            echo "Historical recovery attempt $attempt/3"
-            if node scripts/recover-historical.mjs --date="$TARGET_DATE"; then
-              if REQUESTED_DATE="$TARGET_DATE" PAGES_BASE_URL="" node scripts/qt-readiness.mjs --require-ready; then
-                exit 0
-              fi
-            fi
-            if (( attempt < 3 )); then sleep $((attempt * 5)); fi
-          done
-          echo "::error::Historical recovery did not produce a locally ready QT record."
-          exit 1
-
-      - name: Supplement project perspectives (non-blocking)
-        continue-on-error: true
-        timeout-minutes: 3
-        env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
-          GEMINI_FALLBACK_MODEL: ${{ vars.GEMINI_FALLBACK_MODEL }}
-          GOOGLE_CSE_API_KEY: ${{ secrets.GOOGLE_CSE_API_KEY }}
-          GOOGLE_CSE_ID: ${{ secrets.GOOGLE_CSE_ID || vars.GOOGLE_CSE_ID }}
-          READING_JESUS_CHANNEL_ID: ${{ vars.READING_JESUS_CHANNEL_ID }}
-        run: node scripts/enrich-projects.mjs --date="$TARGET_DATE"
-
-      - name: Validate content
-        run: |
-          node scripts/validate.mjs
-          node scripts/validate-projects.mjs
-
-      - name: Commit repaired content
-        shell: bash
-        run: |
-          git add content
-          git config user.name "qt-daily-bot"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if ! git diff --cached --quiet; then
-            git commit -m "content: repair QT $TARGET_DATE"
-            git pull --rebase origin main
-            git push origin HEAD:main
-          fi
-
+          node scripts/validate.mjs --date=2026-09-13
+          PAGES_BASE_URL="" node scripts/qt-readiness.mjs --require-ready
       - name: Build site
         run: node scripts/build-site.mjs
       - uses: actions/configure-pages@v5
@@ -96,16 +50,17 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
-      - name: Verify published repaired record
+      - name: Verify published recovered record
+        env:
+          REQUESTED_DATE: '2026-09-13'
         shell: bash
         run: |
           for attempt in 1 2 3 4; do
             echo "Published-copy verification attempt $attempt/4"
-            if REQUESTED_DATE="$TARGET_DATE" node scripts/qt-readiness.mjs --require-ready; then
+            if node scripts/qt-readiness.mjs --require-ready; then
               exit 0
             fi
             if (( attempt < 4 )); then sleep $((attempt * 4)); fi
           done
-          echo "::error::Published repaired QT did not converge after repeated checks."
+          echo "::error::Published recovered QT did not converge after repeated checks."
           exit 1

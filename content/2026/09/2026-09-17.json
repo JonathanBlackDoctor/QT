@@ -74,17 +74,17 @@
         ],
         "passage": "사사기 8:1-21",
         "evidenceHash": "e7a330ce07c87b46a7c3496b59f9ae17593133fffc50b586fbebf9a06d7243e6",
-        "summary": null,
-        "summaryStatus": "failed",
-        "summaryError": "요약 생성 또는 근거 검증에 실패했습니다. 확보한 자료와 기존 본문은 보존했습니다.",
+        "summary": "사사기는 여호수아 사후 가나안 족속을 몰아내지 못한 이스라엘이 우상 숭배와 도덕적 타락에 빠지며 겪는 총체적 실패를 다룹니다. 이스라엘이 죄를 지어 이방 민족에게 압제당할 때마다 하나님은 사사를 세워 구원하시지만, 백성은 사사가 죽으면 다시 범죄하는 하향 곡선의 순환을 반복합니다. 지도자인 사사들 역시 점차 결함과 부패가 심해지며, 후반부에서는 왕이 없어 각자 자기 소견대로 행하다가 극심한 폭력과 내전 등 자멸에 이르는 공동체의 참상이 드러납니다. 해석적 적용으로 보면, 본문의 기드온 서사 역시 인간 지도자의 불완전함과 이스라엘 내부의 균열 속에서도 백성을 구원하시는 하나님의 자비를 배경으로 이해할 수 있습니다.",
+        "evidenceQuotes": [
+          "The book of Judges begins with the death of Joshua and, unfortunately, tells the story of Israel’s total failure.",
+          "As the narrative progresses, it becomes clear that the repeating pattern is not just a cycle but a downward spiral , leading Israel deeper and deeper into chaos"
+        ],
+        "summaryStatus": "ready",
+        "model": "gemini-3.8-flash",
         "summaryAttempts": [
           {
             "model": "gemini-3.8-flash",
-            "outcome": "evidence_validation_failed"
-          },
-          {
-            "model": "gemini-2.5-pro",
-            "outcome": "http_404"
+            "outcome": "ok"
           }
         ]
       },
@@ -196,6 +196,12 @@
       "url": "https://biblehub.com/text/judges/8-1.htm",
       "usedFor": "사사기 8:1 히브리어 원어(Strong 7378 וַיְרִיב֥וּן, Strong 2394 בְּחָזְקָֽה) 및 문법 분석",
       "evidenceLevel": "direct"
+    },
+    {
+      "label": "바이블프로젝트 · Judges",
+      "url": "https://bibleproject.com/guides/book-of-judges/",
+      "usedFor": "책 전체의 흐름과 본문 연결 (공식 해설 본문)",
+      "evidenceLevel": "direct"
     }
   ],
   "evidenceMeta": {
@@ -212,7 +218,7 @@
     "projectSources": {
       "bibleproject": {
         "status": "ready",
-        "summaryStatus": "failed",
+        "summaryStatus": "ready",
         "checkedAt": "2026-09-13T15:45:46.216Z"
       },
       "readingjesus": {
@@ -223,5 +229,5 @@
     }
   },
   "generatedAt": "2026-09-16T18:45:18.047Z",
-  "projectEnrichedAt": "2026-09-16T18:45:23.667Z"
+  "projectEnrichedAt": "2026-09-16T18:55:36.866Z"
 }

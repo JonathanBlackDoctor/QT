@@ -171,6 +171,8 @@ jobs:
           fi
       - name: Build site
         if: steps.ready.outputs.needs_deployment == 'true'
+        env:
+          GA_MEASUREMENT_ID: ${{ vars.GA_MEASUREMENT_ID }}
         run: node scripts/build-site.mjs
       - uses: actions/configure-pages@v5
         if: steps.ready.outputs.needs_deployment == 'true'

@@ -5,6 +5,8 @@ import { pageHtml } from '../site/page.mjs';
 
 const dist = path.join(ROOT, 'dist');
 const site = path.join(ROOT, 'site');
+const gaMeasurementId = process.env.GA_MEASUREMENT_ID?.trim() || '';
+const pageOptions = { gaMeasurementId };
 const assets = [
   'app.js', 'archive.js', 'dom.js', 'icons.js', 'model.js',
   'reader-chrome.js', 'reader-content.js', 'project-perspectives.js', 'styles.css',
@@ -17,9 +19,9 @@ await fs.cp(path.join(site, 'styles'), path.join(dist, 'styles'), { recursive: t
 await Promise.all(assets.map((asset) => fs.copyFile(path.join(site, asset), path.join(dist, asset))));
 
 await Promise.all([
-  fs.writeFile(path.join(dist, 'index.html'), pageHtml('오늘의 QT', 'home'), 'utf8'),
-  fs.writeFile(path.join(dist, 'archive.html'), pageHtml('QT 아카이브', 'archive'), 'utf8'),
-  fs.writeFile(path.join(dist, '404.html'), pageHtml('QT', 'home'), 'utf8'),
+  fs.writeFile(path.join(dist, 'index.html'), pageHtml('오늘의 QT', 'home', pageOptions), 'utf8'),
+  fs.writeFile(path.join(dist, 'archive.html'), pageHtml('QT 아카이브', 'archive', pageOptions), 'utf8'),
+  fs.writeFile(path.join(dist, '404.html'), pageHtml('QT', 'home', pageOptions), 'utf8'),
   fs.writeFile(path.join(dist, '.nojekyll'), '', 'utf8'),
 ]);
 console.log('Site built to dist/');

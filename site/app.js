@@ -24,7 +24,11 @@ main().catch((error) => {
 
 async function main() {
   const index = await fetchJson('./content/index.json');
-  if (page === 'archive') return renderArchive(app, index);
+  if (page === 'archive') {
+    renderArchive(app, index);
+    trackPageView({ content_group: 'archive' });
+    return;
+  }
   return renderHome(index);
 }
 
@@ -42,6 +46,7 @@ async function renderHome(index) {
     const archive = textEl('a', 'record-note', '생성된 날짜를 아카이브에서 선택하기 →');
     archive.href = './archive.html';
     app.append(archive);
+    trackPageView({ content_group: 'qt_reader', qt_date: defaultDate, qt_status: 'missing' });
     return;
   }
 
@@ -68,6 +73,28 @@ async function renderHome(index) {
 
   installHomeChrome(doc, index, selection);
   if (selection.requestedMissing) announceMissingDate(requestedDate, selection.selectedDate);
+  const analytics = {
+    content_group: 'qt_reader',
+    qt_date: doc.date,
+    qt_status: doc.status,
+    qt_passage: doc.passage || '(unverified)',
+  };
+  trackPageView(analytics);
+  trackEvent('qt_view', analytics);
+}
+
+function trackPageView(parameters = {}) {
+  trackEvent('page_view', {
+    page_title: document.title,
+    page_location: location.href,
+    page_path: `${location.pathname}${location.search}`,
+    ...parameters,
+  });
+}
+
+function trackEvent(name, parameters = {}) {
+  if (typeof window.gtag !== 'function') return;
+  window.gtag('event', name, parameters);
 }
 
 function watchReadingDay(renderedDate, now) {

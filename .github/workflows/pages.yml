@@ -31,7 +31,10 @@ jobs:
           node-version: '24'
       - run: node --test scripts/*.test.mjs
       - run: node scripts/validate.mjs && node scripts/validate-projects.mjs
-      - run: node scripts/build-site.mjs
+      - name: Build site
+        env:
+          GA_MEASUREMENT_ID: ${{ vars.GA_MEASUREMENT_ID }}
+        run: node scripts/build-site.mjs
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

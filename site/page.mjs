@@ -33,7 +33,32 @@ function archiveHeader() {
   </header>`;
 }
 
-export function pageHtml(title, page) {
+function analyticsScript(measurementId) {
+  const id = String(measurementId ?? '').trim();
+  if (!/^G-[A-Z0-9]+$/.test(id)) return '';
+  const safeId = escapeHtml(id);
+  return `
+  <script async src="https://www.googletagmanager.com/gtag/js?id=${safeId}"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    window.gtag = gtag;
+    gtag('consent', 'default', {
+      ad_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
+      analytics_storage: 'granted'
+    });
+    gtag('js', new Date());
+    gtag('config', '${safeId}', {
+      send_page_view: false,
+      allow_google_signals: false,
+      allow_ad_personalization_signals: false
+    });
+  </script>`;
+}
+
+export function pageHtml(title, page, { gaMeasurementId = '' } = {}) {
   const safeTitle = escapeHtml(title);
   const safePage = page === 'archive' ? 'archive' : 'home';
   const isHome = safePage === 'home';
@@ -47,6 +72,7 @@ export function pageHtml(title, page) {
   <meta name="theme-color" content="#f7f4ec" />
   <title>${safeTitle}</title>
   <meta name="description" content="매일 검증된 자료를 바탕으로 생성하는 성경 큐티 해설 아카이브" />
+${analyticsScript(gaMeasurementId)}
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&amp;family=Noto+Serif+KR:wght@400;500;600&amp;display=swap" rel="stylesheet" />

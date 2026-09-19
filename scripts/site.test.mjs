@@ -52,6 +52,17 @@ test('home template narrows live announcements to a dedicated status region', ()
   assert.match(html, /id="toc-trigger"/);
 });
 
+test('GA4 is opt-in at build time and rejects malformed measurement IDs', () => {
+  const disabled = pageHtml('오늘의 QT', 'home');
+  const enabled = pageHtml('오늘의 QT', 'home', { gaMeasurementId: 'G-ABC1234567' });
+  const malformed = pageHtml('오늘의 QT', 'home', { gaMeasurementId: 'not-a-ga-id' });
+  assert.doesNotMatch(disabled, /googletagmanager|G-ABC1234567/);
+  assert.match(enabled, /googletagmanager\.com\/gtag\/js\?id=G-ABC1234567/);
+  assert.match(enabled, /send_page_view: false/);
+  assert.match(enabled, /ad_storage: 'denied'/);
+  assert.doesNotMatch(malformed, /googletagmanager/);
+});
+
 test('reader UI excludes note fields and completion streak features', async () => {
   const siteDir = path.join(ROOT, 'site');
   const files = (await fs.readdir(siteDir)).filter((name) => name.endsWith('.js'));

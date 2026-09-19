@@ -30,6 +30,9 @@ Repository → **Settings → Secrets and variables → Actions → New reposito
 
 - `GEMINI_MODEL` — 기본값 `gemini-3.8-flash`
 - `GEMINI_FALLBACK_MODEL` — 기본값 `gemini-2.5-pro`
+- `GA_MEASUREMENT_ID` — 선택, Google Analytics 4 웹 스트림의 `G-XXXXXXXXXX`; 설정하면 배포 시 방문 분석 활성화
+
+GA4 연동은 광고 저장소·Google Signals·광고 개인화를 비활성화하며, 페이지 조회와 QT 날짜·본문·생성 상태만 이벤트로 전송합니다. 변수 미설정 또는 형식이 잘못된 경우 분석 스크립트를 빌드 결과에 포함하지 않습니다.
 
 Gemini 모델 기본값은 저장소의 생성 코드에 설정되어 있으며, 호출 실패 시 fallback 모델을 시도합니다.
 

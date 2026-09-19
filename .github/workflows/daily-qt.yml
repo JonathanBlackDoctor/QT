@@ -5,9 +5,12 @@ on:
     # Primary and first recovery, expressed in UTC.
     - cron: '5 15 * * *' # 00:05 KST
     - cron: '20 15 * * *' # 00:20 KST
-    # Bounded catch-up window, including after the 04:00 reader rollover.
+    # Fast catch-up through the 04:00 reader rollover.
     - cron: '35,50 15 * * *' # 00:35, 00:50 KST
     - cron: '5,20,35,50 16-19 * * *' # 01:05 through 04:50 KST
+    # If SU has a longer outage, retry hourly for the rest of the KST day.
+    # Ready/published dates exit before tests, model calls, or deployment.
+    - cron: '5 0-14,20-23 * * *' # 05:05 through 23:05 KST
   # A pipeline repair should recover missing content immediately, not wait a day.
   push:
     branches: [main]

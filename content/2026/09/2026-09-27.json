@@ -74,17 +74,17 @@
         ],
         "passage": "사사기 12:1-15",
         "evidenceHash": "e7a330ce07c87b46a7c3496b59f9ae17593133fffc50b586fbebf9a06d7243e6",
-        "summary": null,
-        "summaryStatus": "failed",
-        "summaryError": "요약 생성 또는 근거 검증에 실패했습니다. 확보한 자료와 기존 본문은 보존했습니다.",
+        "summary": "사사기는 여호수아의 죽음 이후 이스라엘이 가나안 족속을 몰아내지 못하고 그들의 부패와 종교적 관습을 답습하면서 총체적인 실패에 빠지는 과정을 다룹니다. 이스라엘은 죄를 짓고 압제를 당하다가 구원을 호소하면 하나님이 사사를 통해 건져내시지만, 곧 다시 타락하는 하향식 나선형 순환을 반복합니다. 등장하는 사사들 또한 시간이 흐를수록 더 심각한 결함을 보이며, 후반부에 이르면 백성 전체가 각자 자기 소견에 옳은 대로 행하는 극심한 도덕적 붕괴와 내전에 직면합니다. 자료는 이러한 참담한 인간의 실패 속에서도 하나님이 자비를 베풀어 일하셨음을 밝히며, 참된 정의와 평화를 가져올 왕에 대한 소망을 제시합니다.",
+        "evidenceQuotes": [
+          "The progression here shows how Israel’s leaders went from pretty good to okay to bad to worse.",
+          "This part of Israel’s history was a series of cycles moving in a downward spiral."
+        ],
+        "summaryStatus": "ready",
+        "model": "gemini-3.8-flash",
         "summaryAttempts": [
           {
             "model": "gemini-3.8-flash",
-            "outcome": "evidence_validation_failed"
-          },
-          {
-            "model": "gemini-2.5-pro",
-            "outcome": "http_404"
+            "outcome": "ok"
           }
         ]
       },
@@ -178,7 +178,14 @@
       }
     }
   },
-  "sources": [],
+  "sources": [
+    {
+      "label": "바이블프로젝트 · Judges",
+      "url": "https://bibleproject.com/guides/book-of-judges/",
+      "usedFor": "책 전체의 흐름과 본문 연결 (공식 해설 본문)",
+      "evidenceLevel": "direct"
+    }
+  ],
   "evidenceMeta": {
     "retrievedAt": "2026-09-26T18:25:18.130Z",
     "suDirectAttempted": true,
@@ -193,7 +200,7 @@
     "projectSources": {
       "bibleproject": {
         "status": "ready",
-        "summaryStatus": "failed",
+        "summaryStatus": "ready",
         "checkedAt": "2026-09-20T15:58:17.826Z"
       },
       "readingjesus": {
@@ -204,5 +211,5 @@
     }
   },
   "generatedAt": "2026-09-26T18:26:15.050Z",
-  "projectEnrichedAt": "2026-09-26T18:26:20.746Z"
+  "projectEnrichedAt": "2026-09-26T18:37:48.840Z"
 }

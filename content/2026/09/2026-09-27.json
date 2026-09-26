@@ -1,0 +1,208 @@
+{
+  "schemaVersion": 1,
+  "status": "ok",
+  "date": "2026-09-27",
+  "displayDate": "2026년 9월 27일 (일)",
+  "passage": "사사기 12:1-15",
+  "title": "이스라엘을 공격하는 사사",
+  "verification": {
+    "overall": "직접 확인",
+    "date": "직접 확인",
+    "passage": "직접 확인",
+    "title": "직접 확인",
+    "suCommentary": "직접 확인"
+  },
+  "sections": {
+    "summary": "암몬과의 전쟁이 끝난 후 에브라임 사람들은 자신들을 부르지 않았다고 거칠게 항의하며 입다의 집을 불사르겠다고 위협합니다. 입다는 이전에 도움을 요청했을 때 에브라임이 돕지 않았음을 반박하고, 길르앗 사람들을 모아 에브라임과 내전을 치릅니다. 길르앗 군대는 요단강 나루턱을 선점한 뒤 '쉽볼렛' 발음 시험으로 도망하는 에브라임 사람 4만 2천 명을 학살합니다. 이후 입다는 사사가 된 지 6년 만에 죽고, 그 뒤를 이어 입산, 엘론, 압돈이 차례로 이스라엘의 사사가 됩니다.",
+    "context": "BibleHub 주석 자료에 따르면 본 사건은 중앙 집권적 왕정이 수립되기 전 분열된 지파 연합체였던 사사 시대 말기(기원전 약 1100년경)를 배경으로 합니다. 요단강 나루턱은 군사와 상업의 전략적 요충지였습니다. 에브라임 지파는 기득권과 주도권을 주장하며 갈등을 일으켰습니다.",
+    "projectPerspective": null,
+    "commentary": "본문은 외적과의 전쟁에서 승리한 직후 발생한 동족 간의 비극적인 내전을 다룹니다. 에브라임 지파의 시기심과 교만한 위협, 그리고 이를 유화적으로 풀지 못하고 가혹하게 보복한 입다의 대응은 지파 공동체의 심각한 도덕적 타락과 분열을 드러냅니다. 언어적 차이인 '쉽볼렛' 발음으로 동족을 가려내어 학살한 사건은 사사 시대의 비극적 실상을 단적으로 보여줍니다.",
+    "language": null,
+    "christological": "본문에 대한 신약의 직접 인용은 확인되지 않습니다. 다만 지파 간의 분열과 잔혹한 내전은 인간 사사의 한계를 드러내며, 하나님 백성 사이에 화평을 가져올 참된 통치자의 필요성을 절제된 정경적 맥락에서 묵상하게 합니다.",
+    "suApplication": "성서유니온 공식 해설 본문은 직접 확인하지 못해 생략합니다.",
+    "lifeApplication": [
+      {
+        "area": "개인",
+        "text": "공동체 내에서 인정받고자 하는 시기심과 공명심을 경계하고 마음을 살핍니다."
+      },
+      {
+        "area": "관계",
+        "text": "오해와 갈등의 순간에 감정적 보복 대신 온유하고 절제된 태도로 대화합니다."
+      },
+      {
+        "area": "공동체(교회)",
+        "text": "지체 간의 다툼과 분열을 막고 하나 됨을 지키기 위해 겸손히 섬깁니다."
+      },
+      {
+        "area": "일터·세상",
+        "text": "차별과 배제의 언어를 버리고 화해와 평화를 증언하는 통로로 살아갑니다."
+      }
+    ],
+    "questions": [
+      "에브라임 지파가 입다를 향해 분노를 터뜨린 근본적인 원인은 무엇입니까?",
+      "갈등을 대화로 풀지 못하고 내전과 학살로 이어진 비극이 주는 교훈은 무엇입니까?",
+      "오늘날 공동체 안에서 분열과 반목을 극복하기 위해 필요한 태도는 무엇입니까?"
+    ],
+    "prayerPoints": [
+      "마음속의 시기와 다툼을 버리고 공동체의 화평을 구하게 하소서.",
+      "갈등 속에서도 온유함과 절제로 형제를 품는 성숙함을 주소서."
+    ],
+    "projectPerspectives": {
+      "bibleproject": {
+        "provider": "bibleproject",
+        "label": "바이블프로젝트",
+        "version": 2,
+        "book": "사사기",
+        "scope": "book",
+        "status": "ready",
+        "reason": "공식 책 해설 본문을 직접 확보했습니다.",
+        "checkedAt": "2026-09-20T15:58:17.826Z",
+        "searchConfigured": false,
+        "attempts": [
+          {
+            "url": "https://bibleproject.com/guides/book-of-judges/",
+            "outcome": "ok"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://bibleproject.com/guides/book-of-judges/",
+            "title": "Judges",
+            "evidenceLevel": "direct",
+            "contentKind": "article"
+          }
+        ],
+        "passage": "사사기 12:1-15",
+        "evidenceHash": "e7a330ce07c87b46a7c3496b59f9ae17593133fffc50b586fbebf9a06d7243e6",
+        "summary": null,
+        "summaryStatus": "failed",
+        "summaryError": "요약 생성 또는 근거 검증에 실패했습니다. 확보한 자료와 기존 본문은 보존했습니다.",
+        "summaryAttempts": [
+          {
+            "model": "gemini-3.8-flash",
+            "outcome": "evidence_validation_failed"
+          },
+          {
+            "model": "gemini-2.5-pro",
+            "outcome": "http_404"
+          }
+        ]
+      },
+      "readingjesus": {
+        "provider": "readingjesus",
+        "label": "리딩지저스",
+        "version": 2,
+        "book": "사사기",
+        "scope": "book",
+        "status": "metadata_only",
+        "reason": "공식 영상의 제목·채널 정보만 확인했습니다. 자막을 확보하지 못해 해설을 추측하지 않습니다.",
+        "checkedAt": "2026-09-25T19:16:32.879Z",
+        "searchConfigured": false,
+        "attempts": [
+          {
+            "url": "https://www.youtube.com/@readingjesus",
+            "outcome": "ok"
+          },
+          {
+            "url": "https://www.youtube.com/@readingjesus/search",
+            "outcome": "ok"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "ok"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "playback_login_required"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "player_metadata_unavailable"
+          },
+          {
+            "url": "https://www.youtube.com/oembed",
+            "outcome": "ok"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "ok"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "playback_login_required"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "player_metadata_unavailable"
+          },
+          {
+            "url": "https://www.youtube.com/oembed",
+            "outcome": "ok"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "ok"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "playback_login_required"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "player_metadata_unavailable"
+          },
+          {
+            "url": "https://www.youtube.com/oembed",
+            "outcome": "ok"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://www.youtube.com/watch?v=Y0SisgKiCnI",
+            "title": "사사기 19장 | 45주 성경통독",
+            "evidenceLevel": "direct",
+            "contentKind": "video_metadata",
+            "channelId": "UCDKV9zBBIEA1If3sBz_rMZQ",
+            "metadataFields": [
+              "title",
+              "channel"
+            ]
+          }
+        ],
+        "channelId": "UCDKV9zBBIEA1If3sBz_rMZQ",
+        "description": "",
+        "passage": "사사기 12:1-15",
+        "evidenceHash": null,
+        "summary": null,
+        "summaryStatus": "not_applicable"
+      }
+    }
+  },
+  "sources": [],
+  "evidenceMeta": {
+    "retrievedAt": "2026-09-26T18:25:18.130Z",
+    "suDirectAttempted": true,
+    "suDirectSucceeded": true,
+    "suDirectUrl": "https://sum.su.or.kr:8888/bible/today",
+    "suDirectDateMatch": true,
+    "suDirectError": null,
+    "suDateNavigationTried": false,
+    "searchFallbackUsed": false,
+    "researchDirectCount": 2,
+    "researchMetadataCount": 0,
+    "projectSources": {
+      "bibleproject": {
+        "status": "ready",
+        "summaryStatus": "failed",
+        "checkedAt": "2026-09-20T15:58:17.826Z"
+      },
+      "readingjesus": {
+        "status": "metadata_only",
+        "summaryStatus": "not_applicable",
+        "checkedAt": "2026-09-25T19:16:32.879Z"
+      }
+    }
+  },
+  "generatedAt": "2026-09-26T18:26:15.050Z",
+  "projectEnrichedAt": "2026-09-26T18:26:20.746Z"
+}

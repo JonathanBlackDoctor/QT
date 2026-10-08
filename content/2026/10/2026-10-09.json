@@ -74,17 +74,17 @@
         ],
         "passage": "사사기 19:22-30",
         "evidenceHash": "e7a330ce07c87b46a7c3496b59f9ae17593133fffc50b586fbebf9a06d7243e6",
-        "summary": null,
-        "summaryStatus": "failed",
-        "summaryError": "요약 생성 또는 근거 검증에 실패했습니다. 확보한 자료와 기존 본문은 보존했습니다.",
+        "summary": "사사기는 여호수아 사후 이스라엘이 가나안 족속을 몰아내지 못하고 그들의 풍습을 따르며 겪게 되는 도덕적 파탄과 반복되는 하향식 타락의 순환을 다룹니다. 백성들이 죄를 짓고 억압받을 때마다 하나님은 사사를 세워 구원하시지만, 사사들마저 점점 더 심각한 결함을 드러냅니다. 책의 후반부는 왕이 없어 각자 자기 소견에 옳은 대로 행하던 이스라엘 전체가 성적 폭력과 내전 등 극단적인 자기 파멸의 혼란에 빠지는 과정을 보여줍니다. 해석적 적용으로 보면, 기브아에서 벌어진 충격적인 폭력과 타락을 다루는 오늘 본문은 사사기 결말부가 고발하는 이스라엘 전체의 도덕적 붕괴와 자기 파멸의 전형을 나타냅니다.",
+        "evidenceQuotes": [
+          "It tells the tragic tale of Israel’s moral corruption, bad leadership, and how they became no different than the Canaanites themselves.",
+          "The concluding section ( Judg. 17-21 ) is really disturbing and shows the corruption of the people of Israel as a whole."
+        ],
+        "summaryStatus": "ready",
+        "model": "gemini-3.8-flash",
         "summaryAttempts": [
           {
             "model": "gemini-3.8-flash",
-            "outcome": "evidence_validation_failed"
-          },
-          {
-            "model": "gemini-2.5-pro",
-            "outcome": "http_404"
+            "outcome": "ok"
           }
         ]
       },
@@ -196,6 +196,12 @@
       "url": "https://biblehub.com/text/judges/19-22.htm",
       "usedFor": "사사기 19:22 원어 단어(בְלִיַּ֗עַל, וְנֵדָעֶֽנּוּ׃) 및 Strong's 번호 확인",
       "evidenceLevel": "direct"
+    },
+    {
+      "label": "바이블프로젝트 · Judges",
+      "url": "https://bibleproject.com/guides/book-of-judges/",
+      "usedFor": "책 전체의 흐름과 본문 연결 (공식 해설 본문)",
+      "evidenceLevel": "direct"
     }
   ],
   "evidenceMeta": {
@@ -212,7 +218,7 @@
     "projectSources": {
       "bibleproject": {
         "status": "ready",
-        "summaryStatus": "failed",
+        "summaryStatus": "ready",
         "checkedAt": "2026-10-04T18:42:05.556Z"
       },
       "readingjesus": {
@@ -223,5 +229,5 @@
     }
   },
   "generatedAt": "2026-10-08T20:38:51.354Z",
-  "projectEnrichedAt": "2026-10-08T20:38:59.205Z"
+  "projectEnrichedAt": "2026-10-08T20:42:21.279Z"
 }

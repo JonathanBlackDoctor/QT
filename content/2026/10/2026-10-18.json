@@ -74,17 +74,17 @@
         ],
         "passage": "야고보서 2:1-13",
         "evidenceHash": "3356dd2821ba1ca85d1f6adafc55ff77eacf9f6cf20e2ca030861f17e96082ff",
-        "summary": null,
-        "summaryStatus": "failed",
-        "summaryError": "요약 생성 또는 근거 검증에 실패했습니다. 확보한 자료와 기존 본문은 보존했습니다.",
+        "summary": "야고보서는 예수님의 산상수훈 가르침과 잠언의 지혜를 바탕으로 예수님을 따르는 공동체의 삶에 실제적인 도전을 던지는 책입니다. 1장에서는 닥쳐오는 시련을 인내하며 신행일치의 온전한 삶에 이르고, 말씀을 듣기만 하는 것이 아니라 직접 행동으로 옮겨야 함을 강조합니다. 이어지는 2장부터 5장은 일상에서 온전한 헌신을 나타내는 열두 가지 가르침을 다루며, 차별 대우를 피하고 참된 믿음을 행위로 증명하며 말과 부에 대해 지혜롭게 처신할 것을 촉구합니다. [해석적 적용] 본서의 큰 흐름에 비추어 볼 때, 타깃 본문(야고보서 2:1-13)의 차별 금지와 긍휼 실천 권면은 부와 사회적 지위로 생기는 구분을 허물고 이웃 사랑이라는 율법을 온전히 실천하라는 야고보서의 중심 주제와 연결됩니다.",
+        "evidenceQuotes": [
+          "His goal isn’t to teach us new theological information; rather, he wants to get in our business and challenge how we live.",
+          "Jacob also believes that God’s Kingdom community is a place where the divisions created by wealth and social status are dismantled."
+        ],
+        "summaryStatus": "ready",
+        "model": "gemini-3.8-flash",
         "summaryAttempts": [
           {
             "model": "gemini-3.8-flash",
-            "outcome": "evidence_validation_failed"
-          },
-          {
-            "model": "gemini-2.5-pro",
-            "outcome": "http_404"
+            "outcome": "ok"
           }
         ]
       },
@@ -96,7 +96,7 @@
         "scope": "book",
         "status": "metadata_only",
         "reason": "공식 영상의 제목·채널 정보만 확인했습니다. 자막을 확보하지 못해 해설을 추측하지 않습니다.",
-        "checkedAt": "2026-10-16T17:20:37.265Z",
+        "checkedAt": "2026-10-17T17:52:33.007Z",
         "searchConfigured": false,
         "attempts": [
           {
@@ -196,6 +196,12 @@
       "url": "https://biblehub.com/text/james/2-1.htm",
       "usedFor": "원어 prosōpolēmpsiais 단어 분석",
       "evidenceLevel": "direct"
+    },
+    {
+      "label": "바이블프로젝트 · James",
+      "url": "https://bibleproject.com/guides/book-of-james/",
+      "usedFor": "책 전체의 흐름과 본문 연결 (공식 해설 본문)",
+      "evidenceLevel": "direct"
     }
   ],
   "evidenceMeta": {
@@ -212,16 +218,16 @@
     "projectSources": {
       "bibleproject": {
         "status": "ready",
-        "summaryStatus": "failed",
+        "summaryStatus": "ready",
         "checkedAt": "2026-10-15T18:58:31.807Z"
       },
       "readingjesus": {
         "status": "metadata_only",
         "summaryStatus": "not_applicable",
-        "checkedAt": "2026-10-16T17:20:37.265Z"
+        "checkedAt": "2026-10-17T17:52:33.007Z"
       }
     }
   },
   "generatedAt": "2026-10-17T15:29:08.893Z",
-  "projectEnrichedAt": "2026-10-17T15:29:13.211Z"
+  "projectEnrichedAt": "2026-10-17T17:52:36.751Z"
 }

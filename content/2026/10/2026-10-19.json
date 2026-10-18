@@ -74,17 +74,16 @@
         ],
         "passage": "야고보서 2:14-26",
         "evidenceHash": "3356dd2821ba1ca85d1f6adafc55ff77eacf9f6cf20e2ca030861f17e96082ff",
-        "summary": null,
-        "summaryStatus": "failed",
-        "summaryError": "요약 생성 또는 근거 검증에 실패했습니다. 확보한 자료와 기존 본문은 보존했습니다.",
+        "summary": "야고보서는 예수님의 가르침과 잠언의 지혜에 깊이 뿌리를 둔 책으로, 흩어진 공동체가 예수님의 길을 따라 온전히 헌신하도록 도전합니다. 저자는 시련을 인내와 성품을 형성하는 기회로 바라보며, 하나님을 신뢰하고 이웃을 사랑하는 참된 지혜를 실천할 것을 촉구합니다. 특히 2장부터 5장까지 이어지는 가르침들을 통해 말과 부에 대한 태도를 점검하게 하고, 가난한 이를 돌보며 행동으로 나타나는 온전한 삶을 살아내도록 권면합니다. 이러한 책의 전반적인 흐름을 해석적으로 적용해 볼 때, 행함이 따르지 않는 믿음을 죽은 것으로 규정하는 본문은 삶과 신앙이 일치해야 한다는 야고보의 지혜와 깊이 맞닿아 있습니다.",
+        "evidenceQuotes": [
+          "In essence, Jacob is calling the messianic community to become truly wise by living according to Jesus’ summary of the Torah­­—love God and love your neighbor as yourself."
+        ],
+        "summaryStatus": "ready",
+        "model": "gemini-3.8-flash",
         "summaryAttempts": [
           {
             "model": "gemini-3.8-flash",
-            "outcome": "evidence_validation_failed"
-          },
-          {
-            "model": "gemini-2.5-pro",
-            "outcome": "http_404"
+            "outcome": "ok"
           }
         ]
       },
@@ -196,6 +195,12 @@
       "url": "https://biblehub.com/text/james/2-14.htm",
       "usedFor": "헬라어 원어 분석(πίστις, ἔργα, ὄφελος)",
       "evidenceLevel": "direct"
+    },
+    {
+      "label": "바이블프로젝트 · James",
+      "url": "https://bibleproject.com/guides/book-of-james/",
+      "usedFor": "책 전체의 흐름과 본문 연결 (공식 해설 본문)",
+      "evidenceLevel": "direct"
     }
   ],
   "evidenceMeta": {
@@ -212,7 +217,7 @@
     "projectSources": {
       "bibleproject": {
         "status": "ready",
-        "summaryStatus": "failed",
+        "summaryStatus": "ready",
         "checkedAt": "2026-10-15T18:58:31.807Z"
       },
       "readingjesus": {
@@ -223,5 +228,5 @@
     }
   },
   "generatedAt": "2026-10-18T17:53:36.951Z",
-  "projectEnrichedAt": "2026-10-18T17:53:44.596Z"
+  "projectEnrichedAt": "2026-10-18T18:08:28.012Z"
 }

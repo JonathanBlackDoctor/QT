@@ -1,0 +1,215 @@
+{
+  "schemaVersion": 1,
+  "status": "ok",
+  "date": "2026-10-26",
+  "displayDate": "2026년 10월 26일 (월)",
+  "passage": "시편 16:1-11",
+  "title": "나의 행복은 주님밖에 없습니다",
+  "verification": {
+    "overall": "직접 확인",
+    "date": "직접 확인",
+    "passage": "직접 확인",
+    "title": "직접 확인",
+    "suCommentary": "직접 확인"
+  },
+  "sections": {
+    "summary": "시편 16편은 탄식이나 원수에 대한 고발 없이, 오직 하나님을 향한 전적인 신뢰와 주 안에서 누리는 참된 복을 노래하는 다윗의 신앙고백 시입니다. 시인은 주님만이 자신의 피난처이자 유일한 복임을 선언하며, 우상 숭배를 단호히 거절하고 거룩한 성도들과의 교제를 기뻐합니다. 또한 하나님을 자신의 기업과 잔의 소득으로 삼아 허락하신 삶의 터전에 감사하며, 주님을 항상 앞에 모심으로 흔들리지 않는 평안을 누립니다. 나아가 하나님께서 영혼을 스올에 버려두지 않으시고 생명의 길과 주의 면전에서 누리는 영원한 즐거움으로 인도하실 것을 확신합니다.",
+    "context": "시편 16편의 표제어는 '다윗의 믹담(Miktam)'으로, 보배롭고 귀중한 신앙의 고백을 담고 있습니다(BibleHub). 역사·문화적으로 당시 가나안을 비롯한 고대 근동 주변 민족들은 여러 우상에게 피의 전제를 드리며 복을 구하는 다신교적 풍습을 따랐으나, 본문은 오직 여호와 하나님만을 피난처와 분깃으로 삼는 신앙을 보여줍니다.",
+    "projectPerspective": null,
+    "commentary": "시편 16편에서 시인은 주님밖에는 나의 복이 없다고 고백하며, 여호와께서 주신 분깃과 기업을 기뻐합니다. 하나님을 항상 자기 앞에 모심으로 마음이 기쁘고 영도 즐거워하며 육체도 안전히 살 것을 노래합니다. 주께서 생명의 길을 보이시며 주의 앞에는 충만한 기쁨이 있음을 확신합니다.",
+    "language": null,
+    "christological": "본문은 하나님께서 거룩한 자를 멸망에 이르지 않게 하시고 생명의 길을 보이실 것을 고백합니다. 정경적 관점에서 이는 하나님의 백성을 향한 영원한 구원과 생명의 약속을 신학적으로 묵상하게 합니다.",
+    "suApplication": "성서유니온 공식 해설 본문은 직접 확인하지 못해 생략합니다.",
+    "lifeApplication": [
+      {
+        "area": "개인",
+        "text": "하나님 외에 다른 만족을 구하지 않고 주님만을 피난처와 유일한 복으로 삼습니다."
+      },
+      {
+        "area": "관계",
+        "text": "믿음의 지체들을 존귀한 자로 여기며 거룩한 교제를 기뻐합니다."
+      },
+      {
+        "area": "공동체(교회)",
+        "text": "공동체 안에서 주께서 허락하신 기업과 분깃에 감사하며 연합합니다."
+      },
+      {
+        "area": "일터·세상",
+        "text": "세상의 우상과 헛된 가치를 멀리하고 삶의 현장에서 흔들리지 않는 믿음으로 살아갑니다."
+      }
+    ],
+    "questions": [
+      "현재 삶에서 주님만이 유일한 복이라고 진실하게 고백하고 있습니까?",
+      "하나님께서 허락하신 삶의 분깃과 환경을 감사함으로 받고 있습니까?",
+      "일상에서 주님을 항상 앞에 모시고 동행하는 삶을 살고 있습니까?"
+    ],
+    "prayerPoints": [
+      "주님만이 나의 참된 피난처이자 유일한 복임을 고백하며 감사드립니다.",
+      "생명의 길로 인도하시는 주님을 항상 모시고 흔들림 없는 믿음으로 걷게 하소서."
+    ],
+    "projectPerspectives": {
+      "bibleproject": {
+        "provider": "bibleproject",
+        "label": "바이블프로젝트",
+        "version": 2,
+        "book": "시편",
+        "scope": "book",
+        "status": "ready",
+        "reason": "공식 책 해설 본문을 직접 확보했습니다.",
+        "checkedAt": "2026-10-25T16:01:37.105Z",
+        "searchConfigured": false,
+        "attempts": [
+          {
+            "url": "https://bibleproject.com/guides/book-of-psalms/",
+            "outcome": "ok"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://bibleproject.com/guides/book-of-psalms/",
+            "title": "Psalms",
+            "evidenceLevel": "direct",
+            "contentKind": "article"
+          }
+        ],
+        "passage": "시편 16:1-11",
+        "evidenceHash": "fa66f74fd45dd4bea53c25137a619b1bb3bb6539b5f2c011c05740bc59ebe077",
+        "summary": "시편은 토라 묵상과 메시아 왕국을 대망하는 1-2편의 서론을 시작으로 5개 권역으로 구성되어 있으며, 고통 속의 탄식에서 승리의 찬양으로 나아가는 구조적 흐름을 보여줍니다. 1권(3-41편) 안에서 다윗은 구원을 요청하며 언약적 신실함을 지키는 모범으로 묘사되고, 이후 시편들은 포로기와 위기 속에서도 하나님의 영원한 통치와 메시아적 승리를 향한 기대를 이어갑니다. 본문인 시편 16편이 하나님을 유일한 피난처와 복으로 삼는 신앙고백을 담고 있는 것은, 해석적 적용의 관점에서 언약에 신실하여 하나님께 부르짖는 다윗의 모습이 시편 전체가 지향하는 메시아적 소망의 토대와 연결됨을 보여줍니다.",
+        "evidenceQuotes": [
+          "Book One contains a collection of poems ( Ps. 15-24 ) that opens and closes with a call to covenant faithfulness.",
+          "This shift from lament to praise is profound, and it tells us something about the nature of prayer according to this new Torah."
+        ],
+        "summaryStatus": "ready",
+        "model": "gemini-3.8-flash",
+        "summaryAttempts": [
+          {
+            "model": "gemini-3.8-flash",
+            "outcome": "ok"
+          }
+        ]
+      },
+      "readingjesus": {
+        "provider": "readingjesus",
+        "label": "리딩지저스",
+        "version": 2,
+        "book": "시편",
+        "scope": "book",
+        "status": "metadata_only",
+        "reason": "공식 영상의 제목·채널 정보만 확인했습니다. 자막을 확보하지 못해 해설을 추측하지 않습니다.",
+        "checkedAt": "2026-10-25T16:01:55.319Z",
+        "searchConfigured": false,
+        "attempts": [
+          {
+            "url": "https://www.youtube.com/@readingjesus",
+            "outcome": "ok"
+          },
+          {
+            "url": "https://www.youtube.com/@readingjesus/search",
+            "outcome": "ok"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "ok"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "playback_login_required"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "player_metadata_unavailable"
+          },
+          {
+            "url": "https://www.youtube.com/oembed",
+            "outcome": "ok"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "ok"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "playback_login_required"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "player_metadata_unavailable"
+          },
+          {
+            "url": "https://www.youtube.com/oembed",
+            "outcome": "ok"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "ok"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "playback_login_required"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "player_metadata_unavailable"
+          },
+          {
+            "url": "https://www.youtube.com/oembed",
+            "outcome": "ok"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://www.youtube.com/watch?v=4wlO6G1R9ug",
+            "title": "그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 3권 4강 1일차 | 시편 73-78편 | 45주 성경통독",
+            "evidenceLevel": "direct",
+            "contentKind": "video_metadata",
+            "channelId": "UCDKV9zBBIEA1If3sBz_rMZQ",
+            "metadataFields": [
+              "title",
+              "channel"
+            ]
+          }
+        ],
+        "channelId": "UCDKV9zBBIEA1If3sBz_rMZQ",
+        "description": "",
+        "passage": "시편 16:1-11",
+        "evidenceHash": null,
+        "summary": null,
+        "summaryStatus": "not_applicable"
+      }
+    }
+  },
+  "sources": [
+    {
+      "label": "바이블프로젝트 · Psalms",
+      "url": "https://bibleproject.com/guides/book-of-psalms/",
+      "usedFor": "책 전체의 흐름과 본문 연결 (공식 해설 본문)",
+      "evidenceLevel": "direct"
+    }
+  ],
+  "evidenceMeta": {
+    "retrievedAt": "2026-10-25T16:00:09.689Z",
+    "suDirectAttempted": true,
+    "suDirectSucceeded": true,
+    "suDirectUrl": "https://sum.su.or.kr:8888/bible/today",
+    "suDirectDateMatch": true,
+    "suDirectError": null,
+    "suDateNavigationTried": false,
+    "searchFallbackUsed": false,
+    "researchDirectCount": 2,
+    "researchMetadataCount": 0,
+    "projectSources": {
+      "bibleproject": {
+        "status": "ready",
+        "summaryStatus": "ready",
+        "checkedAt": "2026-10-25T16:01:37.105Z"
+      },
+      "readingjesus": {
+        "status": "metadata_only",
+        "summaryStatus": "not_applicable",
+        "checkedAt": "2026-10-25T16:01:55.319Z"
+      }
+    }
+  },
+  "generatedAt": "2026-10-25T16:01:36.609Z",
+  "projectEnrichedAt": "2026-10-25T16:02:00.056Z"
+}

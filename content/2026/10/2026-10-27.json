@@ -74,17 +74,17 @@
         ],
         "passage": "시편 17:1-15",
         "evidenceHash": "fa66f74fd45dd4bea53c25137a619b1bb3bb6539b5f2c011c05740bc59ebe077",
-        "summary": null,
-        "summaryStatus": "failed",
-        "summaryError": "요약 생성 또는 근거 검증에 실패했습니다. 확보한 자료와 기존 본문은 보존했습니다.",
+        "summary": "시편은 포로기 이후에 고대 시와 노래들을 의도적으로 배열한 다섯 권의 모음집으로, 율법 묵상과 메시아 왕국에 대한 소망을 서론(시편 1-2편)에서 제시하며 시작합니다. 전반부에서는 언약적 신실함과 고난 가운데 구원을 호소하는 다윗의 기도가 강조되며, 전체 흐름은 비극과 고통을 아뢰는 탄식에서 감사와 기쁨의 찬양으로 점차 전환됩니다. 책 전체는 역사적 위기 속에서도 온 세상을 다스리시는 하나님과 장차 임할 메시아 왕국을 바라보도록 이끕니다. 이러한 시편의 큰 구조 속에서 다윗이 대적의 위협 앞에 결백과 구원을 간구하는 시편 17편은, 언약적 신실함을 지키며 구원을 호소하는 기도 여정이라는 맥락에서 해석적으로 적용해 볼 수 있습니다. 결국 시편은 악을 이기실 메시아의 궁극적 승리와 하나님의 다스림을 찬양하는 결론으로 마무리됩니다.",
+        "evidenceQuotes": [
+          "The whole book of Psalms has been divided into five books or sections ( Ps. 3-41 ; Ps. 42-72 ; Ps. 73-89 ; Ps. 90-106 , and 107-145).",
+          "This shift from lament to praise is profound, and it tells us something about the nature of prayer according to this new Torah."
+        ],
+        "summaryStatus": "ready",
+        "model": "gemini-3.8-flash",
         "summaryAttempts": [
           {
             "model": "gemini-3.8-flash",
-            "outcome": "evidence_validation_failed"
-          },
-          {
-            "model": "gemini-2.5-pro",
-            "outcome": "http_404"
+            "outcome": "ok"
           }
         ]
       },
@@ -96,7 +96,7 @@
         "scope": "book",
         "status": "metadata_only",
         "reason": "공식 영상의 제목·채널 정보만 확인했습니다. 자막을 확보하지 못해 해설을 추측하지 않습니다.",
-        "checkedAt": "2026-10-25T16:01:55.319Z",
+        "checkedAt": "2026-10-26T20:32:03.955Z",
         "searchConfigured": false,
         "attempts": [
           {
@@ -158,8 +158,8 @@
         ],
         "sources": [
           {
-            "url": "https://www.youtube.com/watch?v=4wlO6G1R9ug",
-            "title": "그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 3권 4강 1일차 | 시편 73-78편 | 45주 성경통독",
+            "url": "https://www.youtube.com/watch?v=CytdIciWnbo",
+            "title": "그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 3권 3강 2일차 | 시편 43-48편 | 45주 성경통독",
             "evidenceLevel": "direct",
             "contentKind": "video_metadata",
             "channelId": "UCDKV9zBBIEA1If3sBz_rMZQ",
@@ -178,7 +178,14 @@
       }
     }
   },
-  "sources": [],
+  "sources": [
+    {
+      "label": "바이블프로젝트 · Psalms",
+      "url": "https://bibleproject.com/guides/book-of-psalms/",
+      "usedFor": "책 전체의 흐름과 본문 연결 (공식 해설 본문)",
+      "evidenceLevel": "direct"
+    }
+  ],
   "evidenceMeta": {
     "retrievedAt": "2026-10-26T15:11:45.126Z",
     "suDirectAttempted": true,
@@ -193,16 +200,16 @@
     "projectSources": {
       "bibleproject": {
         "status": "ready",
-        "summaryStatus": "failed",
+        "summaryStatus": "ready",
         "checkedAt": "2026-10-25T16:01:37.105Z"
       },
       "readingjesus": {
         "status": "metadata_only",
         "summaryStatus": "not_applicable",
-        "checkedAt": "2026-10-25T16:01:55.319Z"
+        "checkedAt": "2026-10-26T20:32:03.955Z"
       }
     }
   },
   "generatedAt": "2026-10-26T15:13:48.116Z",
-  "projectEnrichedAt": "2026-10-26T15:13:53.252Z"
+  "projectEnrichedAt": "2026-10-26T20:32:07.552Z"
 }

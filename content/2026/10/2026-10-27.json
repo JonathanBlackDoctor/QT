@@ -1,0 +1,208 @@
+{
+  "schemaVersion": 1,
+  "status": "ok",
+  "date": "2026-10-27",
+  "displayDate": "2026년 10월 27일 (화)",
+  "passage": "시편 17:1-15",
+  "title": null,
+  "verification": {
+    "overall": "직접 확인",
+    "date": "직접 확인",
+    "passage": "직접 확인",
+    "title": "확인 실패",
+    "suCommentary": "직접 확인"
+  },
+  "sections": {
+    "summary": "시편 17편은 억울한 모함과 대적들의 위협 속에서 다윗이 공평하신 하나님의 판결과 구원을 간구하는 기도다. 시인은 밤의 시험과 감찰 속에서도 마음과 입술과 걸음이 말씀의 기준을 따라 결백했음을 아뢰며 결백한 자를 도우시는 주님을 의지한다. 먹잇감을 노리는 사자처럼 악인들이 에워싸는 현실에서 주님의 날개 그늘과 눈동자 같은 보호를 호소한다. 시인은 세상 재물로 배를 채우고 분깃을 삼는 자들과 대조하여, 마침내 깰 때에 주의 얼굴을 뵙고 주의 형상으로 온전히 만족하겠다는 궁극적 소망을 고백한다.",
+    "context": "본 시편은 표제어에서 다윗의 기도로 기록되어 있으며, 사울을 피해 광야를 전전하거나 압살롬의 반역을 겪던 시기의 절박한 정황과 긴밀히 어우러진다(BibleHub 해설). 시인은 하나님을 의로운 재판관으로, 자신을 부당한 송사에 휘말린 자로 나타내는 법정적 언어를 사용한다.",
+    "projectPerspective": null,
+    "commentary": "시인은 자신의 억울함을 사람에게 토로하지 않고 의로우신 재판관이신 하나님께 아뢰며 주의 공의로운 판단을 구한다. 밤낮으로 이어지는 시험과 대적들의 위협 속에서도 입술로 범죄하지 아니하고 주의 날개 그늘 아래 머물기를 소망하며, 세상의 헛된 분깃이 아니라 주의 형상으로 온전히 만족하는 신앙의 중심을 고백한다.",
+    "language": null,
+    "christological": "환난과 억울함 가운데서도 자신의 무죄함과 순전함을 하나님께 온전히 의탁하며 의로운 판결을 간구하는 다윗의 기도는, 성경 전체의 구원 역사 속에서 고난 가운데서도 하나님을 전적으로 신뢰하는 의인의 길을 묵상하게 하는 정경적 연결점을 보여준다.",
+    "suApplication": "성서유니온 공식 해설 본문은 직접 확인하지 못해 생략합니다.",
+    "lifeApplication": [
+      {
+        "area": "개인",
+        "text": "억울한 일을 겪을 때 혈기로 반응하지 않고 하나님 앞에 엎드려 입술과 마음의 결백을 지키도록 기도한다."
+      },
+      {
+        "area": "관계",
+        "text": "타인의 비난이나 오해 속에서도 맞서 다투기보다 하나님의 공평하신 판단에 모든 판단을 맡긴다."
+      },
+      {
+        "area": "공동체(교회)",
+        "text": "부당한 고난과 환난에 처한 지체들을 위해 함께 중보하며 하나님의 위로와 보호를 간구한다."
+      },
+      {
+        "area": "일터·세상",
+        "text": "세상의 물질적 분깃에 집착하기보다 주의 의로운 뜻을 행하며 주의 얼굴을 뵙는 만족을 우선순위로 삼는다."
+      }
+    ],
+    "questions": [
+      "억울한 상황에 직면했을 때 가장 먼저 하나님 앞에 나아가 공평한 판단을 구하고 있는가?",
+      "위기와 시험 속에서도 마음과 입술의 결백함을 지키기 위해 무엇을 경계해야 하는가?",
+      "이 세상의 일시적 분깃보다 하나님의 형상과 임재로 만족하는 영적 소망을 품고 있는가?"
+    ],
+    "prayerPoints": [
+      "고난과 시험 중에도 입술로 범죄하지 않고 주의 날개 그늘 아래 머물게 하옵소서.",
+      "세상의 헛된 분깃이 아닌 주님의 의와 얼굴을 구하며 참된 만족을 누리게 하옵소서."
+    ],
+    "projectPerspectives": {
+      "bibleproject": {
+        "provider": "bibleproject",
+        "label": "바이블프로젝트",
+        "version": 2,
+        "book": "시편",
+        "scope": "book",
+        "status": "ready",
+        "reason": "공식 책 해설 본문을 직접 확보했습니다.",
+        "checkedAt": "2026-10-25T16:01:37.105Z",
+        "searchConfigured": false,
+        "attempts": [
+          {
+            "url": "https://bibleproject.com/guides/book-of-psalms/",
+            "outcome": "ok"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://bibleproject.com/guides/book-of-psalms/",
+            "title": "Psalms",
+            "evidenceLevel": "direct",
+            "contentKind": "article"
+          }
+        ],
+        "passage": "시편 17:1-15",
+        "evidenceHash": "fa66f74fd45dd4bea53c25137a619b1bb3bb6539b5f2c011c05740bc59ebe077",
+        "summary": null,
+        "summaryStatus": "failed",
+        "summaryError": "요약 생성 또는 근거 검증에 실패했습니다. 확보한 자료와 기존 본문은 보존했습니다.",
+        "summaryAttempts": [
+          {
+            "model": "gemini-3.8-flash",
+            "outcome": "evidence_validation_failed"
+          },
+          {
+            "model": "gemini-2.5-pro",
+            "outcome": "http_404"
+          }
+        ]
+      },
+      "readingjesus": {
+        "provider": "readingjesus",
+        "label": "리딩지저스",
+        "version": 2,
+        "book": "시편",
+        "scope": "book",
+        "status": "metadata_only",
+        "reason": "공식 영상의 제목·채널 정보만 확인했습니다. 자막을 확보하지 못해 해설을 추측하지 않습니다.",
+        "checkedAt": "2026-10-25T16:01:55.319Z",
+        "searchConfigured": false,
+        "attempts": [
+          {
+            "url": "https://www.youtube.com/@readingjesus",
+            "outcome": "ok"
+          },
+          {
+            "url": "https://www.youtube.com/@readingjesus/search",
+            "outcome": "ok"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "ok"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "playback_login_required"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "player_metadata_unavailable"
+          },
+          {
+            "url": "https://www.youtube.com/oembed",
+            "outcome": "ok"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "ok"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "playback_login_required"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "player_metadata_unavailable"
+          },
+          {
+            "url": "https://www.youtube.com/oembed",
+            "outcome": "ok"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "ok"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "playback_login_required"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "player_metadata_unavailable"
+          },
+          {
+            "url": "https://www.youtube.com/oembed",
+            "outcome": "ok"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://www.youtube.com/watch?v=4wlO6G1R9ug",
+            "title": "그리스도 중심 성경읽기, 리딩지저스 🎧 오디오 바이블 | 3권 4강 1일차 | 시편 73-78편 | 45주 성경통독",
+            "evidenceLevel": "direct",
+            "contentKind": "video_metadata",
+            "channelId": "UCDKV9zBBIEA1If3sBz_rMZQ",
+            "metadataFields": [
+              "title",
+              "channel"
+            ]
+          }
+        ],
+        "channelId": "UCDKV9zBBIEA1If3sBz_rMZQ",
+        "description": "",
+        "passage": "시편 17:1-15",
+        "evidenceHash": null,
+        "summary": null,
+        "summaryStatus": "not_applicable"
+      }
+    }
+  },
+  "sources": [],
+  "evidenceMeta": {
+    "retrievedAt": "2026-10-26T15:11:45.126Z",
+    "suDirectAttempted": true,
+    "suDirectSucceeded": true,
+    "suDirectUrl": "https://sum.su.or.kr:8888/bible/today",
+    "suDirectDateMatch": true,
+    "suDirectError": null,
+    "suDateNavigationTried": false,
+    "searchFallbackUsed": false,
+    "researchDirectCount": 2,
+    "researchMetadataCount": 0,
+    "projectSources": {
+      "bibleproject": {
+        "status": "ready",
+        "summaryStatus": "failed",
+        "checkedAt": "2026-10-25T16:01:37.105Z"
+      },
+      "readingjesus": {
+        "status": "metadata_only",
+        "summaryStatus": "not_applicable",
+        "checkedAt": "2026-10-25T16:01:55.319Z"
+      }
+    }
+  },
+  "generatedAt": "2026-10-26T15:13:48.116Z",
+  "projectEnrichedAt": "2026-10-26T15:13:53.252Z"
+}

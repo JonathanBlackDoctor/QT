@@ -96,7 +96,7 @@
         "scope": "book",
         "status": "metadata_only",
         "reason": "공식 영상의 제목·채널 정보만 확인했습니다. 자막을 확보하지 못해 해설을 추측하지 않습니다.",
-        "checkedAt": "2026-11-01T18:55:54.930Z",
+        "checkedAt": "2026-11-02T23:07:19.447Z",
         "searchConfigured": false,
         "attempts": [
           {
@@ -158,8 +158,8 @@
         ],
         "sources": [
           {
-            "url": "https://www.youtube.com/watch?v=qQHqdQhJjeo",
-            "title": "고린도후서 13장 | 45주 성경통독",
+            "url": "https://www.youtube.com/watch?v=DRuDDg-BftA",
+            "title": "고린도후서 9장 | 45주 성경통독",
             "evidenceLevel": "direct",
             "contentKind": "video_metadata",
             "channelId": "UCDKV9zBBIEA1If3sBz_rMZQ",
@@ -218,10 +218,10 @@
       "readingjesus": {
         "status": "metadata_only",
         "summaryStatus": "not_applicable",
-        "checkedAt": "2026-11-01T18:55:54.930Z"
+        "checkedAt": "2026-11-02T23:07:19.447Z"
       }
     }
   },
   "generatedAt": "2026-11-02T15:36:18.342Z",
-  "projectEnrichedAt": "2026-11-02T15:36:24.320Z"
+  "projectEnrichedAt": "2026-11-02T23:07:23.091Z"
 }

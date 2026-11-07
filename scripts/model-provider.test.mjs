@@ -109,3 +109,32 @@ test('a temporarily rate-limited Gemini API retries before using any backup', as
   assert.equal(text, '{"result":"from Gemini"}');
   assert.equal(calls, 2);
 });
+
+test('a GitHub Models 200 health-check response is never used as QT content', async () => {
+  const urls = [];
+  const text = await generateModelText({
+    ...prompts,
+    env: { GITHUB_MODELS_TOKEN: 'token' },
+    fetchImpl: async url => {
+      urls.push(url);
+      return urls.length === 1
+        ? new Response('OK\n', { status: 200, headers: { 'content-type': 'text/plain' } })
+        : ok(githubReply);
+    },
+  });
+  assert.equal(text, '{"result":"from GitHub Models"}');
+  assert.match(urls[1], /models\.inference\.ai\.azure\.com/);
+});
+
+test('two non-JSON 200 responses are reported as permanent provider errors', async () => {
+  let calls = 0;
+  await assert.rejects(
+    generateModelText({
+      ...prompts,
+      env: { GITHUB_MODELS_TOKEN: 'token' },
+      fetchImpl: async () => { calls++; return new Response('OK\n', { status: 200 }); },
+    }),
+    e => e instanceof ModelProviderError && e.permanent && /non-JSON/.test(e.message),
+  );
+  assert.equal(calls, 2);
+});

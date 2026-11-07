@@ -48,7 +48,7 @@ test('verified official daily passage yields a clearly labeled source-only recor
   assert.equal(doc.sources[0].url, officialUrl);
   assert.equal(doc.sources[1].url, 'https://biblehub.com/2_corinthians/5.htm');
   const md = sourceOnlyMarkdown(doc);
-  assert.match(md, /공식 본문 확인/);
+  assert.match(md, /본문 확인 · 임시 묵상 가이드/);
   assert.match(md, /AI 해설·주석·그리스도 중심 연결은 생성되지 않았습니다/);
   assert.doesNotMatch(md, /깊이 있는 주석 및 강해/);
   const index = [{ date, status: 'limited', path: '2026/11/2026-11-07.json' }];

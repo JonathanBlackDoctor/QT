@@ -18,7 +18,7 @@ export function setReaderHeader(doc) {
   const date = document.querySelector('#header-date');
   const title = document.querySelector('#header-title');
   if (date) date.textContent = doc.displayDate || doc.date || '오늘의 QT';
-  if (title) title.textContent = doc.title || '오늘의 말씀';
+  if (title) title.textContent = doc.status === 'limited' ? '본문 확인 · 묵상 가이드' : (doc.title || '오늘의 말씀');
 }
 
 export function announceMissingDate(requestedDate, selectedDate) {
@@ -27,7 +27,7 @@ export function announceMissingDate(requestedDate, selectedDate) {
 
 export function installHomeChrome(doc, index, selection) {
   document.body.appendChild(renderDateDock(index, selection.entryIndex, selection.selectedDate));
-  const dialogs = [renderSourcesDialog(doc.sources ?? []), renderVerificationDialog(doc), renderTocDialog()];
+  const dialogs = [renderSourcesDialog(doc.sources ?? []), renderVerificationDialog(doc), renderTocDialog(doc.status)];
   document.body.append(...dialogs);
 
   document.querySelectorAll('[data-dialog]').forEach((trigger) => {
@@ -125,14 +125,21 @@ function verificationRow(label, value) {
   return row;
 }
 
-function renderTocDialog() {
+function renderTocDialog(status = 'ok') {
   const body = el('nav', 'toc-list');
   body.setAttribute('aria-label', '문서 목차');
-  const entries = [
-    ['01', '문맥과 배경', 'context'], ['02', '본문의 흐름', 'summary'],
-    ['03', '묵상을 위한 질문', 'questions'], ['04', '삶으로', 'life-application'],
-    ['05', '기도 제목', 'prayer'], ['06', '더 깊이 읽기', 'deep-dive'],
-  ];
+  const entries = status === 'limited'
+    ? [
+        ['01', '확인된 오늘의 본문', 'summary'],
+        ['02', '묵상을 위한 질문', 'questions'],
+        ['03', '삶으로', 'life-application'],
+        ['04', '기도 제목', 'prayer'],
+      ]
+    : [
+        ['01', '문맥과 배경', 'context'], ['02', '본문의 흐름', 'summary'],
+        ['03', '묵상을 위한 질문', 'questions'], ['04', '삶으로', 'life-application'],
+        ['05', '기도 제목', 'prayer'], ['06', '더 깊이 읽기', 'deep-dive'],
+      ];
   for (const [number, label, id] of entries) {
     const button = el('button', 'toc-item');
     button.type = 'button';
@@ -151,7 +158,7 @@ function renderTocDialog() {
   const archive = textEl('a', 'toc-item', '아카이브 보기');
   archive.href = './archive.html'; archive.prepend(textEl('span', 'toc-number', '→'));
   body.append(source, verify, archive);
-  return bottomSheet('toc-dialog', '목차', '핵심 흐름 5개 · 심화 5개 · 근거 2개', body);
+  return bottomSheet('toc-dialog', '목차', status === 'limited' ? '공식 본문 확인 · 묵상 가이드' : '핵심 흐름 5개 · 심화 5개 · 근거 2개', body);
 }
 
 function bottomSheet(id, title, subtitle, body) {

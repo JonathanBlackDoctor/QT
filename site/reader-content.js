@@ -16,7 +16,7 @@ export function renderHero(doc) {
   chips.append(passage, verification);
   hero.append(
     textEl('p', 'hero-date', doc.displayDate || doc.date || '날짜 확인 실패'),
-    textEl('h1', '', doc.status === 'failed' ? '생성 실패 기록' : (doc.title || '오늘의 말씀')),
+    textEl('h1', '', doc.status === 'failed' ? '생성 실패 기록' : doc.status === 'limited' ? '본문 확인 · 묵상 가이드' : (doc.title || '오늘의 말씀')),
     chips,
   );
   return hero;

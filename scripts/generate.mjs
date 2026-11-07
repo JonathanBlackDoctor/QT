@@ -11,11 +11,11 @@ import {
   koreanDate,
   parseArgs,
   readJson,
-  sleep,
   stripCodeFence,
   writeJson,
 } from './lib.mjs';
 import { collectEvidence } from './evidence.mjs';
+import { generateModelText } from './model-provider.mjs';
 
 const args = parseArgs();
 const targetDate = assertDate(args.date || currentKstDate());
@@ -40,23 +40,34 @@ if (!evidence.passage) {
 }
 
 const systemPrompt = await fs.readFile(path.join(ROOT, 'prompts', 'qt-system.md'), 'utf8');
-let result = await generateCommentary({ targetDate, evidence, systemPrompt });
-let normalized = normalizeResult(result, evidence, targetDate);
 try {
-  validateGenerated(normalized, evidence);
+  let result = await generateCommentary({ targetDate, evidence, systemPrompt });
+  let normalized = normalizeResult(result, evidence, targetDate);
+  try {
+    validateGenerated(normalized, evidence);
+  } catch (error) {
+    console.warn(`Generated output failed evidence compliance: ${error.message}`);
+    result = await generateCommentary({
+      targetDate,
+      evidence,
+      systemPrompt,
+      correction: { issue: error.message, previous: normalized },
+    });
+    normalized = normalizeResult(result, evidence, targetDate);
+    validateGenerated(normalized, evidence);
+  }
+  await persist(targetDate, normalized);
+  console.log(`Generated QT ${targetDate}: ${normalized.passage}`);
 } catch (error) {
-  console.warn(`Generated output failed evidence compliance: ${error.message}`);
-  result = await generateCommentary({
-    targetDate,
-    evidence,
-    systemPrompt,
-    correction: { issue: error.message, previous: normalized },
-  });
-  normalized = normalizeResult(result, evidence, targetDate);
-  validateGenerated(normalized, evidence);
+  // Workflow exit 78: configuration/billing error is not fixed by retrying
+  // the same API keys three more times in the same action run.
+  if (error?.permanent) {
+    console.error('::error::' + error.message);
+    process.exitCode = 78;
+  } else {
+    throw error;
+  }
 }
-await persist(targetDate, normalized);
-console.log(`Generated QT ${targetDate}: ${normalized.passage}`);
 
 function buildFailure(date, evidence) {
   const message = `⚠️ 오늘(${date})의 매일성경 본문을 성서유니온 공식 페이지 또는 검색을 통해 확인하지 못했습니다.\n본문 구절(예: 큐티 시편 79:1-13)을 직접 입력해 주시면 해설을 진행하겠습니다.`;
@@ -83,9 +94,6 @@ function buildFailure(date, evidence) {
 }
 
 async function generateCommentary({ targetDate, evidence, systemPrompt, correction = null }) {
-  const apiKey = process.env.GEMINI_API_KEY?.trim();
-  if (!apiKey) throw new Error('GEMINI_API_KEY is required to generate commentary.');
-
   const schema = `Return exactly one JSON object with this shape:\n{
   "date": "YYYY-MM-DD",
   "passage": "verified Korean Bible reference",
@@ -138,7 +146,7 @@ async function generateCommentary({ targetDate, evidence, systemPrompt, correcti
     ] : []),
   ].join('\n');
 
-  const text = await callGemini({ apiKey, systemPrompt, userPrompt });
+  const text = await generateModelText({ systemPrompt, userPrompt });
   try {
     return JSON.parse(stripCodeFence(text));
   } catch (firstError) {
@@ -150,57 +158,10 @@ async function generateCommentary({ targetDate, evidence, systemPrompt, correcti
       'BROKEN_RESPONSE:',
       text,
     ].join('\n');
-    const repaired = await callGemini({ apiKey, systemPrompt, userPrompt: repairPrompt, temperature: 0 });
+    const repaired = await generateModelText({ systemPrompt, userPrompt: repairPrompt, temperature: 0 });
     try { return JSON.parse(stripCodeFence(repaired)); }
     catch { throw new Error(`Gemini returned invalid JSON twice: ${firstError.message}`); }
   }
-}
-
-async function callGemini({ apiKey, systemPrompt, userPrompt, temperature = 0.2 }) {
-  const primary = process.env.GEMINI_MODEL?.trim() || 'gemini-3.8-flash';
-  const fallback = process.env.GEMINI_FALLBACK_MODEL?.trim() || 'gemini-2.5-pro';
-  const models = [...new Set([primary, fallback].filter(Boolean))];
-  const body = {
-    systemInstruction: { parts: [{ text: systemPrompt }] },
-    contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
-    generationConfig: {
-      temperature,
-      responseMimeType: 'application/json',
-      maxOutputTokens: 8192,
-    },
-  };
-
-  let lastError;
-  for (const model of models) {
-    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`;
-    for (let attempt = 1; attempt <= 3; attempt++) {
-      const res = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-      if (res.ok) {
-        const json = await res.json();
-        const text = json?.candidates?.[0]?.content?.parts?.map(p => p.text ?? '').join('')?.trim();
-        if (!text) throw new Error(`Gemini model ${model} returned an empty response.`);
-        console.log(`Gemini model used: ${model}`);
-        return text;
-      }
-
-      const errText = await res.text();
-      lastError = new Error(`Gemini ${model} HTTP ${res.status}: ${errText.slice(0, 1000)}`);
-      const retryable = [429, 500, 502, 503, 504].includes(res.status);
-      if (retryable && attempt < 3) {
-        await sleep(1500 * attempt);
-        continue;
-      }
-      break;
-    }
-    if (model !== models.at(-1)) {
-      console.warn(`Gemini model ${model} failed; trying fallback ${models[models.indexOf(model) + 1]}.`);
-    }
-  }
-  throw lastError;
 }
 
 function normalizeResult(raw, evidence, date) {

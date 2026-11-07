@@ -6,6 +6,7 @@ import {
   renderEvidenceActions,
   renderHero,
   renderReaderSections,
+  renderSourceOnlySections,
 } from './reader-content.js';
 import {
   announceMissingDate,
@@ -62,6 +63,12 @@ async function renderHome(index) {
     app.append(
       textEl('section', 'failure-panel reader-failure', doc.failureMessage || '이 날짜의 QT 생성에 실패했습니다.'),
       renderEvidenceActions(doc),
+    );
+  } else if (doc.status === 'limited') {
+    app.append(
+      ...renderSourceOnlySections(doc),
+      renderEvidenceActions(doc),
+      textEl('p', 'record-note', '본문만 공식 자료로 확인한 임시 기록입니다. AI 해설이 복구되면 전체 해설로 교체할 수 있습니다.'),
     );
   } else {
     app.append(

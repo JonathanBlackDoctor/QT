@@ -16,6 +16,7 @@ import {
 } from './lib.mjs';
 import { collectEvidence } from './evidence.mjs';
 import { generateModelText } from './model-provider.mjs';
+import { createSourceOnlyRecord, hasVerifiedSource, sourceOnlyMarkdown } from './source-only.mjs';
 
 const args = parseArgs();
 const targetDate = assertDate(args.date || currentKstDate());
@@ -58,10 +59,15 @@ try {
   }
   await persist(targetDate, normalized);
   console.log(`Generated QT ${targetDate}: ${normalized.passage}`);
-} catch (error) {
-  // Workflow exit 78: configuration/billing error is not fixed by retrying
-  // the same API keys three more times in the same action run.
-  if (error?.permanent) {
+ } catch (error) {
+  // An outage must not be disguised as a complete AI-written commentary.
+  // Publish a clearly labeled, source-only reading guide only when the
+  // exact day's official passage was independently verified.
+  if (process.env.QT_SOURCE_ONLY_FALLBACK !== 'false' && hasVerifiedSource(evidence)) {
+    const limited = createSourceOnlyRecord(targetDate, evidence);
+    await persist(targetDate, limited);
+    console.warn('::warning::Model generation unavailable; published verified-source-only QT for ' + targetDate + '.');
+  } else if (error?.permanent) {
     console.error('::error::' + error.message);
     process.exitCode = 78;
   } else {
@@ -364,6 +370,7 @@ async function persist(date, doc) {
 }
 
 function toMarkdown(doc) {
+  if (doc.status === 'limited') return sourceOnlyMarkdown(doc);
   if (doc.status === 'failed') {
     return `# QT — ${doc.displayDate}\n\n${doc.failureMessage}\n\n## 검증 상태\n\n- 전체: ${doc.verification.overall}\n- 날짜: ${doc.verification.date}\n- 본문: ${doc.verification.passage}\n`;
   }

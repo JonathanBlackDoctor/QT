@@ -22,11 +22,23 @@ export function contentReadiness(doc, index, date) {
   checkedDate(date);
   const expectedPath = `${date.slice(0, 4)}/${date.slice(5, 7)}/${date}.json`;
   const entry = Array.isArray(index) ? index.find((item) => item?.date === date) : null;
-  const documentReady = doc?.date === date && doc?.status === 'ok'
-    && typeof doc.passage === 'string' && Boolean(doc.passage.trim())
+  const passageReady = doc?.date === date && typeof doc.passage === 'string'
+    && Boolean(doc.passage.trim());
+  const fullReady = passageReady && doc.status === 'ok'
     && ['summary', 'commentary', 'christological'].every((key) =>
       typeof doc.sections?.[key] === 'string' && Boolean(doc.sections[key].trim()));
-  const indexReady = entry?.status === 'ok' && entry?.path === expectedPath;
+  const sourceOnlyReady = passageReady && doc.status === 'limited'
+    && doc.generationMode === 'verified_source_only'
+    && doc.verification?.date === '직접 확인'
+    && doc.verification?.passage === '직접 확인'
+    && typeof doc.notice === 'string' && Boolean(doc.notice.trim())
+    && typeof doc.sections?.summary === 'string' && Boolean(doc.sections.summary.trim())
+    && Array.isArray(doc.sections?.questions) && doc.sections.questions.length === 3
+    && Array.isArray(doc.sections?.lifeApplication) && doc.sections.lifeApplication.length === 4
+    && Array.isArray(doc.sources) && doc.sources.some(s => s.evidenceLevel === 'direct'
+      && /^https:\/\/sum\.su\.or\.kr(?::\d+)?\//.test(s.url));
+  const documentReady = Boolean(fullReady || sourceOnlyReady);
+  const indexReady = entry?.status === doc?.status && entry?.path === expectedPath;
   const ready = Boolean(documentReady && indexReady);
   return {
     date,

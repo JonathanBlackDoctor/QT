@@ -123,63 +123,88 @@ async function callGemini({ geminiKey, systemPrompt, userPrompt, temperature, en
 
 async function callGithubModels({ githubToken, systemPrompt, userPrompt, temperature, env, fetchImpl, sleepImpl }) {
   const model = env.GITHUB_MODELS_MODEL?.trim() || 'openai/gpt-4.1-mini';
-  const endpoint = 'https://models.github.ai/inference/chat/completions';
-  const body = {
-    model,
-    messages: [
-      { role: 'system', content: systemPrompt + '\nReturn only a valid JSON object.' },
-      { role: 'user', content: userPrompt },
-    ],
-    temperature,
-    max_tokens: 8192,
-    response_format: { type: 'json_object' },
-  };
+  const routes = [
+    { url: 'https://models.github.ai/inference/chat/completions', model, label: 'GitHub Models' },
+    // Compatibility endpoint for installations still routed to the legacy host.
+    { url: 'https://models.inference.ai.azure.com/chat/completions', model: model.split('/').at(-1), label: 'legacy GitHub Models' },
+  ];
 
   let lastError;
-  for (let attempt = 1; attempt <= 3; attempt++) {
-    let response;
-    try {
-      response = await fetchImpl(endpoint, {
-        method: 'POST',
-        headers: {
-          accept: 'application/vnd.github+json',
-          authorization: 'Bearer ' + githubToken,
-          'content-type': 'application/json',
-          'x-github-api-version': '2022-11-28',
-        },
-        body: JSON.stringify(body),
-        signal: AbortSignal.timeout(90_000),
-      });
-    } catch {
-      lastError = new ModelProviderError('GitHub Models network request failed', { provider: 'github-models' });
-      if (attempt < 3) { await sleepImpl(1500 * attempt); continue; }
-      break;
-    }
+  for (const route of routes) {
+    const body = {
+      model: route.model,
+      messages: [
+        { role: 'system', content: systemPrompt + '\nReturn only a valid JSON object.' },
+        { role: 'user', content: userPrompt },
+      ],
+      temperature,
+      max_tokens: 8192,
+      response_format: { type: 'json_object' },
+    };
 
-    if (response.ok) {
-      const json = await response.json();
-      const content = json?.choices?.[0]?.message?.content;
-      const text = typeof content === 'string' ? content.trim() :
-        Array.isArray(content) ? content.map(p => p.text || '').join('').trim() : '';
-      if (text) {
-        console.log('GitHub Models backup used: ' + model);
-        return text;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      let response;
+      try {
+        response = await fetchImpl(route.url, {
+          method: 'POST',
+          headers: {
+            accept: 'application/vnd.github+json',
+            authorization: 'Bearer ' + githubToken,
+            'content-type': 'application/json',
+            'x-github-api-version': '2022-11-28',
+          },
+          body: JSON.stringify(body),
+          signal: AbortSignal.timeout(90_000),
+        });
+      } catch {
+        lastError = new ModelProviderError(route.label + ' network request failed', { provider: 'github-models' });
+        if (attempt < 3) { await sleepImpl(1500 * attempt); continue; }
+        throw lastError;
       }
-      lastError = new ModelProviderError('GitHub Models returned an empty response', { provider: 'github-models' });
+
+      if (response.ok) {
+        // Some gateways respond with 200 text/plain "OK", but no actual model
+        // answer. Never misreport such a health-check response as a generation.
+        const raw = await response.text();
+        let json;
+        try {
+          json = JSON.parse(raw);
+        } catch {
+          lastError = new ModelProviderError(
+            route.label + ' returned non-JSON HTTP ' + response.status + ' instead of a model completion',
+            { provider: 'github-models', status: response.status, permanent: true },
+          );
+          console.warn(route.label + ' did not return a model completion; checking compatibility endpoint.');
+          break;
+        }
+        const content = json?.choices?.[0]?.message?.content;
+        const text = typeof content === 'string' ? content.trim() :
+          Array.isArray(content) ? content.map(p => p.text || '').join('').trim() : '';
+        if (text) {
+          console.log(route.label + ' backup used: ' + route.model);
+          return text;
+        }
+        lastError = new ModelProviderError(
+          route.label + ' response did not contain a chat completion',
+          { provider: 'github-models', status: response.status, permanent: true },
+        );
+        break;
+      }
+
+      await response.text(); // do not emit any response bodies or credentials
+      lastError = new ModelProviderError(
+        route.label + ' ' + route.model + ' HTTP ' + response.status +
+          (response.status === 403 ? ' (check Models access and models: read permission)' : ''),
+        { provider: 'github-models', status: response.status, permanent: [400, 401, 402, 403, 404].includes(response.status) },
+      );
+      if ([429, 500, 502, 503, 504].includes(response.status) && attempt < 3) {
+        await sleepImpl(1500 * attempt);
+        continue;
+      }
+      // Permission, billing and capacity errors are not fixed by changing URLs.
+      if (response.status !== 404) throw lastError;
       break;
     }
-
-    await response.text(); // consume, but never log credentials or response payloads
-    lastError = new ModelProviderError(
-      'GitHub Models ' + model + ' HTTP ' + response.status +
-        (response.status === 403 ? ' (check Models access and models: read permission)' : ''),
-      { provider: 'github-models', status: response.status, permanent: [400, 401, 402, 403, 404].includes(response.status) },
-    );
-    if ([429, 500, 502, 503, 504].includes(response.status) && attempt < 3) {
-      await sleepImpl(1500 * attempt);
-      continue;
-    }
-    break;
   }
   throw lastError;
 }

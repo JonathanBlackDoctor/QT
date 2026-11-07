@@ -29,7 +29,7 @@ for (const date of dates) {
   catch (e) { fail(`Missing/invalid content JSON for ${date}: ${e.message}`); }
 
   if (doc.date !== date) fail(`${date}: document date mismatch (${doc.date})`);
-  if (!['ok','failed'].includes(doc.status)) fail(`${date}: invalid status ${doc.status}`);
+  if (!['ok','failed','limited'].includes(doc.status)) fail(`${date}: invalid status ${doc.status}`);
   if (!doc.verification?.overall) fail(`${date}: missing verification status`);
 
   if (doc.status === 'ok') {
@@ -42,6 +42,26 @@ for (const date of dates) {
     }
     if (!Array.isArray(doc.sections.lifeApplication) || doc.sections.lifeApplication.length !== 4) {
       fail(`${date}: exactly 4 life-application areas required`);
+    }
+  } else if (doc.status === 'limited') {
+    if (doc.generationMode !== 'verified_source_only' || !doc.passage || !doc.notice) {
+      fail(`${date}: source-only record must identify verified reading and warning`);
+    }
+    if (doc.verification.date !== '직접 확인' || doc.verification.passage !== '직접 확인') {
+      fail(`${date}: limited record cannot claim an unverified passage`);
+    }
+    if (!doc.sections?.summary || !Array.isArray(doc.sections?.questions)
+      || doc.sections.questions.length !== 3 || !Array.isArray(doc.sections?.lifeApplication)
+      || doc.sections.lifeApplication.length !== 4) {
+      fail(`${date}: source-only reader sections are incomplete`);
+    }
+    if (doc.sections.commentary || doc.sections.christological || doc.sections.language
+      || doc.sections.projectPerspective || doc.sections.suApplication) {
+      fail(`${date}: source-only record cannot present inferred AI interpretations`);
+    }
+    if (!doc.sources?.some(x => x.evidenceLevel === 'direct'
+      && /^https:\/\/sum\.su\.or\.kr(?::\d+)?\//.test(x.url))) {
+      fail(`${date}: limited record must cite directly verified official SU page`);
     }
   } else if (!doc.failureMessage) {
     fail(`${date}: failed record must contain failureMessage`);

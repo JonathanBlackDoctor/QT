@@ -23,7 +23,7 @@
     }
   ],
   "evidenceMeta": {
-    "retrievedAt": "2026-11-07T04:21:55.105Z",
+    "retrievedAt": "2026-11-07T17:59:29.730Z",
     "suDirectAttempted": true,
     "suDirectSucceeded": true,
     "suDirectUrl": "https://sum.su.or.kr:8888/bible/today",
@@ -34,5 +34,5 @@
     "researchDirectCount": 0,
     "researchMetadataCount": 0
   },
-  "generatedAt": "2026-11-07T04:21:56.350Z"
+  "generatedAt": "2026-11-07T17:59:30.750Z"
 }

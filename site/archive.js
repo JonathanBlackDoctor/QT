@@ -36,7 +36,7 @@ export function renderArchive(app, index) {
       const copy = el('span', 'archive-copy');
       copy.append(
         textEl('strong', '', item.passage || '본문 확인 실패'),
-        textEl('span', '', item.title || (item.status === 'failed' ? '생성 실패 기록' : '오늘의 말씀')),
+        textEl('span', '', item.title || (item.status === 'failed' ? '생성 실패 기록' : item.status === 'limited' ? '본문 확인 · 임시 묵상 가이드' : '오늘의 말씀')),
       );
       link.append(copy, textEl('span', `archive-badge ${item.status === 'failed' ? 'failed' : ''}`, item.verification || '확인 실패'));
       list.appendChild(link);

@@ -1,6 +1,6 @@
 # QT
 
-매일 **00:05 KST**에 성서유니온 「매일성경」 본문을 확인하고, 검증된 자료만 사용해 Gemini로 큐티 해설을 생성하여 Git에 보관하고 GitHub Pages에 공개하는 정적 사이트입니다. **00:20 KST**에 첫 복구를 시도하고, 누락 시 **04:50 KST까지 15분 간격의 추가 복구 슬롯**을 사용합니다. 정상 해설은 다시 생성하지 않으며, 파일은 정상인데 공개 사이트만 오래된 경우 배포만 복구합니다. 00:20에는 기존 프로젝트 관점 보완 재시도도 유지합니다.
+매일 **00:05 KST**에 성서유니온 「매일성경」 본문을 확인하고, 검증된 자료만 사용해 Gemini를 우선 호출하고, 결제 크레딧이 소진되거나 API가 실패하면 GitHub Models로 대체해 큐티 해설을 생성하여 Git에 보관하고 GitHub Pages에 공개하는 정적 사이트입니다. **00:20 KST**에 첫 복구를 시도하고, 누락 시 **04:50 KST까지 15분 간격의 추가 복구 슬롯**을 사용합니다. 정상 해설은 다시 생성하지 않으며, 파일은 정상인데 공개 사이트만 오래된 경우 배포만 복구합니다. 00:20에는 기존 프로젝트 관점 보완 재시도도 유지합니다.
 
 **첫 화면의 날짜는 한국시간 04:00에 전환됩니다.** 화요일 03:00에는 월요일 QT, 04:00부터 화요일 QT를 기본 표시합니다. 날짜를 직접 선택한 링크는 이 기본값보다 우선합니다. 생성 시각과 첫 화면 전환 시각은 별개입니다. [예약 실행 진단 및 복구 동작](docs/scheduling.md)
 
@@ -22,19 +22,23 @@
 
 Repository → **Settings → Secrets and variables → Actions → New repository secret**에서 설정합니다.
 
-- `GEMINI_API_KEY` — 필수
+- `GEMINI_API_KEY` — 권장(기본 생성기). 미설정/결제 중단 시 GitHub Models 백업을 사용할 수 있습니다.
 - `GOOGLE_CSE_API_KEY` — 검색 fallback/추가 연구용, 선택
 - `GOOGLE_CSE_ID` — 검색 fallback/추가 연구용, 선택
 
 선택적으로 Repository → **Settings → Secrets and variables → Actions → Variables**에서 모델을 바꿀 수 있습니다.
 
-- `GEMINI_MODEL` — 기본값 `gemini-3.8-flash`
+- `GEMINI_MODEL` — 기본값 `gemini-2.5-flash`
 - `GEMINI_FALLBACK_MODEL` — 기본값 `gemini-2.5-pro`
+- `GITHUB_MODELS_MODEL` — Gemini 장애 시 백업, 기본값 `openai/gpt-4.1-mini`
+- `QT_GITHUB_MODELS_ENABLED` — 기본 `true`. `false`로 설정하면 GitHub Models 백업을 끕니다.
 - `GA_MEASUREMENT_ID` — 선택, Google Analytics 4 웹 스트림의 `G-XXXXXXXXXX`; 설정하면 배포 시 방문 분석 활성화
 
 GA4 연동은 광고 저장소·Google Signals·광고 개인화를 비활성화하며, 페이지 조회와 QT 날짜·본문·생성 상태만 이벤트로 전송합니다. 변수 미설정 또는 형식이 잘못된 경우 분석 스크립트를 빌드 결과에 포함하지 않습니다.
 
-Gemini 모델 기본값은 저장소의 생성 코드에 설정되어 있으며, 호출 실패 시 fallback 모델을 시도합니다.
+Gemini 모델 기본값은 저장소의 생성 코드에 설정되어 있습니다. **HTTP 402(선불 결제 크레딧 소진)**가 발생하면 같은 키로 다른 Gemini 모델을 계속 호출하지 않고 GitHub Models로 전환합니다. 이 백업은 GitHub Actions의 `models: read` 권한과 기본 제공 `GITHUB_TOKEN`을 사용하므로 별도 모델 키가 필요하지 않습니다. 다만 계정·조직의 GitHub Models 사용 가능 여부 및 무료 사용량 한도에 따라 백업도 실패할 수 있습니다. 이 경우 Google AI Studio에서 해당 프로젝트에 크레딧을 충전하거나 사용 가능한 모델 공급자를 설정해야 합니다.
+
+생성 실패가 영구 결제/권한 문제로 확인되면 같은 실행 안에서 무의미하게 3번 더 호출하지 않습니다. 성공적인 일일 실행은 **최근 이틀 중 누락된 QT도 근거를 확인할 수 있는 경우에만 복구**하며, 검증되지 않은 본문을 임의로 생성하지 않습니다.
 
 Google CSE 키가 없어도 성서유니온 직접 확인이 성공하면 **성서유니온 + 본문에서 결정적으로 계산 가능한 BibleHub 직접 자료**를 바탕으로 생성할 수 있습니다. 다만 성서유니온 직접 접근 자체가 실패하면 CSE 검색 fallback으로 본문을 복구할 수 없으므로 그 실행은 추측하지 않고 실패 처리되며, 복구 실행이 다시 시도합니다. 또한 CSE가 없으면 BibleProject/TGC/NET Bible 등 더 넓은 출처의 자동 탐색은 제한됩니다.
 

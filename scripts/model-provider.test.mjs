@@ -110,23 +110,7 @@ test('a temporarily rate-limited Gemini API retries before using any backup', as
   assert.equal(calls, 2);
 });
 
-test('a GitHub Models 200 health-check response is never used as QT content', async () => {
-  const urls = [];
-  const text = await generateModelText({
-    ...prompts,
-    env: { GITHUB_MODELS_TOKEN: 'token' },
-    fetchImpl: async url => {
-      urls.push(url);
-      return urls.length === 1
-        ? new Response('OK\n', { status: 200, headers: { 'content-type': 'text/plain' } })
-        : ok(githubReply);
-    },
-  });
-  assert.equal(text, '{"result":"from GitHub Models"}');
-  assert.match(urls[1], /models\.inference\.ai\.azure\.com/);
-});
-
-test('two non-JSON 200 responses are reported as permanent provider errors', async () => {
+test('a non-JSON HTTP 200 from GitHub Models fails permanently without repeating', async () => {
   let calls = 0;
   await assert.rejects(
     generateModelText({
@@ -134,7 +118,20 @@ test('two non-JSON 200 responses are reported as permanent provider errors', asy
       env: { GITHUB_MODELS_TOKEN: 'token' },
       fetchImpl: async () => { calls++; return new Response('OK\n', { status: 200 }); },
     }),
-    e => e instanceof ModelProviderError && e.permanent && /non-JSON/.test(e.message),
+    e => e instanceof ModelProviderError && e.permanent && /without a JSON model completion/.test(e.message),
   );
-  assert.equal(calls, 2);
+  assert.equal(calls, 1);
+});
+
+test('a JSON HTTP 200 without a model completion fails permanently', async () => {
+  let calls = 0;
+  await assert.rejects(
+    generateModelText({
+      ...prompts,
+      env: { GITHUB_MODELS_TOKEN: 'token' },
+      fetchImpl: async () => { calls++; return ok({ status: 'OK' }); },
+    }),
+    e => e instanceof ModelProviderError && e.permanent && /no chat completion/.test(e.message),
+  );
+  assert.equal(calls, 1);
 });

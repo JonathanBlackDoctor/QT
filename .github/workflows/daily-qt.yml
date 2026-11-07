@@ -19,6 +19,7 @@ on:
       - 'prompts/qt-system.md'
       - 'scripts/generate.mjs'
       - 'scripts/model-provider.mjs'
+      - 'scripts/source-only.mjs'
       - 'scripts/evidence.mjs'
       - 'scripts/lib.mjs'
       - 'scripts/transport.mjs'

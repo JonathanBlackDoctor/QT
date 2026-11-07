@@ -18,6 +18,7 @@ on:
       - '.github/workflows/daily-qt.yml'
       - 'prompts/qt-system.md'
       - 'scripts/generate.mjs'
+      - 'scripts/model-provider.mjs'
       - 'scripts/evidence.mjs'
       - 'scripts/lib.mjs'
       - 'scripts/transport.mjs'
@@ -37,6 +38,7 @@ permissions:
   contents: write
   pages: write
   id-token: write
+  models: read
 concurrency:
   group: qt-publish
   cancel-in-progress: false
@@ -116,6 +118,9 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
           GEMINI_FALLBACK_MODEL: ${{ vars.GEMINI_FALLBACK_MODEL }}
+          GITHUB_MODELS_TOKEN: ${{ github.token }}
+          GITHUB_MODELS_MODEL: ${{ vars.GITHUB_MODELS_MODEL }}
+          QT_GITHUB_MODELS_ENABLED: ${{ vars.QT_GITHUB_MODELS_ENABLED || 'true' }}
           GOOGLE_CSE_API_KEY: ${{ secrets.GOOGLE_CSE_API_KEY }}
           GOOGLE_CSE_ID: ${{ secrets.GOOGLE_CSE_ID || vars.GOOGLE_CSE_ID }}
           READING_JESUS_CHANNEL_ID: ${{ vars.READING_JESUS_CHANNEL_ID }}
@@ -130,6 +135,12 @@ jobs:
               if REQUESTED_DATE="$TARGET_DATE" PAGES_BASE_URL="" node scripts/qt-readiness.mjs --require-ready; then
                 exit 0
               fi
+            else
+              status=$?
+              if (( status == 78 )); then
+                echo "::error::Model billing or authorization is blocked. Skipping repeated calls with unchanged credentials."
+                exit 1
+              fi
             fi
             if (( attempt < 3 )); then
               sleep $((attempt * 5))
@@ -137,6 +148,41 @@ jobs:
           done
           echo "::error::QT generation did not produce a locally ready record after 3 attempts."
           exit 1
+      - name: Recover the previous two missing QT dates (best effort)
+        if: steps.ready.outputs.needs_deployment == 'true' && (steps.generate.outcome == 'success' || steps.generate.outcome == 'skipped')
+        continue-on-error: true
+        timeout-minutes: 5
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
+          GEMINI_FALLBACK_MODEL: ${{ vars.GEMINI_FALLBACK_MODEL }}
+          GITHUB_MODELS_TOKEN: ${{ github.token }}
+          GITHUB_MODELS_MODEL: ${{ vars.GITHUB_MODELS_MODEL }}
+          QT_GITHUB_MODELS_ENABLED: ${{ vars.QT_GITHUB_MODELS_ENABLED || 'true' }}
+          GOOGLE_CSE_API_KEY: ${{ secrets.GOOGLE_CSE_API_KEY }}
+          GOOGLE_CSE_ID: ${{ secrets.GOOGLE_CSE_ID || vars.GOOGLE_CSE_ID }}
+          READING_JESUS_CHANNEL_ID: ${{ vars.READING_JESUS_CHANNEL_ID }}
+        shell: bash
+        run: |
+          for days_ago in 1 2; do
+            backfill_date="$(python3 - "$days_ago" <<'PY'
+          from datetime import datetime, timedelta
+          from zoneinfo import ZoneInfo
+          import sys
+          print((datetime.now(ZoneInfo('Asia/Seoul')).date() - timedelta(days=int(sys.argv[1]))).isoformat())
+          PY
+            )"
+            if REQUESTED_DATE="$backfill_date" PAGES_BASE_URL="" node scripts/qt-readiness.mjs --require-ready >/dev/null 2>&1; then
+              echo "QT $backfill_date already ready; no extra model call."
+              continue
+            fi
+            echo "Recovering missing QT $backfill_date without guessing unverified passages."
+            if node scripts/generate.mjs "--date=$backfill_date" && REQUESTED_DATE="$backfill_date" PAGES_BASE_URL="" node scripts/qt-readiness.mjs --require-ready; then
+              echo "Recovered QT $backfill_date"
+            else
+              echo "::warning::Could not fully recover QT $backfill_date; leaving other dates intact."
+            fi
+          done
       - name: Supplement project perspectives (non-blocking)
         if: steps.ready.outputs.needs_enrichment == 'true'
         continue-on-error: true

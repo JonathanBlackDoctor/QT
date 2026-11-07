@@ -1,5 +1,23 @@
 [
   {
+    "date": "2026-11-07",
+    "displayDate": "2026년 11월 7일 (토)",
+    "passage": "고린도후서 5:11-21",
+    "title": null,
+    "status": "limited",
+    "verification": "직접 확인",
+    "path": "2026/11/2026-11-07.json"
+  },
+  {
+    "date": "2026-11-06",
+    "displayDate": "2026년 11월 6일 (금)",
+    "passage": null,
+    "title": null,
+    "status": "failed",
+    "verification": "확인 실패",
+    "path": "2026/11/2026-11-06.json"
+  },
+  {
     "date": "2026-11-05",
     "displayDate": "2026년 11월 5일 (목)",
     "passage": "고린도후서 4:1-18",

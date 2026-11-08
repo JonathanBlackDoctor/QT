@@ -43,10 +43,29 @@ export function contentReadiness(doc, index, date) {
   return {
     date,
     ready,
+    // A verified reading guide can be published without AI-generated commentary.
+    aiReady: Boolean(fullReady && indexReady),
+    quality: fullReady && indexReady ? 'full' : sourceOnlyReady && indexReady ? 'limited' : 'incomplete',
     reason: ready ? 'ready' : !doc ? 'missing_or_unreadable_document'
       : !documentReady ? 'failed_or_incomplete_document' : 'missing_or_invalid_index_entry',
     // The existing generator skips status=ok. Force repair only for inconsistent records.
     repair: !ready && doc?.status === 'ok',
+  };
+}
+
+// Retry limited records deliberately instead of declaring their AI work complete
+// or calling blocked model providers on every hourly publication check.
+export function requiredWork(state, {
+  forced = false, retryLimitedAi = false, retryPerspectives = false, published = true,
+} = {}) {
+  const retryLimited = retryLimitedAi && state.ready && !state.aiReady;
+  const needsGeneration = forced || !state.ready || retryLimited;
+  const needsEnrichment = needsGeneration || retryPerspectives;
+  return {
+    needsGeneration,
+    needsEnrichment,
+    needsDeployment: needsEnrichment || !published,
+    forceGeneration: forced || state.repair,
   };
 }
 
@@ -89,28 +108,32 @@ async function main() {
   const date = checkedDate(process.env.REQUESTED_DATE?.trim() || generationDate());
   const state = await inspectReadiness(date);
   const forced = process.env.FORCE_GENERATION === 'true';
-  const needsEnrichment = forced || !state.ready || process.env.RETRY_PERSPECTIVES === 'true';
+  const retryPerspectives = process.env.RETRY_PERSPECTIVES === 'true';
+  const retryLimitedAi = process.env.RETRY_LIMITED_AI === 'true';
   const requireReady = process.argv.includes('--require-ready');
+  const requireFull = process.argv.includes('--require-full');
   const baseUrl = process.env.PAGES_BASE_URL;
   let published = !baseUrl;
   if (baseUrl && state.ready) {
-    for (let attempt = 0; attempt < (requireReady ? 3 : 1); attempt++) {
+    for (let attempt = 0; attempt < (requireReady || requireFull ? 3 : 1); attempt++) {
       published = await inspectPublication(date, ROOT, baseUrl);
       if (published) break;
-      if (requireReady && attempt < 2) await new Promise((resolve) => setTimeout(resolve, 3000));
+      if ((requireReady || requireFull) && attempt < 2) await new Promise((resolve) => setTimeout(resolve, 3000));
     }
   }
-  console.log(JSON.stringify({ ...state, published, checkedAt: new Date().toISOString(), event: process.env.GITHUB_EVENT_NAME || 'local' }));
-  if (!requireReady && process.env.GITHUB_OUTPUT) {
+  const work = requiredWork(state, { forced, retryLimitedAi, retryPerspectives, published });
+  console.log(JSON.stringify({ ...state, published, ...work, checkedAt: new Date().toISOString(), event: process.env.GITHUB_EVENT_NAME || 'local' }));
+  if (!requireReady && !requireFull && process.env.GITHUB_OUTPUT) {
     await fs.appendFile(process.env.GITHUB_OUTPUT,
-      `date=${date}\nneeds_generation=${forced || !state.ready}\nforce_generation=${forced || state.repair}\nneeds_enrichment=${needsEnrichment}\nneeds_deployment=${needsEnrichment || !published}\n`);
+      `date=${date}\nneeds_generation=${work.needsGeneration}\nforce_generation=${work.forceGeneration}\nneeds_enrichment=${work.needsEnrichment}\nneeds_deployment=${work.needsDeployment}\n`);
   }
   if (process.env.GITHUB_STEP_SUMMARY) {
     await fs.appendFile(process.env.GITHUB_STEP_SUMMARY,
-      `\n### QT readiness: ${date}\n- Checked: ${new Date().toISOString()}\n- Content: ${state.reason}\n- Published match: ${baseUrl ? published : 'not checked'}\n- Generation: KST calendar day; homepage rollover: 04:00 KST.\n`);
+      `\n### QT readiness: ${date}\n- Checked: ${new Date().toISOString()}\n- Content: ${state.reason}\n- AI commentary: ${state.quality === 'full' ? 'ready' : state.quality === 'limited' ? 'unavailable (verified-source-only)' : 'missing'}\n- Published match: ${baseUrl ? published : 'not checked'}\n- Generation: KST calendar day; homepage rollover: 04:00 KST.\n`);
   }
-  if (requireReady && (!state.ready || !published)) {
-    console.error(`::error::QT ${date} is not ready (${state.reason}, published=${published}). A failure record is not successful publication.`);
+  if ((requireReady && (!state.ready || !published)) ||
+      (requireFull && (!state.aiReady || !published))) {
+    console.error(`::error::QT ${date} is not ${requireFull ? 'AI-complete' : 'publishable'} (${state.quality}, published=${published}).`);
     process.exitCode = 1;
   }
 }

@@ -64,6 +64,10 @@ try {
   // Publish a clearly labeled, source-only reading guide only when the
   // exact day's official passage was independently verified.
   if (process.env.QT_SOURCE_ONLY_FALLBACK !== 'false' && hasVerifiedSource(evidence)) {
+    // Expose the failing provider/status without printing untrusted server
+    // response bodies, API keys or evidence text into public CI logs.
+    console.warn('::warning::QT AI generation failed (' +
+      (error?.provider || 'validation') + ', HTTP ' + (error?.status ?? 'unknown') + ').');
     const limited = createSourceOnlyRecord(targetDate, evidence);
     await persist(targetDate, limited);
     console.warn('::warning::Model generation unavailable; published verified-source-only QT for ' + targetDate + '.');

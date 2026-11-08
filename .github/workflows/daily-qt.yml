@@ -69,6 +69,7 @@ jobs:
           REQUESTED_DATE: ${{ inputs.date }}
           FORCE_GENERATION: ${{ inputs.force }}
           RETRY_PERSPECTIVES: ${{ github.event_name == 'schedule' && github.event.schedule == '20 15 * * *' }}
+          RETRY_LIMITED_AI: ${{ (github.event_name == 'schedule' && github.event.schedule == '20 15 * * *') || github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
         run: node scripts/qt-readiness.mjs
       - name: Already generated and published
         if: steps.ready.outputs.needs_deployment != 'true'
@@ -119,6 +120,8 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
           GEMINI_FALLBACK_MODEL: ${{ vars.GEMINI_FALLBACK_MODEL }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: ${{ vars.OPENAI_MODEL }}
           GITHUB_MODELS_TOKEN: ${{ github.token }}
           GITHUB_MODELS_MODEL: ${{ vars.GITHUB_MODELS_MODEL }}
           QT_GITHUB_MODELS_ENABLED: ${{ vars.QT_GITHUB_MODELS_ENABLED || 'true' }}
@@ -154,9 +157,12 @@ jobs:
         continue-on-error: true
         timeout-minutes: 5
         env:
+          RETRY_LIMITED_AI: ${{ (github.event_name == 'schedule' && github.event.schedule == '20 15 * * *') || github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
           GEMINI_FALLBACK_MODEL: ${{ vars.GEMINI_FALLBACK_MODEL }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: ${{ vars.OPENAI_MODEL }}
           GITHUB_MODELS_TOKEN: ${{ github.token }}
           GITHUB_MODELS_MODEL: ${{ vars.GITHUB_MODELS_MODEL }}
           QT_GITHUB_MODELS_ENABLED: ${{ vars.QT_GITHUB_MODELS_ENABLED || 'true' }}
@@ -174,8 +180,11 @@ jobs:
           PY
             )"
             if REQUESTED_DATE="$backfill_date" PAGES_BASE_URL="" node scripts/qt-readiness.mjs --require-ready >/dev/null 2>&1; then
-              echo "QT $backfill_date already ready; no extra model call."
-              continue
+              if [[ "$RETRY_LIMITED_AI" != "true" ]] || REQUESTED_DATE="$backfill_date" PAGES_BASE_URL="" node scripts/qt-readiness.mjs --require-full >/dev/null 2>&1; then
+                echo "QT $backfill_date already ready; no extra model call."
+                continue
+              fi
+              echo "Retrying limited AI commentary for $backfill_date."
             fi
             echo "Recovering missing QT $backfill_date without guessing unverified passages."
             if node scripts/generate.mjs "--date=$backfill_date" && REQUESTED_DATE="$backfill_date" PAGES_BASE_URL="" node scripts/qt-readiness.mjs --require-ready; then
@@ -193,6 +202,11 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
           GEMINI_FALLBACK_MODEL: ${{ vars.GEMINI_FALLBACK_MODEL }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: ${{ vars.OPENAI_MODEL }}
+          GITHUB_MODELS_TOKEN: ${{ github.token }}
+          GITHUB_MODELS_MODEL: ${{ vars.GITHUB_MODELS_MODEL }}
+          QT_GITHUB_MODELS_ENABLED: ${{ vars.QT_GITHUB_MODELS_ENABLED || 'true' }}
           GOOGLE_CSE_API_KEY: ${{ secrets.GOOGLE_CSE_API_KEY }}
           GOOGLE_CSE_ID: ${{ secrets.GOOGLE_CSE_ID || vars.GOOGLE_CSE_ID }}
           READING_JESUS_CHANNEL_ID: ${{ vars.READING_JESUS_CHANNEL_ID }}

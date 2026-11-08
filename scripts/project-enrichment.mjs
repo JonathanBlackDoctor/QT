@@ -79,7 +79,7 @@ export function createSummarizer({ env = process.env, generate = generateModelTe
           temperature: 0.1,
           env,
         });
-        const parsed = JSON.parse(text.trim().replace(/^\`\`\`(?:json)?\\s*/i, '').replace(/\\s*\`\`\`$/, ''));
+        const parsed = JSON.parse(text.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, ''));
         const checked = validatePerspectiveSummary(parsed, source, doc);
         summaryAttempts.push({ model: 'configured AI provider', outcome: 'ok' });
         return { ...checked, summaryStatus: 'ready', model: 'configured AI provider', summaryAttempts };

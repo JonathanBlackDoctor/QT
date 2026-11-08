@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createSourceOnlyRecord, hasVerifiedSource, sourceOnlyMarkdown } from './source-only.mjs';
+import { createSourceOnlyRecord, hasVerifiedSource, hasDurablyVerifiedRecord, sourceOnlyMarkdown } from './source-only.mjs';
 import { contentReadiness } from './qt-readiness.mjs';
 
 const date = '2026-11-07';
@@ -75,4 +75,22 @@ test('only a fully labeled source-only record is considered publishable', () => 
   assert.equal(contentReadiness({ ...doc, verification: { ...doc.verification, passage: '확인 실패' } }, index, date).ready, false);
   assert.equal(contentReadiness({ ...doc, notice: null }, index, date).ready, false);
   assert.equal(contentReadiness(doc, [{ ...index[0], status: 'ok' }], date).ready, false);
+});
+
+test('saved verified reading is never erased because a later official date lookup fails', () => {
+  const limited = createSourceOnlyRecord(date, evidence);
+  assert.equal(hasDurablyVerifiedRecord(limited, date), true);
+  assert.equal(hasDurablyVerifiedRecord(limited, '2026-11-08'), false);
+  assert.equal(hasDurablyVerifiedRecord({ ...limited, status: 'failed' }, date), false);
+  assert.equal(hasDurablyVerifiedRecord({ ...limited, passage: null }, date), false);
+  assert.equal(hasDurablyVerifiedRecord({
+    ...limited, verification: { ...limited.verification, date: '확인 실패' },
+  }, date), false);
+  assert.equal(hasDurablyVerifiedRecord({
+    ...limited, sources: [{ url: 'https://example.org/a', evidenceLevel: 'direct' }],
+  }, date), false);
+  assert.equal(hasDurablyVerifiedRecord({
+    date, status: 'ok', passage, sections: { summary: 'summary', commentary: 'commentary', christological: 'Christology' },
+  }, date), true);
+  assert.equal(hasDurablyVerifiedRecord({ ...limited, status: 'ok' }, date), false);
 });

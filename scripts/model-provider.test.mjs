@@ -120,7 +120,7 @@ test('a non-JSON HTTP 200 from GitHub Models fails permanently without repeating
     }),
     e => e instanceof ModelProviderError && e.permanent && /without a JSON model completion/.test(e.message),
   );
-  assert.equal(calls, 1);
+  assert.equal(calls, 2); // chat gateway and Responses API fallback
 });
 
 test('a JSON HTTP 200 without a model completion fails permanently', async () => {
@@ -133,5 +133,64 @@ test('a JSON HTTP 200 without a model completion fails permanently', async () =>
     }),
     e => e instanceof ModelProviderError && e.permanent && /no chat completion/.test(e.message),
   );
+  assert.equal(calls, 2); // chat gateway and Responses API fallback
+});
+
+test('GitHub Models Responses API is tried after a non-JSON chat gateway', async () => {
+  const endpoints = [];
+  const result = await generateModelText({
+    ...prompts,
+    env: { GITHUB_MODELS_TOKEN: 'token' },
+    fetchImpl: async (url, opts) => {
+      endpoints.push(url);
+      if (url.endsWith('/chat/completions')) return new Response('OK\\n', { status: 200 });
+      assert.deepEqual(JSON.parse(opts.body).input.map(x => x.role), ['system', 'user']);
+      return ok({ output: [{ content: [{ type: 'output_text', text: '{"result":"responses"}' }] }] });
+    },
+  });
+  assert.equal(result, '{"result":"responses"}');
+  assert.deepEqual(endpoints.map(x => x.split('/').at(-1)), ['completions', 'responses']);
+});
+
+test('OpenAI backup is used only when configured and prior providers cannot answer', async () => {
+  const urls = [];
+  const text = await generateModelText({
+    ...prompts,
+    env: { GEMINI_API_KEY: 'gemini', GITHUB_MODELS_TOKEN: 'github', OPENAI_API_KEY: 'openai-secret' },
+    fetchImpl: async (url, opts) => {
+      urls.push(url);
+      if (url.includes('generativelanguage')) return new Response('prepayment credits are depleted', { status: 402 });
+      if (url.includes('models.github.ai')) return new Response('OK\\n', { status: 200 });
+      assert.equal(opts.headers.authorization, 'Bearer openai-secret');
+      assert.equal(JSON.parse(opts.body).model, 'gpt-4.1-mini');
+      return ok({ choices: [{ message: { content: '{"result":"OpenAI"}' } }] });
+    },
+  });
+  assert.equal(text, '{"result":"OpenAI"}');
+  assert.equal(urls.length, 4);
+  assert.match(urls.at(-1), /api\\.openai\\.com/);
+});
+
+test('OpenAI is usable as sole provider and never exposes billing errors or keys', async () => {
+  const result = await generateModelText({
+    ...prompts,
+    env: { OPENAI_API_KEY: 'a-secret' },
+    fetchImpl: async (url, options) => {
+      assert.match(url, /api\\.openai\\.com/);
+      assert.equal(options.headers.authorization, 'Bearer a-secret');
+      return ok({ choices: [{ message: { content: '{"ok":true}' } }] });
+    },
+  });
+  assert.equal(result, '{"ok":true}');
+  let calls = 0;
+  await assert.rejects(generateModelText({
+    ...prompts,
+    env: { OPENAI_API_KEY: 'private-api-key' },
+    fetchImpl: async () => {
+      calls++;
+      return new Response('{"error":{"code":"insufficient_quota"}}', { status: 429 });
+    },
+  }), e => e.permanent && !e.message.includes('private-api-key') &&
+      /billing|quota/.test(e.message));
   assert.equal(calls, 1);
 });

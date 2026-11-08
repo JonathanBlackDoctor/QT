@@ -204,6 +204,9 @@ jobs:
           GEMINI_FALLBACK_MODEL: ${{ vars.GEMINI_FALLBACK_MODEL }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_MODEL: ${{ vars.OPENAI_MODEL }}
+          GITHUB_MODELS_TOKEN: ${{ github.token }}
+          GITHUB_MODELS_MODEL: ${{ vars.GITHUB_MODELS_MODEL }}
+          QT_GITHUB_MODELS_ENABLED: ${{ vars.QT_GITHUB_MODELS_ENABLED || 'true' }}
           GOOGLE_CSE_API_KEY: ${{ secrets.GOOGLE_CSE_API_KEY }}
           GOOGLE_CSE_ID: ${{ secrets.GOOGLE_CSE_ID || vars.GOOGLE_CSE_ID }}
           READING_JESUS_CHANNEL_ID: ${{ vars.READING_JESUS_CHANNEL_ID }}

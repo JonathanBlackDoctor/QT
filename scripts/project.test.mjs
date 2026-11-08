@@ -217,3 +217,21 @@ test('reader renders independent statuses, not a disabled empty project row', ()
     assert.ok(!serialized.includes('aria-disabled'));
   } finally { globalThis.document = previous; }
 });
+
+test('project perspective summaries use the shared AI provider without weakening evidence checks', async () => {
+  let calls = 0;
+  const summarize = createSummarizer({
+    env: { OPENAI_API_KEY: 'private-test-token' },
+    generate: async ({ systemPrompt, userPrompt, env }) => {
+      calls++;
+      assert.match(systemPrompt, /근거 구절/);
+      assert.equal(env.OPENAI_API_KEY, 'private-test-token');
+      assert.equal(JSON.parse(userPrompt).target.passage, doc().passage);
+      return JSON.stringify(generated());
+    },
+  });
+  const result = await summarize(source(), doc());
+  assert.equal(result.summaryStatus, 'ready');
+  assert.equal(result.summary, summary);
+  assert.equal(calls, 1);
+});

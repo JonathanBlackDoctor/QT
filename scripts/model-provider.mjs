@@ -151,7 +151,7 @@ function completionText(json) {
 async function callGithubModels({ githubToken, systemPrompt, userPrompt, temperature, env, fetchImpl, sleepImpl }) {
   const model = env.GITHUB_MODELS_MODEL?.trim() || 'openai/gpt-4.1-mini';
   const messages = [
-    { role: 'system', content: systemPrompt + '\\nReturn only a valid JSON object.' },
+    { role: 'system', content: systemPrompt + '\nReturn only a valid JSON object.' },
     { role: 'user', content: userPrompt },
   ];
   // Some accounts return HTTP 200 text/plain "OK" on the chat route, not
@@ -234,7 +234,7 @@ async function callOpenAI({ openaiKey, systemPrompt, userPrompt, temperature, en
   const body = {
     model,
     messages: [
-      { role: 'system', content: systemPrompt + '\\nReturn only a valid JSON object.' },
+      { role: 'system', content: systemPrompt + '\nReturn only a valid JSON object.' },
       { role: 'user', content: userPrompt },
     ],
     temperature,

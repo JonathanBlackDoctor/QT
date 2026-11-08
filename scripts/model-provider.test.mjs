@@ -131,7 +131,7 @@ test('a JSON HTTP 200 without a model completion fails permanently', async () =>
       env: { GITHUB_MODELS_TOKEN: 'token' },
       fetchImpl: async () => { calls++; return ok({ status: 'OK' }); },
     }),
-    e => e instanceof ModelProviderError && e.permanent && /no chat completion/.test(e.message),
+    e => e instanceof ModelProviderError && e.permanent && /no model completion/.test(e.message),
   );
   assert.equal(calls, 2); // chat gateway and Responses API fallback
 });
@@ -168,7 +168,7 @@ test('OpenAI backup is used only when configured and prior providers cannot answ
   });
   assert.equal(text, '{"result":"OpenAI"}');
   assert.equal(urls.length, 4);
-  assert.match(urls.at(-1), /api\\.openai\\.com/);
+  assert.match(urls.at(-1), /api\.openai\.com/);
 });
 
 test('OpenAI is usable as sole provider and never exposes billing errors or keys', async () => {
@@ -176,7 +176,7 @@ test('OpenAI is usable as sole provider and never exposes billing errors or keys
     ...prompts,
     env: { OPENAI_API_KEY: 'a-secret' },
     fetchImpl: async (url, options) => {
-      assert.match(url, /api\\.openai\\.com/);
+      assert.match(url, /api\.openai\.com/);
       assert.equal(options.headers.authorization, 'Bearer a-secret');
       return ok({ choices: [{ message: { content: '{"ok":true}' } }] });
     },

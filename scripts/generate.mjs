@@ -5,7 +5,6 @@ import {
   assertDate,
   contentPaths,
   currentKstDate,
-  exists,
   extractPassages,
   isWhitelistedUrl,
   koreanDate,
@@ -16,15 +15,15 @@ import {
 } from './lib.mjs';
 import { collectEvidence } from './evidence.mjs';
 import { generateModelText } from './model-provider.mjs';
-import { createSourceOnlyRecord, hasVerifiedSource, sourceOnlyMarkdown } from './source-only.mjs';
+import { createSourceOnlyRecord, hasVerifiedSource, hasDurablyVerifiedRecord, sourceOnlyMarkdown } from './source-only.mjs';
 
 const args = parseArgs();
 const targetDate = assertDate(args.date || currentKstDate());
 const paths = contentPaths(targetDate);
 
-if (await exists(paths.json) && !args.force) {
-  const existing = await readJson(paths.json).catch(() => null);
-  if (existing?.status === 'ok') {
+const existing = await readJson(paths.json).catch(() => null);
+if (existing && !args.force) {
+  if (existing.status === 'ok') {
     console.log(`QT ${targetDate} already exists and is valid; skipping. Use --force to regenerate.`);
     process.exit(0);
   }
@@ -34,6 +33,13 @@ if (await exists(paths.json) && !args.force) {
 const evidence = await collectEvidence(targetDate);
 
 if (!evidence.passage) {
+  // Historical SU /bible/today may only display the current date. Never
+  // overwrite a previously directly verified passage with a new failure.
+  if (hasDurablyVerifiedRecord(existing, targetDate)) {
+    console.warn('::warning::Official passage lookup is unavailable for ' + targetDate +
+      '; preserving previously verified ' + existing.status + ' record.');
+    process.exit(0);
+  }
   const failure = buildFailure(targetDate, evidence);
   await persist(targetDate, failure);
   console.log(`Could not verify passage for ${targetDate}; failure record written.`);

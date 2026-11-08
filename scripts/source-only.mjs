@@ -14,6 +14,26 @@ export function hasVerifiedSource(evidence) {
   );
 }
 
+
+/**
+ * A transient historical SU lookup failure must not erase a passage that this
+ * repository already verified for the requested date. This function protects
+ * saved evidence; it does not generate or infer commentary from it.
+ */
+export function hasDurablyVerifiedRecord(doc, date) {
+  if (!doc || doc.date !== date || typeof doc.passage !== 'string' || !doc.passage.trim()) return false;
+  if (doc.status === 'ok') {
+    return ['summary', 'commentary', 'christological'].every(key =>
+      typeof doc.sections?.[key] === 'string' && Boolean(doc.sections[key].trim()));
+  }
+  if (doc.status !== 'limited' || doc.generationMode !== 'verified_source_only' ||
+      doc.verification?.date !== '직접 확인' || doc.verification?.passage !== '직접 확인') return false;
+  return Array.isArray(doc.sources) && doc.sources.some(source =>
+    source?.evidenceLevel === 'direct' &&
+    /^https:\/\/sum\.su\.or\.kr(?::\d+)?\//.test(source.url || '') &&
+    isWhitelistedUrl(source.url));
+}
+
 export function createSourceOnlyRecord(date, evidence) {
   assertDate(date);
   if (!hasVerifiedSource(evidence) || evidence.targetDate !== date) {

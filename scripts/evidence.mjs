@@ -115,6 +115,22 @@ async function tryOfficialDateNavigation(initialDoc, targetDate) {
       return { doc, via: link.href };
     } catch {}
   }
+
+  // The official calendar can select dates through form fields instead of links.
+  const datedUrl = new URL('/bible/today', initialDoc.url);
+  datedUrl.search = new URLSearchParams({
+    qt_ty: 'QT1',
+    base_de: targetDate,
+    front_book_nm: '0',
+    searchtab: '2',
+  }).toString();
+  try {
+    const doc = await fetchText(datedUrl.href, { maxChars: 22000 });
+    // The date in our own query is not evidence that the server honored it.
+    if (isOfficialSuUrl(doc.url) && documentMatchesDate({ ...doc, url: '' }, targetDate)) {
+      return { doc, via: datedUrl.href };
+    }
+  } catch {}
   return null;
 }
 

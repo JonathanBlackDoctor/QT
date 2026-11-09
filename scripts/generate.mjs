@@ -58,7 +58,7 @@ try {
       targetDate,
       evidence,
       systemPrompt,
-      correction: { issue: error.message, previous: normalized },
+      correctionIssue: error.message,
     });
     normalized = normalizeResult(result, evidence, targetDate);
     validateGenerated(normalized, evidence);
@@ -109,7 +109,7 @@ function buildFailure(date, evidence) {
   };
 }
 
-async function generateCommentary({ targetDate, evidence, systemPrompt, correction = null }) {
+async function generateCommentary({ targetDate, evidence, systemPrompt, correctionIssue = '' }) {
   const schema = `Return exactly one JSON object with this shape:\n{
   "date": "YYYY-MM-DD",
   "passage": "verified Korean Bible reference",
@@ -151,18 +151,18 @@ async function generateCommentary({ targetDate, evidence, systemPrompt, correcti
     '',
     'EVIDENCE_BUNDLE:',
     JSON.stringify(evidence),
-    ...(correction ? [
+    ...(correctionIssue ? [
       '',
       'COMPLIANCE_CORRECTION_REQUIRED:',
-      correction.issue,
-      'The prior draft below violated the evidence rules. Rewrite the full JSON from scratch.',
-      'Do not preserve any unsupported Bible reference, Hebrew/Greek token, Strong number, quotation, or typology assertion.',
-      'PRIOR_DRAFT:',
-      JSON.stringify(correction.previous),
+      correctionIssue,
+      'Write fresh JSON grounded in the selected passage. Put its reference in the passage field only.',
+      'In all sections, discuss the passage without chapter-and-verse addresses or original-language spellings. Set sections.language to null.',
+      'For the Christ-centered section, use a cautious thematic connection and explain the evidence limits.',
+      'Omit any unsupported claims, quotations, or sources.',
     ] : []),
   ].join('\n');
 
-  const text = await generateModelText({ systemPrompt, userPrompt });
+  const text = await generateModelText({ systemPrompt, userPrompt, temperature: correctionIssue ? 0 : undefined });
   try {
     return JSON.parse(stripCodeFence(text));
   } catch (firstError) {

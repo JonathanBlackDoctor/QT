@@ -110,6 +110,57 @@ test('a temporarily rate-limited Gemini API retries before using any backup', as
   assert.equal(calls, 2);
 });
 
+test('a Gemini daily quota error switches models without retrying the exhausted model', async () => {
+  const requests = [];
+  const text = await generateModelText({
+    ...prompts,
+    env: { GEMINI_API_KEY: 'key' },
+    sleepImpl: async () => assert.fail('The daily quota cannot clear during a retry'),
+    fetchImpl: async url => {
+      requests.push(url);
+      return requests.length === 1
+        ? new Response('GenerateRequestsPerDayPerProjectPerModel limit: 30', { status: 429 })
+        : ok(geminiReply);
+    },
+  });
+  assert.equal(text, '{"result":"from Gemini"}');
+  assert.equal(requests.length, 2);
+  assert.match(requests[1], /gemini-2\.5-pro/);
+});
+
+test('Gemini accounting logs token counts and a purpose without including content', async t => {
+  const log = t.mock.method(console, 'log', () => {});
+  await generateModelText({
+    ...prompts,
+    usageFeature: 'grounded-retry',
+    env: { GEMINI_API_KEY: 'sample-secret-key' },
+    fetchImpl: async () => ok({
+      ...geminiReply,
+      modelVersion: 'gemini-2.5-flash-001',
+      usageMetadata: {
+        promptTokenCount: 123,
+        cachedContentTokenCount: 12,
+        candidatesTokenCount: 45,
+        thoughtsTokenCount: 6,
+        totalTokenCount: 174,
+        unrecognizedText: 'should stay private',
+      },
+    }),
+  });
+  const event = log.mock.calls[0].arguments[0].replace('Gemini token usage: ', '');
+  assert.deepEqual(JSON.parse(event), {
+    app: 'QT',
+    feature: 'grounded-retry',
+    model: 'gemini-2.5-flash',
+    modelVersion: 'gemini-2.5-flash-001',
+    promptTokens: 123,
+    cachedPromptTokens: 12,
+    outputTokens: 45,
+    thinkingTokens: 6,
+    totalTokens: 174,
+  });
+});
+
 test('a non-JSON HTTP 200 from GitHub Models fails permanently without repeating', async () => {
   let calls = 0;
   await assert.rejects(

@@ -179,6 +179,7 @@ async function generateCommentary({ targetDate, evidence, systemPrompt, correcti
     systemPrompt: constrainedSystemPrompt,
     userPrompt,
     temperature: correctionIssue ? 0 : undefined,
+    usageFeature: correctionIssue ? 'grounded-retry' : 'commentary',
   });
   try {
     return JSON.parse(stripCodeFence(text));
@@ -191,7 +192,12 @@ async function generateCommentary({ targetDate, evidence, systemPrompt, correcti
       'BROKEN_RESPONSE:',
       text,
     ].join('\n');
-    const repaired = await generateModelText({ systemPrompt, userPrompt: repairPrompt, temperature: 0 });
+    const repaired = await generateModelText({
+      systemPrompt,
+      userPrompt: repairPrompt,
+      temperature: 0,
+      usageFeature: 'json-repair',
+    });
     try { return JSON.parse(stripCodeFence(repaired)); }
     catch { throw new Error(`Gemini returned invalid JSON twice: ${firstError.message}`); }
   }

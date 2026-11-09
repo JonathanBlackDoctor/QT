@@ -77,6 +77,7 @@ export function createSummarizer({ env = process.env, generate = generateModelTe
           systemPrompt: system,
           userPrompt: sourceData + correction,
           temperature: 0.1,
+          usageFeature: 'project-perspective',
           env,
         });
         const parsed = JSON.parse(text.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, ''));

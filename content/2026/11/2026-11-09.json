@@ -53,7 +53,7 @@
   "sources": [
     {
       "label": "성서유니온 매일성경",
-      "url": "https://sum.su.or.kr:8888/bible/today",
+      "url": "https://sum.su.or.kr:8888/bible/today?qt_ty=QT1&base_de=2026-11-09&front_book_nm=0&searchtab=2",
       "usedFor": "해당 날짜와 성경 본문을 공식 자료에서 직접 검증",
       "evidenceLevel": "direct"
     },
@@ -71,14 +71,14 @@
     }
   ],
   "evidenceMeta": {
-    "retrievedAt": "2026-11-08T19:42:55.852Z",
+    "retrievedAt": "2026-11-09T15:15:21.194Z",
     "generationMode": "verified_source_only",
     "modelOutput": "unavailable",
     "suDirectAttempted": true,
     "suDirectSucceeded": true,
-    "suDirectUrl": "https://sum.su.or.kr:8888/bible/today",
+    "suDirectUrl": "https://sum.su.or.kr:8888/bible/today?qt_ty=QT1&base_de=2026-11-09&front_book_nm=0&searchtab=2",
     "suDirectDateMatch": true,
     "researchDirectCount": 2
   },
-  "generatedAt": "2026-11-08T19:42:58.193Z"
+  "generatedAt": "2026-11-09T15:16:06.747Z"
 }

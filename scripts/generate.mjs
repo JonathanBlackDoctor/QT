@@ -61,7 +61,12 @@ try {
       correctionIssue: error.message,
     });
     normalized = normalizeResult(result, evidence, targetDate);
-    validateGenerated(normalized, evidence);
+    try {
+      validateGenerated(normalized, evidence);
+    } catch (retryError) {
+      console.warn('Grounded retry failed evidence compliance: ' + retryError.message.split(':')[0]);
+      throw retryError;
+    }
   }
   await persist(targetDate, normalized);
   console.log(`Generated QT ${targetDate}: ${normalized.passage}`);
@@ -162,7 +167,19 @@ async function generateCommentary({ targetDate, evidence, systemPrompt, correcti
     ] : []),
   ].join('\n');
 
-  const text = await generateModelText({ systemPrompt, userPrompt, temperature: correctionIssue ? 0 : undefined });
+  const constrainedSystemPrompt = correctionIssue ? [
+    systemPrompt,
+    '',
+    'For this recovery attempt, use the exact selected passage reference in the passage field.',
+    'In sections, omit every chapter-and-verse address, original-language spelling, Strong number, and typological claim.',
+    'Use a brief, evidence-grounded thematic connection to Christ. Do not use the expressions 예표, 미리 보여, or 미리 바라보게.',
+    'Keep all required fields populated, including three questions and four applications.',
+  ].join('\n') : systemPrompt;
+  const text = await generateModelText({
+    systemPrompt: constrainedSystemPrompt,
+    userPrompt,
+    temperature: correctionIssue ? 0 : undefined,
+  });
   try {
     return JSON.parse(stripCodeFence(text));
   } catch (firstError) {

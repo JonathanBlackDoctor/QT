@@ -38,10 +38,10 @@
   {
     "date": "2026-11-06",
     "displayDate": "2026년 11월 6일 (금)",
-    "passage": null,
+    "passage": "고린도후서 5:1-10",
     "title": null,
-    "status": "failed",
-    "verification": "확인 실패",
+    "status": "ok",
+    "verification": "직접 확인",
     "path": "2026/11/2026-11-06.json"
   },
   {

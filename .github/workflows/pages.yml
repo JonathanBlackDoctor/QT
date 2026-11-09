@@ -9,6 +9,11 @@ on:
       - 'scripts/*.test.mjs'
       - '.github/workflows/pages.yml'
   workflow_dispatch:
+    inputs:
+      cancel_blocking_deployment:
+        description: 'Optional exact SHA of an older Pages deployment reported as blocking'
+        required: false
+        type: string
 permissions:
   contents: read
   pages: write
@@ -23,6 +28,18 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - name: Cancel the specified blocking Pages deployment
+        if: github.event_name == 'workflow_dispatch' && inputs.cancel_blocking_deployment != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BLOCKING_DEPLOYMENT: ${{ inputs.cancel_blocking_deployment }}
+        shell: bash
+        run: |
+          if [[ ! "$BLOCKING_DEPLOYMENT" =~ ^[0-9a-f]{40}$ || "$BLOCKING_DEPLOYMENT" == "$GITHUB_SHA" ]]; then
+            echo "::error::Enter the exact 40-character SHA of an older blocking deployment."
+            exit 1
+          fi
+          gh api --silent --method POST "repos/$GITHUB_REPOSITORY/pages/deployments/$BLOCKING_DEPLOYMENT/cancel"
       - uses: actions/checkout@v4
         with:
           ref: main

@@ -71,7 +71,7 @@
     }
   ],
   "evidenceMeta": {
-    "retrievedAt": "2026-11-09T15:15:21.194Z",
+    "retrievedAt": "2026-11-09T15:27:52.835Z",
     "generationMode": "verified_source_only",
     "modelOutput": "unavailable",
     "suDirectAttempted": true,
@@ -80,5 +80,5 @@
     "suDirectDateMatch": true,
     "researchDirectCount": 2
   },
-  "generatedAt": "2026-11-09T15:16:06.747Z"
+  "generatedAt": "2026-11-09T15:28:36.316Z"
 }

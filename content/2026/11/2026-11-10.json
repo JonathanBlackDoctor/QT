@@ -1,7 +1,6 @@
 {
   "schemaVersion": 1,
-  "status": "limited",
-  "generationMode": "verified_source_only",
+  "status": "ok",
   "date": "2026-11-10",
   "displayDate": "2026년 11월 10일 (화)",
   "passage": "고린도후서 8:1-15",
@@ -13,72 +12,217 @@
     "title": "확인 실패",
     "suCommentary": "직접 확인"
   },
-  "notice": "AI 해설 서비스 연결이 중단되어, 공식 본문 확인과 묵상 질문만 제공합니다. 아래 글은 본문 요약이나 실제 주석이 아닙니다.",
   "sections": {
-    "summary": "성서유니온 공식 자료에서 2026-11-10의 본문이 고린도후서 8:1-15임을 직접 확인했습니다. 본문을 먼저 읽고, 각 문장의 주어·핵심 단어·문맥을 표시해 보세요. 해설을 추측하여 덧붙이지 않았습니다.",
-    "context": "",
+    "summary": "본문은 마게도냐 교회들의 모범적인 연보를 통해 고린도 교회의 헌신을 독려하는 바울의 권면을 담고 있습니다. 마게도냐 교회들은 극심한 환난과 가난 속에서도 넘치는 기쁨으로 풍성한 연보를 드렸으며, 이는 하나님의 은혜로 가능했습니다. 바울은 고린도 교회가 이전에 시작했던 선한 일을 완성하고, 그리스도께서 부요하심에도 우리를 위해 가난하게 되신 은혜를 본받아 사랑의 진실함을 증명하라고 촉구합니다. 또한, 연보의 목적이 다른 사람들을 평안하게 하고 모든 이가 균등하게 되도록 돕는 데 있음을 강조합니다.",
+    "context": "이 본문은 바울이 세 번째 선교 여행 중 마게도냐에서 고린도 교회에 보낸 편지의 일부입니다. 당시 유대 지역의 신자들은 기근과 박해로 인해 재정적인 어려움을 겪고 있었습니다. 바울은 이들을 돕기 위해 여러 교회로부터 구제 헌금을 모으는 사역을 조직했습니다. 이는 이방인 그리스도인들과 유대인 그리스도인들 사이의 연합을 보여주고, 가난한 자들을 기억하라는 부르심을 이행하기 위함이었습니다. 마게도냐 교회들, 특히 빌립보, 데살로니가, 베뢰아 교회들은 로마 식민지로서 경제적 어려움을 겪고 있었고, 그리스도인들은 적대적인 환경에 처해 있었습니다. 그럼에도 불구하고 이들은 놀라운 관대함을 보였습니다. 바울은 이러한 마게도냐 교회들의 모범을 들어 고린도 교회가 예루살렘 교회를 돕는 일에 참여하도록 격려하고 있습니다.",
     "projectPerspective": null,
-    "commentary": "",
+    "commentary": "바울은 마게도냐 교회들이 하나님께서 주신 은혜로 인해 환난과 극심한 가난 속에서도 넘치는 기쁨으로 풍성한 연보를 드렸다고 증언합니다. 그들은 힘대로 할 뿐 아니라 힘에 지나도록 자원하여 성도 섬기는 일에 참여하기를 간절히 구했습니다. 이는 그들이 먼저 자신을 주께 드리고 하나님의 뜻을 따라 바울에게 주었기 때문입니다 (성서유니온). 바울은 고린도 교회가 믿음, 말, 지식, 모든 간절함, 사랑 등 모든 일에 풍성한 것 같이 이 은혜, 즉 연보에도 풍성하게 할 것을 권면합니다. 이는 명령이 아니라 다른 이들의 간절함을 통해 고린도 교회의 사랑의 진실함을 증명하고자 함입니다 (BibleHub). 바울은 고린도 교회가 일 년 전에 시작하고 원했던 이 선한 일을 이제는 마음에 원하던 것과 같이 완성하되, 있는 대로 하라고 촉구합니다. 할 마음만 있으면 있는 대로 받으실 것이며, 없는 것은 받지 않으신다고 말합니다. 이는 다른 사람들을 평안하게 하고 고린도 교회를 곤고하게 하려는 것이 아니라, 균등하게 하려 함입니다. 고린도 교회의 넉넉한 것으로 부족한 것을 보충하여 후에 그들의 넉넉한 것으로 고린도 교회의 부족한 것을 보충하여 균등하게 하려는 것입니다. 이는 광야에서 만나를 거둘 때 많이 거둔 자도 남지 않고 적게 거둔 자도 모자라지 않았던 것과 같은 원리입니다 (성서유니온, BibleHub).",
     "language": null,
-    "christological": "",
-    "suApplication": "",
+    "christological": "본문은 우리 주 예수 그리스도의 은혜를 분명히 제시합니다. 그리스도께서는 부요하신 분이셨지만, 우리를 위하여 스스로 가난하게 되셨습니다. 이는 그의 가난함으로 말미암아 우리가 부요하게 되도록 하기 위함입니다. 이 말씀은 그리스도의 자발적인 자기 비움과 희생적인 사랑을 보여주며, 신자들이 다른 사람들의 유익을 위해 자신의 자원을 활용하도록 초대하는 본이 됩니다. 성경 전체의 구원과 은혜의 주제와 깊이 연결되어 있으며, 그리스도의 성육신이 이러한 사랑의 가장 큰 표현임을 묵상할 수 있습니다. 이 연결은 본문 자체에 명시적으로 나타나며, 그리스도의 희생이 모든 기독교적 관대함의 근원임을 보여줍니다.",
+    "suApplication": "하나님은 척박한 환경에서도 기쁨으로 헌신하도록 은혜를 주십니다. 삶이 고단하고 넉넉하지 않더라도 은혜가 임하면 자기 것을 나눌 수 있습니다. 어려운 처지에 놓인 이웃을 돕기 위해 기꺼이 나누는 사랑이 은혜의 증거입니다. 하나님은 낮아지신 그리스도의 본을 따르게 하십니다. 자기 자신이 그리스도의 은혜와 사랑에 크게 빚진 자임을 깊이 깨달은 사람은 그리스도를 본받아 자기 비움의 사랑까지 이를 수 있습니다. 하나님은 자기 백성이 서로 부족함을 채움으로 균등과 안정을 이루기를 원하십니다. 재물의 독점이나 이기적 축적을 기뻐하지 않으시며, 물질과 은혜의 선순환을 통해 공동체 안에 결핍이 없는 은혜의 균등을 이루도록 가르치십니다. 지금 내가 누리는 넉넉함이 누군가의 부족함을 채우기 위한 하나님의 계획임을 기억해야 합니다. 고린도 교회는 예루살렘 교회를 돕는 일에 뜻을 모았으나 실행을 미루고 있었습니다. 바울은 그들이 시작한 선한 일을 처음에 품은 그 마음으로 성실히 마무리하라고 촉구합니다. 거창한 일이 아니더라도 자기 형편에 맞게 실천하는 선행을 하나님은 기쁘게 받으십니다.",
     "lifeApplication": [
       {
         "area": "개인",
-        "text": "오늘 읽은 말씀에서 자신에게 특별히 와 닿은 표현과 그 이유를 적어 보세요."
+        "text": "하나님의 은혜에 대한 응답으로 기쁨과 자원하는 마음으로 나누는 삶을 살기 위해, 나의 소유와 시간을 어떻게 사용할지 정기적으로 돌아보고 결단해야 합니다."
       },
       {
         "area": "관계",
-        "text": "말씀을 읽으며 가까운 사람에게 실천할 작은 태도 하나를 선택해 보세요."
+        "text": "그리스도께서 우리를 위해 가난하게 되신 것처럼, 주변의 어려운 이웃이나 지체들의 필요를 외면하지 않고 나의 넉넉한 것으로 그들의 부족함을 채우는 사랑을 실천해야 합니다."
       },
       {
         "area": "공동체(교회)",
-        "text": "공동체 안에서 함께 기도하거나 돌아볼 부분을 생각해 보세요."
+        "text": "교회 공동체 안에서 재정의 투명성을 확보하고, 모든 성도가 서로의 필요를 채우며 균등함을 이루도록 격려하고 참여하는 문화를 만들어가야 합니다."
       },
       {
         "area": "일터·세상",
-        "text": "오늘의 공부·일·생활에서 말씀을 기억하며 점검할 행동을 골라 보세요."
+        "text": "세상 속에서 나의 직업과 재능, 물질적 자원을 하나님의 나라를 위해 어떻게 활용할 수 있을지 고민하고, 이웃의 필요를 채우는 데 기여할 방법을 찾아야 합니다."
       }
     ],
     "questions": [
-      "본문에서 반복되거나 강조되는 표현은 무엇이며, 앞뒤 문맥에서 무슨 역할을 하나요?",
-      "본문의 화자와 대상은 누구인가요? 직접 확인한 구절을 바탕으로 적어 보세요.",
-      "오늘 이 말씀 앞에서 점검하거나 실천할 한 가지는 무엇인가요?"
+      "마게도냐 교회들이 극심한 환난과 가난 속에서도 넘치는 기쁨으로 연보한 모습은 나의 헌신과 나눔의 태도에 어떤 도전을 줍니까?",
+      "그리스도께서 부요하심에도 우리를 위해 가난하게 되신 은혜를 기억할 때, 나의 삶에서 어떤 영역에서 자기 비움의 사랑을 실천할 수 있을까요?",
+      "이전에 선한 마음으로 시작했지만 아직 완성하지 못한 일이 있다면, 본문의 권면을 따라 어떻게 성실히 마무리할 수 있을까요?"
     ],
     "prayerPoints": [
-      "본문을 서둘러 해석하기보다 바르게 읽고 이해하도록 지혜를 구합니다.",
-      "오늘 발견한 실천을 작은 행동으로 이어 가도록 기도합니다."
-    ]
+      "우리를 부요하게 하신 그리스도의 가난해지심을 기억하며, 그 사랑을 본받아 기쁨으로 나누는 공동체가 되게 하소서.",
+      "중국 당국이 가정교회를 급습해 교회 지도자와 성도를 체포하는 일이 늘고 있습니다. 중국 교회가 신실하게 신앙을 지켜 나가고, 옥에 갇힌 지도자들이 하루속히 석방되도록 기도합니다.",
+      "하나님께서 주신 물질과 은혜를 독점하지 않고, 공동체 안에서 서로의 부족함을 채우며 균등과 안정을 이루는 지혜를 주소서."
+    ],
+    "projectPerspectives": {
+      "bibleproject": {
+        "provider": "bibleproject",
+        "label": "바이블프로젝트",
+        "version": 2,
+        "book": "고린도후서",
+        "scope": "book",
+        "status": "ready",
+        "reason": "공식 책 해설 본문을 직접 확보했습니다.",
+        "checkedAt": "2026-11-09T15:29:28.840Z",
+        "searchConfigured": false,
+        "attempts": [
+          {
+            "url": "https://bibleproject.com/guides/book-of-2-corinthians/",
+            "outcome": "ok"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://bibleproject.com/guides/book-of-2-corinthians/",
+            "title": "2 Corinthians",
+            "evidenceLevel": "direct",
+            "contentKind": "article"
+          }
+        ],
+        "passage": "고린도후서 8:1-15",
+        "evidenceHash": "b9c92be1f2fbc24007b2a3d855e96afafdb5ced3880723efa7567674dcedd491",
+        "summary": "고린도후서는 바울이 고린도 교회와의 복잡한 관계 속에서 보낸 서신으로, 그의 사도직에 대한 오해와 교회의 세속적인 가치관을 바로잡기 위해 쓰였습니다. 바울은 자신의 고난과 가난이 오히려 십자가에 달리신 예수님의 삶을 반영하는 진정한 사도직의 증거임을 강조하며, 세상적인 성공이나 웅변술이 아닌 겸손과 섬김이 참된 리더십의 본질임을 역설합니다. 또한, 예수님께서 부요하심에도 우리를 위해 가난하게 되신 복음의 정신을 따라 관대한 나눔을 촉구하고, 자신을 비방하는 소위 \"탁월한 사도들\"과 달리 자신의 약함 속에서 그리스도의 능력이 온전해짐을 자랑하며 교회가 십자가의 역설적 진리를 받아들이고 겸손히 회개할 것을 권면합니다. 이 책은 십자가의 가치관이 우리의 삶과 세상을 어떻게 변화시켜야 하는지에 대한 강력한 도전을 제시합니다.",
+        "evidenceQuotes": [
+          "True Christian leadership is not about status or self-promotion. Paul depicts himself and the other apostles as captive slaves to King Jesus, who’s leading a procession of triumph.",
+          "“My grace is sufficient for you, for my power is made perfect through weakness” ( 2 Cor. 12:9 )."
+        ],
+        "summaryStatus": "ready",
+        "model": "configured AI provider",
+        "summaryAttempts": [
+          {
+            "model": "configured AI provider",
+            "outcome": "ok"
+          }
+        ]
+      },
+      "readingjesus": {
+        "provider": "readingjesus",
+        "label": "리딩지저스",
+        "version": 2,
+        "book": "고린도후서",
+        "scope": "book",
+        "status": "metadata_only",
+        "reason": "공식 영상의 제목·채널 정보만 확인했습니다. 자막을 확보하지 못해 해설을 추측하지 않습니다.",
+        "checkedAt": "2026-11-09T15:29:36.389Z",
+        "searchConfigured": false,
+        "attempts": [
+          {
+            "url": "https://www.youtube.com/@readingjesus",
+            "outcome": "ok"
+          },
+          {
+            "url": "https://www.youtube.com/@readingjesus/search",
+            "outcome": "ok"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "ok"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "playback_login_required"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "player_metadata_unavailable"
+          },
+          {
+            "url": "https://www.youtube.com/oembed",
+            "outcome": "ok"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "ok"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "playback_login_required"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "player_metadata_unavailable"
+          },
+          {
+            "url": "https://www.youtube.com/oembed",
+            "outcome": "ok"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "ok"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "playback_login_required"
+          },
+          {
+            "url": "https://www.youtube.com/watch",
+            "outcome": "player_metadata_unavailable"
+          },
+          {
+            "url": "https://www.youtube.com/oembed",
+            "outcome": "ok"
+          }
+        ],
+        "sources": [
+          {
+            "url": "https://www.youtube.com/watch?v=qQHqdQhJjeo",
+            "title": "고린도후서 13장 | 45주 성경통독",
+            "evidenceLevel": "direct",
+            "contentKind": "video_metadata",
+            "channelId": "UCDKV9zBBIEA1If3sBz_rMZQ",
+            "metadataFields": [
+              "title",
+              "channel"
+            ]
+          }
+        ],
+        "channelId": "UCDKV9zBBIEA1If3sBz_rMZQ",
+        "description": "",
+        "passage": "고린도후서 8:1-15",
+        "evidenceHash": null,
+        "summary": null,
+        "summaryStatus": "not_applicable"
+      }
+    }
   },
   "sources": [
     {
       "label": "성서유니온 매일성경",
       "url": "https://sum.su.or.kr:8888/bible/today",
-      "usedFor": "해당 날짜와 성경 본문을 공식 자료에서 직접 검증",
+      "usedFor": "summary, commentary, suApplication, prayerPoints, context",
       "evidenceLevel": "direct"
     },
     {
       "label": "BibleHub",
       "url": "https://biblehub.com/2_corinthians/8.htm",
-      "usedFor": "본문과 관련된 읽기 자료 링크(자동 해설에 사용하지 않음)",
+      "usedFor": "summary, context, commentary, christological, lifeApplication, questions",
       "evidenceLevel": "direct"
     },
     {
-      "label": "BibleHub",
-      "url": "https://biblehub.com/text/2_corinthians/8-1.htm",
-      "usedFor": "본문과 관련된 읽기 자료 링크(자동 해설에 사용하지 않음)",
+      "label": "바이블프로젝트 · 2 Corinthians",
+      "url": "https://bibleproject.com/guides/book-of-2-corinthians/",
+      "usedFor": "책 전체의 흐름과 본문 연결 (공식 해설 본문)",
       "evidenceLevel": "direct"
     }
   ],
   "evidenceMeta": {
-    "retrievedAt": "2026-11-09T15:14:32.406Z",
-    "generationMode": "verified_source_only",
-    "modelOutput": "unavailable",
+    "retrievedAt": "2026-11-09T15:26:26.924Z",
     "suDirectAttempted": true,
     "suDirectSucceeded": true,
     "suDirectUrl": "https://sum.su.or.kr:8888/bible/today",
     "suDirectDateMatch": true,
-    "researchDirectCount": 2
+    "suDirectError": null,
+    "suDateNavigationTried": false,
+    "searchFallbackUsed": false,
+    "researchDirectCount": 2,
+    "researchMetadataCount": 0,
+    "projectSources": {
+      "bibleproject": {
+        "status": "ready",
+        "summaryStatus": "ready",
+        "checkedAt": "2026-11-09T15:29:28.840Z"
+      },
+      "readingjesus": {
+        "status": "metadata_only",
+        "summaryStatus": "not_applicable",
+        "checkedAt": "2026-11-09T15:29:36.389Z"
+      }
+    }
   },
-  "generatedAt": "2026-11-09T15:15:20.790Z"
+  "generatedAt": "2026-11-09T15:27:52.376Z",
+  "projectEnrichedAt": "2026-11-09T15:29:40.942Z"
 }

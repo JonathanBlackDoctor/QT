@@ -17,6 +17,7 @@ export async function generateModelText({
   systemPrompt,
   userPrompt,
   temperature = 0.2,
+  usageFeature = 'commentary',
   env = process.env,
   fetchImpl = fetch,
   sleepImpl = sleep,
@@ -33,7 +34,7 @@ export async function generateModelText({
   const providers = [
     ...(geminiKey ? [{
       name: 'Gemini',
-      invoke: () => callGemini({ geminiKey, systemPrompt, userPrompt, temperature, env, fetchImpl, sleepImpl }),
+      invoke: () => callGemini({ geminiKey, systemPrompt, userPrompt, temperature, usageFeature, env, fetchImpl, sleepImpl }),
     }] : []),
     ...(githubEnabled ? [{
       name: 'GitHub Models backup',
@@ -77,7 +78,7 @@ export async function generateModelText({
   );
 }
 
-async function callGemini({ geminiKey, systemPrompt, userPrompt, temperature, env, fetchImpl, sleepImpl }) {
+async function callGemini({ geminiKey, systemPrompt, userPrompt, temperature, usageFeature, env, fetchImpl, sleepImpl }) {
   // Allow repository variables to override the documented, stable default.
   const models = [...new Set([
     env.GEMINI_MODEL?.trim() || 'gemini-2.5-flash',
@@ -110,6 +111,20 @@ async function callGemini({ geminiKey, systemPrompt, userPrompt, temperature, en
 
       if (response.ok) {
         const json = await response.json();
+        const usage = json?.usageMetadata;
+        const count = value => Number.isSafeInteger(value) && value >= 0 ? value : null;
+        // Log accounting before checking the text: an unusable completion can still use tokens.
+        console.log('Gemini token usage: ' + JSON.stringify({
+          app: 'QT',
+          feature: usageFeature,
+          model,
+          modelVersion: json?.modelVersion ?? null,
+          promptTokens: count(usage?.promptTokenCount),
+          cachedPromptTokens: count(usage?.cachedContentTokenCount),
+          outputTokens: count(usage?.candidatesTokenCount),
+          thinkingTokens: count(usage?.thoughtsTokenCount),
+          totalTokens: count(usage?.totalTokenCount),
+        }));
         const text = json?.candidates?.[0]?.content?.parts?.map(p => p.text ?? '').join('')?.trim();
         if (!text) {
           lastError = new ModelProviderError('Gemini ' + model + ' returned an empty response', { provider: 'gemini' });
@@ -131,7 +146,11 @@ async function callGemini({ geminiKey, systemPrompt, userPrompt, temperature, en
       );
       // A billing-blocked key cannot be fixed by selecting a different Gemini model.
       if (creditsGone) throw lastError;
-      if ([429, 500, 502, 503, 504].includes(response.status) && attempt < 3) {
+      // Daily and zero-quota limits cannot clear during this request. A
+      // different model can have a separate quota, so keep that fallback.
+      const fixedQuota = response.status === 429 &&
+        /perday|per day|limit:\s*0\b|"quotaValue"\s*:\s*"?0"?\b/i.test(bodyText);
+      if (!fixedQuota && [429, 500, 502, 503, 504].includes(response.status) && attempt < 3) {
         await sleepImpl(1500 * attempt);
         continue;
       }

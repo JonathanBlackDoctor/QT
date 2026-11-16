@@ -96,7 +96,7 @@
         "scope": "book",
         "status": "metadata_only",
         "reason": "공식 영상의 제목·채널 정보만 확인했습니다. 자막을 확보하지 못해 해설을 추측하지 않습니다.",
-        "checkedAt": "2026-11-15T20:14:06.287Z",
+        "checkedAt": "2026-11-16T23:44:48.288Z",
         "searchConfigured": false,
         "attempts": [
           {
@@ -218,10 +218,10 @@
       "readingjesus": {
         "status": "metadata_only",
         "summaryStatus": "not_applicable",
-        "checkedAt": "2026-11-15T20:14:06.287Z"
+        "checkedAt": "2026-11-16T23:44:48.288Z"
       }
     }
   },
   "generatedAt": "2026-11-16T17:01:40.974Z",
-  "projectEnrichedAt": "2026-11-16T17:01:53.320Z"
+  "projectEnrichedAt": "2026-11-16T23:44:51.658Z"
 }

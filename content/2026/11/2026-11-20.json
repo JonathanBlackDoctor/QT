@@ -98,83 +98,17 @@
         "version": 2,
         "book": "시편",
         "scope": "book",
-        "status": "metadata_only",
-        "reason": "공식 영상의 제목·채널 정보만 확인했습니다. 자막을 확보하지 못해 해설을 추측하지 않습니다.",
-        "checkedAt": "2026-11-18T20:28:41.650Z",
+        "status": "identity_unverified",
+        "reason": "공식 @readingjesus 채널의 ID를 검증하지 못해 다른 채널의 자료는 사용하지 않았습니다.",
+        "checkedAt": "2026-11-19T22:40:25.715Z",
         "searchConfigured": false,
         "attempts": [
           {
             "url": "https://www.youtube.com/@readingjesus",
             "outcome": "ok"
-          },
-          {
-            "url": "https://www.youtube.com/@readingjesus/search",
-            "outcome": "ok"
-          },
-          {
-            "url": "https://www.youtube.com/watch",
-            "outcome": "ok"
-          },
-          {
-            "url": "https://www.youtube.com/watch",
-            "outcome": "playback_login_required"
-          },
-          {
-            "url": "https://www.youtube.com/watch",
-            "outcome": "player_metadata_unavailable"
-          },
-          {
-            "url": "https://www.youtube.com/oembed",
-            "outcome": "ok"
-          },
-          {
-            "url": "https://www.youtube.com/watch",
-            "outcome": "ok"
-          },
-          {
-            "url": "https://www.youtube.com/watch",
-            "outcome": "playback_login_required"
-          },
-          {
-            "url": "https://www.youtube.com/watch",
-            "outcome": "player_metadata_unavailable"
-          },
-          {
-            "url": "https://www.youtube.com/oembed",
-            "outcome": "ok"
-          },
-          {
-            "url": "https://www.youtube.com/watch",
-            "outcome": "ok"
-          },
-          {
-            "url": "https://www.youtube.com/watch",
-            "outcome": "playback_login_required"
-          },
-          {
-            "url": "https://www.youtube.com/watch",
-            "outcome": "player_metadata_unavailable"
-          },
-          {
-            "url": "https://www.youtube.com/oembed",
-            "outcome": "ok"
           }
         ],
-        "sources": [
-          {
-            "url": "https://www.youtube.com/watch?v=UufgvULDUJw",
-            "title": "시편 31편 | 45주 성경통독",
-            "evidenceLevel": "direct",
-            "contentKind": "video_metadata",
-            "channelId": "UCDKV9zBBIEA1If3sBz_rMZQ",
-            "metadataFields": [
-              "title",
-              "channel"
-            ]
-          }
-        ],
-        "channelId": "UCDKV9zBBIEA1If3sBz_rMZQ",
-        "description": "",
+        "sources": [],
         "passage": "시편 21:1-13",
         "evidenceHash": null,
         "summary": null,
@@ -220,12 +154,12 @@
         "checkedAt": "2026-11-18T20:28:31.494Z"
       },
       "readingjesus": {
-        "status": "metadata_only",
+        "status": "identity_unverified",
         "summaryStatus": "not_applicable",
-        "checkedAt": "2026-11-18T20:28:41.650Z"
+        "checkedAt": "2026-11-19T22:40:25.715Z"
       }
     }
   },
   "generatedAt": "2026-11-19T20:27:38.952Z",
-  "projectEnrichedAt": "2026-11-19T20:28:04.981Z"
+  "projectEnrichedAt": "2026-11-19T22:40:26.246Z"
 }

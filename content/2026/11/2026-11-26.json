@@ -56,7 +56,7 @@
         "scope": "book",
         "status": "ready",
         "reason": "공식 책 해설 본문을 직접 확보했습니다.",
-        "checkedAt": "2026-11-25T23:30:05.636Z",
+        "checkedAt": "2026-11-25T23:39:56.364Z",
         "searchConfigured": false,
         "attempts": [
           {
@@ -84,7 +84,7 @@
           },
           {
             "model": "configured AI provider",
-            "outcome": "evidence_validation_failed"
+            "outcome": "model_unavailable"
           }
         ]
       },
@@ -96,7 +96,7 @@
         "scope": "book",
         "status": "metadata_only",
         "reason": "공식 영상의 제목·채널 정보만 확인했습니다. 자막을 확보하지 못해 해설을 추측하지 않습니다.",
-        "checkedAt": "2026-11-25T23:30:34.980Z",
+        "checkedAt": "2026-11-25T23:40:21.028Z",
         "searchConfigured": false,
         "attempts": [
           {
@@ -213,15 +213,15 @@
       "bibleproject": {
         "status": "ready",
         "summaryStatus": "failed",
-        "checkedAt": "2026-11-25T23:30:05.636Z"
+        "checkedAt": "2026-11-25T23:39:56.364Z"
       },
       "readingjesus": {
         "status": "metadata_only",
         "summaryStatus": "not_applicable",
-        "checkedAt": "2026-11-25T23:30:34.980Z"
+        "checkedAt": "2026-11-25T23:40:21.028Z"
       }
     }
   },
   "generatedAt": "2026-11-25T23:30:05.079Z",
-  "projectEnrichedAt": "2026-11-25T23:30:38.428Z"
+  "projectEnrichedAt": "2026-11-25T23:40:24.239Z"
 }
